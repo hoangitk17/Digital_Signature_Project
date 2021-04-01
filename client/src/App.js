@@ -5,6 +5,7 @@ import { ConnectedRouter } from "connected-react-router";
 import "./styles/index.scss";
 import Routes from "./Routes";
 import configureStore from "./stores";
+import 'antd/dist/antd.css';
 
 const browserHistory = createBrowserHistory();
 export const { store, history } = configureStore();
