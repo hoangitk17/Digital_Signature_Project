@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { createBrowserHistory } from "history";
 import { Provider } from "react-redux";
 import { ConnectedRouter } from "connected-react-router";
-
+import "./styles/index.scss";
 import Routes from "./Routes";
 import configureStore from "./stores";
 
