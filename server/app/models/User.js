@@ -7,13 +7,14 @@ const userSchema = mongoose.Schema({
   userName: { type: String, required:  true },
   password: { type: String, required:  true },
   cardId: { type: String, required:  true },
-  dateOfBirth: Date,
+  dateOfBirth: { type: Date},
   address: { type: String, required:  true },
   privateKey: { type: String, required:  true },
   publicKey: { type: String, required:  true },
-  status: Number,
+  status: { type: Number},
   signImage: { type: String, required:  true },
   avatar: { type: String, required:  true },
+  gender: { type: Boolean }
 })
 
 var User = mongoose.model('User', userSchema);

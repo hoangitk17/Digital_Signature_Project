@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const logSchema = mongoose.Schema({
-  userId: String,
-  time: Date,
-  action: String,
+  userId: {type: String},
+  time: {type: Date},
+  action: {type: String},
 })
 
 var Log = mongoose.model('Log', logSchema);

@@ -75,6 +75,30 @@ class UserController {
       console.log(error);
     }
   }
+
+    // [GET] /user/list-user
+    async getListUser(req, res, next) {
+        try {
+            //console.log("abc", req, res, next)
+            /* await User.find({}, (err, users) => res.status(200).json({ users })); */
+            User.find({} , function (err, users) {
+                var userMap = {};
+
+                console.log(users, err)
+
+                users.forEach(function (user) {
+                    userMap[user._id] = user;
+                });
+
+                console.log(userMap)
+
+                res.json(userMap);
+            });
+        } catch (error) {
+            res.status(500).json({ message: "Something went wrong" });
+            console.log(error);
+        }
+    }
 }
 
 module.exports = new UserController();
