@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  font-family: 'Raleway', sans-serif;
+  font-family: 'Roboto', sans-serif !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -49,3 +49,30 @@ code {
   }
 }
 
+.header {
+    .navbar {
+        padding: 0;
+    }
+
+    .sticky .navbar {
+        padding: 0;
+    }
+    .dropdown-item {
+        padding: 10px !important;
+    }
+    .border-left::before {
+        content: "";
+        position: relative;
+        width: 2px;
+        height: 4px;
+        background-color: #282c34;
+    }
+}
+
+.hero-section .hero-content span {
+    font-family: 'Roboto', sans-serif !important;
+}
+
+h1, h2, h3 {
+    font-family: 'Roboto', sans-serif !important;
+}
