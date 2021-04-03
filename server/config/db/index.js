@@ -5,6 +5,7 @@ async function connect() {
         await mongoose.connect('mongodb+srv://hoang9101999:hoang9101999@cluster0.hqu3d.mongodb.net/CytographyProject?retryWrites=true&w=majority', {
             useNewUrlParser: true,
             useUnifiedTopology: true,
+            useCreateIndex: true,
         });
       console.log('Connect successfully!!!');
       mongoose.set('useFindAndModify', false);

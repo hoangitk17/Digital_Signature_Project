@@ -15,8 +15,10 @@ const userSchema = mongoose.Schema({
   signImage: { type: String, required:  true },
   avatar: { type: String, required:  true },
   gender: { type: Boolean }
+}, {
+    timestamps: true
 })
 
-var User = mongoose.model('User', userSchema);
+//var User = mongoose.model('User', userSchema);
 
-module.exports = User;
+module.exports = mongoose.model('User', userSchema);
