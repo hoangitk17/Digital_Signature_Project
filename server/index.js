@@ -3,11 +3,13 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const route = require('./routes');
 const db = require('./config/db');
+const cors = require("cors")
 
 // Connect to DB
 db.connect();
 
 const app = express();
+app.use(cors());
 app.use(bodyParser.json({ limit: '30mb', extended: true }))
 app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }))
 app.use(express.json());

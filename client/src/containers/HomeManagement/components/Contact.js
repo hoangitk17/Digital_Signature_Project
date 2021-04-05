@@ -15,7 +15,7 @@ export default class Contact extends React.Component {
       <>
         <section id="contact" className="cta-section img-bg pt-110 pb-60">
           <div className="container">
-            <div className="row align-items-center">
+            <div className="row align-items-center mt-3">
               <div className="col-xl-6 col-lg-7">
                 <div className="section-title mb-50">
                                 <h1 className="mb-20 wow fadeInUp" data-wow-delay=".2s">Bạn có ý tưởng nào trong đầu không? Chúng tôi sẽ giúp bạn thực hiện nó</h1>

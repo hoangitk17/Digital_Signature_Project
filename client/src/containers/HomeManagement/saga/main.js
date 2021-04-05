@@ -1,4 +1,6 @@
 import { call, put, takeEvery } from "redux-saga/effects";
+import * as apiUser from "./../../../api/user";
+import * as actions from "../actions";
 
 
 
@@ -12,12 +14,27 @@ import { call, put, takeEvery } from "redux-saga/effects";
 //     }
 // }
 
+function* handleGetUserList(action) {
+    try {
+        const res = yield call(apiUser.getUserList, action.payload);
+        console.log("res saga", res.data)
+        yield put(actions.getUserListSuccess(res.data));
+    } catch(error) {
+        console.log("err saga", error);
+        yield put(actions.getUserListFail(error));
+    }
+}
+
 
 
 
 // function* loadDishIcon() {
 //     yield takeEvery(actions.loadDishIcon, handleLoadDishIcon);
 // }
-export default [
 
+function* getUserList() {
+    yield takeEvery(actions.getUserList, handleGetUserList);
+}
+export default [
+    getUserList
 ];

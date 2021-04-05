@@ -53,11 +53,12 @@ instance.interceptors.response.use(
     const {
       config,
       config: { validateStatus },
-      response: { status }
+      response: { status },
+      message,
     } = error;
-    console.log(error)
-    if (validateStatus()) return Promise.reject(error);
-    if ((status ? status : -1) === 401) {
+      console.log(error.response)
+      if (validateStatus()) return Promise.reject(error.response);
+    /* if ((status ? status : -1) === 401) {
       const refreshToken = get("refreshToken");
       if (refreshToken)
         return getNewTokenAndReattemptRequest(config, refreshToken);
@@ -65,8 +66,8 @@ instance.interceptors.response.use(
         history.push("/login");
         return Promise.reject(error);
       }
-    }
-    return Promise.reject(error);
+    } */
+      return Promise.reject(error.response);
   }
 );
 

@@ -1,16 +1,15 @@
 import React from "react";
 import "./styles.scss";
-import { Main } from "./components";
+import { Header } from "./components";
 import { connect } from "react-redux";
-import { bindActionCreators, compose } from "redux";
+import { bindActionCreators } from "redux";
 import { name } from "./reducers";
 import * as action from "./actions";
 
-class HomeManagement extends React.Component {
+class HeaderManagement extends React.Component {
 
     componentDidMount = () => {
-        console.log("run")
-        this.props.actions.getUserList();
+        console.log("run abc")
     }
 
 
@@ -18,7 +17,7 @@ class HomeManagement extends React.Component {
     const {
       ...rest
     } = this.props;
-    return (<Main {
+    return (<Header {
       ...rest
     }
     />
@@ -40,4 +39,4 @@ var mapDispatchToProp = dispatch => {
   }
 
 }
-export default connect(mapStateToProps, mapDispatchToProp)(HomeManagement);
+export default connect(mapStateToProps, mapDispatchToProp)(HeaderManagement);

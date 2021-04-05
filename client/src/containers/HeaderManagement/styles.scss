@@ -1,0 +1,82 @@
+.header {
+    .navbar {
+        padding: 0;
+    }
+
+    .sticky .navbar {
+        padding: 0;
+    }
+
+    .dropdown-item {
+        padding: 10px !important;
+    }
+
+    .border-left::before {
+        content: "";
+        position: relative;
+        width: 2px;
+        height: 4px;
+        background-color: #282c34;
+    }
+
+    .date-picker {
+        display: block;
+        width: 100%;
+        padding: .375rem .75rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #212529;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        border-radius: .25rem;
+        transition: border-color .15s ease-in-out,
+            box-shadow .15s ease-in-out;
+    }
+
+    .profile-icon {
+        width: 32px;
+        height: 32px;
+        margin-right: 8px;
+        border-radius: 2px;
+    }
+
+    .icon-showpass {
+        position: absolute;
+        color: #0d6efd;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        right: 10px;
+        top: 50px;
+    }
+
+    .icon-showpass-singup {
+        position: absolute;
+        color: #0d6efd;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        right: 10px;
+        top: 42px;
+    }
+
+    .eyeAction:hover {
+        color: #0d6efd;
+        filter: grayscale(80%);
+        cursor: pointer;
+    }
+
+    .message-err {
+        display: flex;
+        color: #f44336;
+        text-align: center;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+    }
+}

@@ -14,19 +14,21 @@ class UserController {
   };
   async signIn (req, res, next) {
     const { userName, password } = req.body;
-
+      console.log(userName, password, req)
+    console.log("sign in")
     try {
       const oldUser = await User.findOne({ userName });
 
-      if (!oldUser) return res.status(404).json({ message: "User doesn't exist" });
+      if (!oldUser) return res.status(404).json({ message: "Tài khoản này không tồn tại!" });
 
       const isPasswordCorrect = password === oldUser.password;
 
-      if (!isPasswordCorrect) return res.status(400).json({ message: "Invalid credentials" });
+      if (!isPasswordCorrect) return res.status(400).json({ message: "Mật khẩu không chính xác!" });
 
-      const token = jwt.sign({ email: oldUser.email, id: oldUser._id }, secret, { expiresIn: "1h" });
+      //const token = jwt.sign({ email: oldUser.email, id: oldUser._id }, secret, { expiresIn: "1h" });
 
-      res.status(200).json({ result: oldUser, token });
+      //res.status(200).json({ result: oldUser, token });
+      res.status(200).json({ result: oldUser });
     } catch (err) {
       res.status(500).json({ message: "Something went wrong" });
     }
@@ -82,17 +84,13 @@ class UserController {
             //console.log("abc", req, res, next)
             /* await User.find({}, (err, users) => res.status(200).json({ users })); */
             User.find({} , function (err, users) {
-                var userMap = {};
+                // var userMap = {};
 
-                console.log(users, err)
+                // users.forEach(function (user) {
+                //     userMap[user._id] = user;
+                // });
 
-                users.forEach(function (user) {
-                    userMap[user._id] = user;
-                });
-
-                console.log(userMap)
-
-                res.json(userMap);
+                res.json(users);
             });
         } catch (error) {
             res.status(500).json({ message: "Something went wrong" });

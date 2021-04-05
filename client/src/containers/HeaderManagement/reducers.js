@@ -2,11 +2,14 @@
 import freeze from "deep-freeze";
 import { handleActions } from "redux-actions";
 import * as actions from "./actions";
-export const name = "Home";
+export const name = "Header";
 const initialState = freeze({
     userList: [],
     isLoading: false,
-    isError: false
+    isError: false,
+    errorMessage: "",
+    InfoAfterSignIn: {},
+    isLogin: false
 })
 
 export default handleActions(
@@ -31,6 +34,28 @@ export default handleActions(
             return freeze({
                 ...state,
                 isError: true
+            })
+        },
+        [actions.signIn]: (state, action) => {
+            return freeze({
+                ...state,
+                isLoading: true
+            })
+        },
+        [actions.signInSuccess]: (state, action) => {
+            console.log("info", action.payload.result, action.payload)
+            return freeze({
+                ...state,
+                InfoAfterSignIn: action.payload.result,
+                isLoading: false,
+                isLogin: true
+            })
+        },
+        [actions.signInFail]: (state, action) => {
+            return freeze({
+                ...state,
+                isError: true,
+                errorMessage: action.payload
             })
         },
 

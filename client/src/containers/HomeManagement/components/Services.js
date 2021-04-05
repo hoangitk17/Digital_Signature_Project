@@ -16,7 +16,7 @@ export default class Services extends React.Component {
             <>
                 <section id="service" className="service-section img-bg pt-100 pb-100 mt-150">
                     <div className="container">
-                        <div className="row justify-content-center">
+                        <div className="row justify-content-center mt-4">
                             <div className="col-xxl-5 col-xl-6 col-lg-7 col-md-10">
                                 <div className="section-title text-center mb-50">
                                     <h1>Những Dịch Vụ Của Chúng Tôi</h1>
