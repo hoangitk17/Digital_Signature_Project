@@ -8,11 +8,6 @@ import * as action from "./actions";
 
 class HeaderManagement extends React.Component {
 
-    componentDidMount = () => {
-        console.log("run abc")
-    }
-
-
   render() {
     const {
       ...rest

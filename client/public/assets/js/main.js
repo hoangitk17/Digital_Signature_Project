@@ -36,7 +36,7 @@
     }
   };
 
-  // for menu scroll 
+  // for menu scroll
   var pageLink = document.querySelectorAll('.page-scroll');
 
   pageLink.forEach(elem => {
@@ -89,7 +89,7 @@
   new WOW().init();
 
 
-  //====== counter up 
+  //====== counter up
   var cu = new counterUp({
     start: 0,
     duration: 2000,
@@ -135,4 +135,8 @@ Math.easeInOutQuad = function (t, b, c, d) {
 
 document.querySelector('.scroll-top').onclick = function () {
   scrollTo(document.documentElement);
+}
+
+document.querySelector('.scroll-top-header').onclick = function () {
+    scrollTo(document.documentElement);
 }

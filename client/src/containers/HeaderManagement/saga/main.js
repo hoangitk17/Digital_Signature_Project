@@ -40,6 +40,33 @@ function* handleSignIn(action) {
         } */
     }
 }
+function* handleSignUp(action) {
+    let res = null;
+    try {
+        console.log("run saga")
+        res = yield call(apiUser.signUp, action.payload);
+        console.log("res saga login", res.data)
+        yield put(actions.signUpSuccess(res.data));
+        yield Swal.fire(
+            'Thông báo',
+            'Đăng ký tài khoản thành công!',
+            'success'
+        )
+        yield action.payload.closeModal();
+    } catch (error) {
+        yield Swal.fire(
+            'Thông báo',
+            'Đăng ký tài khoản thất bại!',
+            'error'
+        )
+        console.log("err saga login", error);
+        if (error?.data?.message) {
+            yield put(actions.signUpFail(error?.data?.message));
+        }/*  else {
+            yield put(actions.signInFail("Network error"));
+        } */
+    }
+}
 
 function* getUserList() {
     yield takeEvery(actions.getUserList, handleGetUserList);
@@ -47,8 +74,12 @@ function* getUserList() {
 function* signIn() {
     yield takeEvery(actions.signIn, handleSignIn);
 }
+function* signUp() {
+    yield takeEvery(actions.signUp, handleSignUp);
+}
 
 export default [
     getUserList,
-    signIn
+    signIn,
+    signUp
 ];

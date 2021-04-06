@@ -13,4 +13,8 @@ export const signIn = createAction(CONST.SIGNIN);
 export const signInSuccess = createAction(CONST.SIGNIN_SUCCESS);
 export const signInFail = createAction(CONST.SIGNIN_FAIL);
 
+export const signUp = createAction(CONST.SIGNUP);
+export const signUpSuccess = createAction(CONST.SIGNUP_SUCCESS);
+export const signUpFail = createAction(CONST.SIGNUP_FAIL);
+
 

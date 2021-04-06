@@ -14,29 +14,20 @@ import {
 import $ from 'jquery';
 import Validator from "../../../utils/validator";
 import Swal from "sweetalert2";
-import PopupEditInfoUser from "./PopupEditInfoUser";
-import CreateSignForFile from "./CreateSignForFile";
-import UpdateSignImage from "./UpdateSignImage";
-import { get } from '../../../services/localStorage';
+import InputFile from "../../../common/InputFile";
+import "../styles.scss";
 const iconEye = <FontAwesomeIcon icon={faEye} />;
 const iconEyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
-// import {
-//     faPersonBooth
-// } from "@fortawesome/free-solid-svg-icons";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-class Header extends Component {
+class PopupEditInfoUser extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            txtusername: "",
-            txtpassword: "",
             hidePassword: true,
             hidePasswordSignUp: true,
             hidePasswordSignUpAgain: true,
-            savelogin: false,
-            isLogin: props?.isLogin ? props?.isLogin : false,
             messenger: "",
+            event: null,
             /* infoSignUp: { */
                 name: "",
                 email: "",
@@ -175,48 +166,22 @@ class Header extends Component {
         });
     }
 
-    onSubmit = () => {
-        var { txtpassword, txtusername, savelogin } = this.state;
-        console.log("run login", txtpassword, txtusername, this.props)
-        const data = { userName: txtusername, password: txtpassword, savelogin };
-        this.props.actions.signIn({
-            data, closeModal: () => {
-                this.setState({
-                    txtusername: "",
-                    txtpassword: "",
-                });
-                document.querySelector('#close-modal-signin').click();
-            }
-        });
-    }
-
     onShowPopupSignUp = () => {
         document.querySelector('#close-modal-signin').click();
         document.querySelector('#modalSignUpTemp').click();
     }
 
-    logOut = () => {
-        this.props.actions.signInFail();
-        Swal.fire(
-            'Thông báo',
-            'Đăng xuất thành công!',
-            'success'
-        );
-        /* this.setState({
-            messenger: ""
-        }) */
-    }
 
-    static getDerivedStateFromProps(nextProps, prevState) {
-        if (nextProps.isLogin !== prevState.isLogin) {
-            return {
-                isLogin: nextProps.isLogin
-            };
-        }
-        return null;
-    }
+    // static getDerivedStateFromProps(nextProps, prevState) {
+    //     if (nextProps.isLogin !== prevState.isLogin) {
+    //         return {
+    //             isLogin: nextProps.isLogin
+    //         };
+    //     }
+    //     return null;
+    // }
 
-    signUp = () => {
+    updateInfoUser = () => {
         const {
             password,
             oldPassword,
@@ -309,148 +274,290 @@ class Header extends Component {
 
 
     render() {
-        const { infoSignUp, hidePassword, hidePasswordSignUp, hidePasswordSignUpAgain, txtusername, txtpassword, errors /*, isLogin messenger */, dateOfBirth } = this.state;
-        console.log("data", txtusername, txtpassword, this.props.InfoAfterSignIn)
+        const { infoSignUp, hidePassword, hidePasswordSignUp, hidePasswordSignUpAgain, txtusername, txtpassword, errors, isLogin/* messenger */, dateOfBirth } = this.state;
         const { isError, errorMessage, InfoAfterSignIn, errorMessageSignUp } = this.props;
         var messenger = !isError ? "" : errorMessage;
         var messengerSignUp = errorMessageSignUp ? errorMessageSignUp : null;
-        /* if (isError) {
-            this.setState({
-                messenger: errorMessage
-            })
-        } */
-        console.log("mess", messenger, isError, infoSignUp)
+        console.log("event", this.state.event)
         return (
-            <header className="header">
-                <div className="navbar-area">
-                    <div className="container">
-                        <div className="row align-items-center">
-                            <div className="col-lg-12">
-                                <nav className="navbar navbar-expand-lg">
-                                    <a className="navbar-brand scroll-top-header" href="#">
-                                        <img src={Logo} alt="Logo" width="120px" height="auto" />
-                                    </a>
-                                    <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                                        <span className="toggler-icon" />
-                                        <span className="toggler-icon" />
-                                        <span className="toggler-icon" />
-                                    </button>
-                                    <div className="collapse navbar-collapse sub-menu-bar" id="navbarSupportedContent">
-                                        <ul id="nav" className="navbar-nav ms-auto">
-                                            <li className="nav-item">
-                                                <a className="page-scroll active" href="#home">Trang Chủ</a>
-                                            </li>
-                                            <li className="nav-item">
-                                                <a className="page-scroll" href="#about">Về Chúng Tôi</a>
-                                            </li>
-                                            <li className="nav-item">
-                                                <a className="page-scroll" href="#service">Dịch Vụ</a>
-                                            </li>
-                                            <li className="nav-item">
-                                                <a className="page-scroll" href="#contact">Liên Hệ</a>
-                                            </li>
-                                            {get("isLogin") !== true ?
-                                                <li className="nav-item dropdown management-account">
-                                                    <a className="dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                        {/* <img src="https://salt.tikicdn.com/ts/upload/67/de/1e/90e54b0a7a59948dd910ba50954c702e.png" class="img-fluid profile-icon" alt="error" /> */}
-                                                        Đăng ký / Đăng nhập
-                                                    </a>
-                                                    <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
-                                                        <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }} data-bs-toggle="modal" data-bs-target="#modalSignUp" id="modalSignUpTemp">Đăng ký tài khoản</a></li>
-                                                        <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }} data-bs-toggle="modal" data-bs-target="#modalLogin">Đăng nhập</a></li>
-                                                        <li><hr className="dropdown-divider" /></li>
-                                                        <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }}>Đăng nhập bằng GOOGLE</a></li>
-                                                        <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }}>Đăng nhập bằng FACEBOOK</a></li>
-                                                        <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }}>Đăng nhập bằng ZALO</a></li>
-                                                    </ul>
-                                                </li> :
-                                                <li className="nav-item dropdown management-account">
-                                                    <a className="dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                        {/* <img src="https://salt.tikicdn.com/ts/upload/67/de/1e/90e54b0a7a59948dd910ba50954c702e.png" class="img-fluid profile-icon" alt="error" style={{ transform: "translateY(-3px)"}}/> */}
-                                                        {InfoAfterSignIn?.name ? "Xin Chào " + InfoAfterSignIn?.name : "Xin Chào " + get("name-user")}
-                                                    </a>
-                                                    <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
-                                                        <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }} data-bs-toggle="modal" data-bs-target="#modalEditInfoUser">Thông tin tài khoản</a></li>
-                                                        <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }} data-bs-toggle="modal" data-bs-target="#modalCreateFileForFile">Ký cho văn bản</a></li>
-                                                        <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }} data-bs-toggle="modal" data-bs-target="#modalUpdateSign">Cập nhật hình ảnh chữ ký</a></li>
-                                                        <li><hr className="dropdown-divider" /></li>
-                                                        <li><a className="dropdown-item" href="#" onClick={this.logOut} style={{ fontSize: 16 }}>Đăng xuất</a></li>
-                                                    </ul>
-                                                </li>
-                                            }
-                                        </ul>
-                                    </div>
-                                </nav>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {/* Modal Login */}
-                <div className="modal fade" id="modalLogin" tabIndex={-1} aria-labelledby="modalLoginLabel" aria-hidden="true">
-                    <div className="modal-dialog modal-dialog-centered">
+            <div className="popup-edit-info-user">
+                {/* Modal Edit Info User */}
+                <div className="modal fade" id="modalEditInfoUser" tabIndex={-1} aria-labelledby="modalEditInfoUser" aria-hidden="true">
+                    <div className="modal-dialog modal-dialog-centered modal-xl">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <h5 className="modal-title" id="modalLoginLabel">Đăng Nhập</h5>
-                                <a href="#" className="float-right btn btn-outline-primary" style={{ marginLeft: 260 }} onClick={this.onShowPopupSignUp}>Đăng Ký</a>
+                                <h5 className="modal-title" id="modalEditInfoUser">Thông tin tài khoản</h5>
                                 <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
                             </div>
                             <div className="modal-body">
                                 <form>
-                                    <div className="form-group">
-                                        <label>Tài Khoản</label>
-                                        <input
-                                            onChange={(e) => this.setState({ txtusername: e.target.value })}
-                                            className="form-control mt-3" placeholder="Nhập tài khoản..." type="text"
-                                            value={this.state.txtusername}
-                                        />
-                                    </div>
-                                    <div className="form-group mt-3" style={{ position: "relative" }}>
-                                        <label>Mật Khẩu</label>
-                                        <a className="float-right" href="#" style={{ marginLeft: 300 }}>Quên mật khẩu?</a>
-                                        <input
-                                            onChange={(e) => this.setState({ txtpassword: e.target.value })}
-                                            className="form-control mt-3" placeholder="Nhập mật khẩu..." type={hidePassword ? "password" : "text"}
-                                            value={this.state.txtpassword}
-                                        />
-                                        <span
-                                            className="icon-showpass eyeAction"
-                                            onClick={this.setHidePassword}
-                                        >
-                                            {hidePassword ? iconEyeSlash : iconEye}
-                                        </span>
-                                    </div>
-                                    <div className="form-group mt-3">
-                                        <div className="checkbox">
-                                            <label> <input type="checkbox" style={{ transform: "translateY(15%)", cursor: "pointer" }} /> <span className="mt-1">Lưu mật khẩu</span> </label>
+                                    <div className="row">
+                                        <div className="col-md-3" style={{ padding: "70px 20px 80px 15px"}}>
+                                            <InputFile
+                                                onChange={event => this.setState({ event })}
+                                            />
+                                        </div>
+                                        <div className="col-md-9">
+                                            <div className="row">
+                                                <div className="col-md-6">
+                                                    <div className="row">
+                                                        <div className="margin-5 col-md-4 line-height-55">
+                                                            <label>Tài Khoản</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
+                                                        </div>
+                                                        <div className="margin-5 col-md-8">
+                                                            <input onChange={(e) => {
+                                                                if (e.target.value === "") {
+                                                                    this.setState({
+                                                                        userName: e.target.value, errors: {
+                                                                            ...errors, userName: e.target.value === ""
+                                                                                ? (this.validator.validate(this.state).userName
+                                                                                    ? this.validator.validate(this.state).userName
+                                                                                    : "Tài khoản không được để trống") : null
+                                                                        }
+                                                                    })
+                                                                } else {
+                                                                    delete errors.userName;
+                                                                    this.setState({ userName: e.target.value, errors: { ...errors, userName: "" } })
+                                                                }
+                                                            }} className="form-control mt-2 disabled" placeholder="Nhập tài khoản..." type="text" value={this.state.userName} disabled/>
+                                                        </div>
+                                                        <div className="margin-5 col-md-4 line-height-55">
+                                                            <label>Họ Và Tên</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
+                                                        </div>
+                                                        <div className="margin-5 col-md-8">
+                                                            <input onChange={(e) => {
+                                                                if (e.target.value === "") {
+                                                                    this.setState({
+                                                                        name: e.target.value, errors: {
+                                                                            ...errors, name: e.target.value === ""
+                                                                                ? (this.validator.validate(this.state).name
+                                                                                    ? this.validator.validate(this.state).name
+                                                                                    : "Họ và tên không được để trống") : null
+                                                                        }
+                                                                    })
+                                                                } else {
+                                                                    delete errors.name;
+                                                                    this.setState({ name: e.target.value, errors: { ...errors, name: "" } })
+                                                                }
+                                                            }}
+                                                                className="form-control mt-2" placeholder="Nhập họ và tên..." type="text" value={this.state.name}
+                                                            />
+                                                        </div>
+                                                        <div className="margin-5 col-md-4 line-height-55">
+                                                            <label>CCCD</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
+                                                        </div>
+                                                        <div className="margin-5 col-md-8">
+                                                            <input onChange={(e) => {
+                                                                if (e.target.value === "") {
+                                                                    this.setState({
+                                                                        cardId: e.target.value, errors: {
+                                                                            ...errors, cardId: e.target.value === ""
+                                                                                ? (this.validator.validate(this.state).cardId
+                                                                                    ? this.validator.validate(this.state).cardId
+                                                                                    : "Số căn cước công dân không được để trống") : null
+                                                                        }
+                                                                    })
+                                                                } else {
+                                                                    delete errors.cardId;
+                                                                    this.setState({ cardId: e.target.value, errors: { ...errors, cardId: "" } })
+                                                                }
+                                                            }} className="form-control mt-2" placeholder="Nhập số căn cước công dân..." type="number" value={this.state.cardId} />
+                                                        </div>
+                                                        <div className="margin-5 col-md-4 line-height-55">
+                                                            <label>Số Điện Thoại</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
+                                                        </div>
+                                                        <div className="margin-5 col-md-8">
+                                                            <input onChange={(e) => {
+                                                                if (e.target.value === "") {
+                                                                    this.setState({
+                                                                        phoneNumber: e.target.value, errors: {
+                                                                            ...errors, phoneNumber: e.target.value === ""
+                                                                                ? (this.validator.validate(this.state).phoneNumber
+                                                                                    ? this.validator.validate(this.state).phoneNumber
+                                                                                    : "Số điện thoại không được để trống") : null
+                                                                        }
+                                                                    })
+                                                                } else {
+                                                                    delete errors.phoneNumber;
+                                                                    this.setState({ phoneNumber: e.target.value, errors: { ...errors, phoneNumber: "" } })
+                                                                }
+                                                            }} className="form-control mt-2" placeholder="Nhập số điện thoại..." type="number" value={this.state.phoneNumber} />
+                                                        </div>
+                                                        <div className="margin-5 col-md-4 line-height-55">
+                                                            <label>Ngày Sinh</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
+                                                        </div>
+                                                        <div className="margin-5 col-md-8">
+                                                            <div className="mt-2"><DatePicker
+                                                                className="date-picker"
+                                                                selected={dateOfBirth}
+                                                                onChange={(dateOfBirth) => {
+                                                                    if (!dateOfBirth) {
+                                                                        console.log("Date", dateOfBirth)
+                                                                        this.setState({
+                                                                            dateOfBirth: dateOfBirth, errors: {
+                                                                                ...errors, dateOfBirth: !dateOfBirth
+                                                                                    ? (this.validator.validate(this.state).dateOfBirth
+                                                                                        ? this.validator.validate(this.state).dateOfBirth
+                                                                                        : "Ngày sinh không hợp lệ") : null
+                                                                            }
+                                                                        })
+                                                                    } else {
+                                                                        console.log("Date", dateOfBirth)
+                                                                        delete errors.dateOfBirth;
+                                                                        this.setState({ dateOfBirth: dateOfBirth, errors: { ...errors, dateOfBirth: "" } })
+                                                                    }
+                                                                }}
+                                                                dateFormat="dd/MM/yyyy"
+                                                                locale="languageDate"
+                                                            /></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-6">
+                                                    <div className="row">
+                                                        <div className="margin-5 col-md-4 line-height-55">
+                                                            <label>Email</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
+                                                        </div>
+                                                        <div className="margin-5 col-md-8">
+                                                            <input onChange={(e) => {
+                                                                if (e.target.value === "") {
+                                                                    this.setState({
+                                                                        email: e.target.value, errors: {
+                                                                            ...errors, email: e.target.value === ""
+                                                                                ? (this.validator.validate(this.state).email
+                                                                                    ? this.validator.validate(this.state).email
+                                                                                    : "Email không được để trống") : null
+                                                                        }
+                                                                    })
+                                                                } else {
+                                                                    delete errors.email;
+                                                                    this.setState({ email: e.target.value, errors: { ...errors, email: "" } })
+                                                                }
+                                                            }} className="form-control mt-2" placeholder="Nhập email..." type="email" value={this.state.email} />
+                                                        </div>
+                                                        <div className="margin-5 col-md-4 line-height-55">
+                                                            <label>Giới Tính</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
+                                                        </div>
+                                                        <div className="margin-5 col-md-8" style={{position: "relative"}}>
+                                                            <div className="d-flex" style={{marginTop: 14}}>
+                                                                <div className="form-check" onClick={() => { this.setState({ gender: true }) }}>
+                                                                    <input className="form-check-input" type="radio" name="gender" id="nam" defaultChecked />
+                                                                    <label className="form-check-label" htmlFor="nam">Nam</label>
+                                                                </div>
+                                                                <div className="form-check" style={{ marginLeft: 100 }} onClick={() => { this.setState({ gender: false }) }}>
+                                                                    <input className="form-check-input" type="radio" name="gender" id="nu" />
+                                                                    <label className="form-check-label" htmlFor="nu">Nữ</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="margin-5 col-md-4 line-height-55">
+                                                            <label>Mật Khẩu Cũ</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
+                                                        </div>
+                                                        <div className="margin-5 col-md-8" style={{position: "relative"}}>
+                                                            <input onChange={(e) => {
+                                                                if (e.target.value === "") {
+                                                                    this.setState({
+                                                                        password: e.target.value, errors: {
+                                                                            ...errors, password: e.target.value === ""
+                                                                                ? (this.validator.validate(this.state).password
+                                                                                    ? this.validator.validate(this.state).password
+                                                                                    : "Mật khẩu không được để trống") : null
+                                                                        }
+                                                                    })
+                                                                } else {
+                                                                    delete errors.password;
+                                                                    this.setState({ password: e.target.value, errors: { ...errors, password: "" } })
+                                                                }
+                                                            }} className="form-control mt-2" placeholder="Nhập mật khẩu cũ..." type={hidePasswordSignUp ? "password" : "text"} value={this.state.password} />
+                                                            <span
+                                                                className="icon-showpass-edit eyeAction"
+                                                                onClick={this.setHidePasswordSignUp}
+                                                            >
+                                                                {hidePasswordSignUp ? iconEyeSlash : iconEye}
+                                                            </span>
+                                                        </div>
+                                                        <div className="margin-5 col-md-4 line-height-55">
+                                                            <label>Mật Khẩu Mới</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
+                                                        </div>
+                                                        <div className="margin-5 col-md-8" style={{position: "relative"}}>
+                                                            <input onChange={(e) => {
+                                                                if (e.target.value === "") {
+                                                                    this.setState({
+                                                                        oldPassword: e.target.value, errors: {
+                                                                            ...errors, oldPassword: e.target.value === ""
+                                                                                ? (this.validator.validate(this.state).oldPassword
+                                                                                    ? this.validator.validate(this.state).oldPassword
+                                                                                    : "Nhập mật khẩu mới không được để trống") : null
+                                                                        }
+                                                                    })
+                                                                } else {
+                                                                    delete errors.oldPassword;
+                                                                    this.setState({ oldPassword: e.target.value, errors: { ...errors, oldPassword: "" } })
+                                                                }
+                                                            }} className="form-control mt-2" placeholder="Nhập mật khẩu mới..." type={hidePasswordSignUpAgain ? "password" : "text"} value={this.state.oldPassword} />
+                                                            <span
+                                                                className="icon-showpass-edit eyeAction"
+                                                                onClick={this.setHidePasswordSignUpAgain}
+                                                            >
+                                                                {hidePasswordSignUpAgain ? iconEyeSlash : iconEye}
+                                                            </span>
+                                                        </div>
+                                                        <div className="margin-5 col-md-4 line-height-55">
+                                                            <label>Nhập Lại MKM</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
+                                                        </div>
+                                                        <div className="margin-5 col-md-8" style={{ position: "relative" }}>
+                                                            <input onChange={(e) => {
+                                                                if (e.target.value === "") {
+                                                                    this.setState({
+                                                                        oldPassword: e.target.value, errors: {
+                                                                            ...errors, oldPassword: e.target.value === ""
+                                                                                ? (this.validator.validate(this.state).oldPassword
+                                                                                    ? this.validator.validate(this.state).oldPassword
+                                                                                    : "Nhập lại mật khẩu mới không đúng") : null
+                                                                        }
+                                                                    })
+                                                                } else {
+                                                                    delete errors.oldPassword;
+                                                                    this.setState({ oldPassword: e.target.value, errors: { ...errors, oldPassword: "" } })
+                                                                }
+                                                            }} className="form-control mt-2" placeholder="Nhập lại mật khẩu mới..." type={hidePasswordSignUpAgain ? "password" : "text"} value={this.state.oldPassword} />
+                                                            <span
+                                                                className="icon-showpass-edit eyeAction"
+                                                                onClick={this.setHidePasswordSignUpAgain}
+                                                            >
+                                                                {hidePasswordSignUpAgain ? iconEyeSlash : iconEye}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="row col-md-12" style={{marginBottom: 5}}>
+                                                <div className="margin-5 col-md-2 line-height-55">
+                                                    <label>Địa chỉ</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
+                                                </div>
+                                                <div className="margin-5 col-md-9" style={{marginLeft: 4}}>
+                                                    <input onChange={(e) => {
+                                                        if (e.target.value === "") {
+                                                            this.setState({
+                                                                address: e.target.value, errors: {
+                                                                    ...errors, address: e.target.value === ""
+                                                                        ? (this.validator.validate(this.state).address
+                                                                            ? this.validator.validate(this.state).address
+                                                                            : "Địa chỉ không được để trống") : null
+                                                                }
+                                                            })
+                                                        } else {
+                                                            delete errors.address;
+                                                            this.setState({ address: e.target.value, errors: { ...errors, address: "" } })
+                                                        }
+                                                    }} className="form-control mt-2" placeholder="Nhập địa chỉ..." type="text" value={this.state.address} />
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </form>
-                                <div className="message-err mt-3">
-                                    {
-                                        messenger && messenger !== "" ? <b>{messenger}</b> : ""
-                                    }
-                                </div>
                             </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" id="close-modal-signin">Hủy</button>
-                                <div className="form-group">
-                                    <button onClick={this.onSubmit} type="submit" className="btn btn-primary btn-block float-right"> Đăng Nhập</button>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-                {/* Modal Sign Up */}
-                <div className="modal fade" id="modalSignUp" tabIndex={-1} aria-labelledby="modalSignUpLabel" aria-hidden="true">
-                    <div className="modal-dialog modal-dialog-scrollable">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-title" id="modalSignUpLabel">Đăng Ký</h5>
-                                {/* <a href className="float-right btn btn-outline-primary" style={{ marginLeft: 260 }}>Đăng Nhập</a> */}
-                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
-                            </div>
-                            <div className="modal-body">
+                            {/* <div className="modal-body">
                                 <form>
                                     <div className="form-group">
                                         <label>Họ Và Tên</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
@@ -669,7 +776,7 @@ class Header extends Component {
                                             }
                                         }} className="form-control mt-2" placeholder="Nhập mật khẩu..." type={hidePasswordSignUp ? "password" : "text"} value={this.state.password}/>
                                         <span
-                                            className="icon-showpass-singup eyeAction"
+                                            className="icon-showpass-edit eyeAction"
                                             onClick={this.setHidePasswordSignUp}
                                         >
                                             {hidePasswordSignUp ? iconEyeSlash : iconEye}
@@ -700,7 +807,7 @@ class Header extends Component {
                                             }
                                         }} className="form-control mt-2" placeholder="Nhập lại mật khẩu..." type={hidePasswordSignUpAgain ? "password" : "text"} value={this.state.oldPassword}/>
                                         <span
-                                            className="icon-showpass-singup eyeAction"
+                                            className="icon-showpass-edit eyeAction"
                                             onClick={this.setHidePasswordSignUpAgain}
                                         >
                                             {hidePasswordSignUpAgain ? iconEyeSlash : iconEye}
@@ -719,22 +826,19 @@ class Header extends Component {
                                         messengerSignUp && messengerSignUp !== "" ? <><hr/><b>{messengerSignUp}</b></> : ""
                                     }
                                 </div>
-                            </div>
+                            </div> */}
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
                                 <div className="form-group">
-                                    <button onClick={this.signUp}
-                                        type="submit" className="btn btn-primary btn-block float-right"> Đăng Ký</button>
+                                    <button onClick={this.updateInfoUser}
+                                        type="submit" className="btn btn-primary btn-block float-right"> Chỉnh Sửa</button>
                                 </div>
                             </div>
 
                         </div>
                     </div>
                 </div>
-            <PopupEditInfoUser />
-            <CreateSignForFile />
-            <UpdateSignImage />
-            </header>
+            </div>
 
         )
     }
@@ -753,4 +857,4 @@ const mapDispatchToProps = dispatch => {
         actions: bindActionCreators(actions, dispatch)
     }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(Header);
+export default connect(mapStateToProps, mapDispatchToProps)(PopupEditInfoUser);

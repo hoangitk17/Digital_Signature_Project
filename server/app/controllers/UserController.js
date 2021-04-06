@@ -14,8 +14,6 @@ class UserController {
   };
   async signIn (req, res, next) {
     const { userName, password } = req.body;
-      console.log(userName, password, req)
-    console.log("sign in")
     try {
       const oldUser = await User.findOne({ userName });
 
@@ -49,11 +47,12 @@ class UserController {
       avatar,
       dateOfBirth,
       status,
+      gender
     } = req.body;
     try {
       const oldUser = await User.findOne({ userName });
 
-      if (oldUser) return res.status(400).json({ message: "User already exists" });
+      if (oldUser) return res.status(400).json({ message: "Tài khoản này đã tồn tại" });
 
       const result = await User.create({
         name,
@@ -69,9 +68,11 @@ class UserController {
         avatar,
         dateOfBirth,
         status,
+        gender
       });
-      const token = jwt.sign({ email: result.email, id: result._id }, secret, { expiresIn: "1h" });
-      res.status(201).json({ result, token });
+      //const token = jwt.sign({ email: result.email, id: result._id }, secret, { expiresIn: "1h" });
+      //res.status(201).json({ result, token });
+      res.status(201).json({ result });
     } catch (error) {
       res.status(500).json({ message: "Something went wrong" });
       console.log(error);
