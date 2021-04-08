@@ -98,6 +98,21 @@ class UserController {
             console.log(error);
         }
     }
+
+    // [GET] /user/:id
+    async getListUserById(req, res, next) {
+        const {
+            id
+        } = req.body;
+        try {
+            User.find({ id }, function (err, users) {
+                res.json(users);
+            });
+        } catch (error) {
+            res.status(500).json({ message: "Something went wrong" });
+            console.log(error);
+        }
+    }
 }
 
 module.exports = new UserController();

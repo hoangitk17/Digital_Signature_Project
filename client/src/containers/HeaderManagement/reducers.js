@@ -27,9 +27,10 @@ export default handleActions(
             })
         },
         [actions.getUserListSuccess]: (state, action) => {
+            console.log("users reducer", action.payload.data, action.payload)
             return freeze({
                 ...state,
-                userList: action.payload.data,
+                userList: action.payload,
                 isLoading: false
             })
         },

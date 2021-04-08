@@ -4,6 +4,11 @@ export const getUserList = payload => {
     return api.get(`/user/listuser`);
 };
 
+export const getUserListById = payload => {
+    const { id } = payload;
+    return api.get(`/user/${id}`);
+};
+
 export const signIn = payload => {
     const { data } = payload;
     console.log("data login api", data)

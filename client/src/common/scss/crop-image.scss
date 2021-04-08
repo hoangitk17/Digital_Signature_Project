@@ -1,0 +1,218 @@
+.popup-box {
+    background: #fff;
+    max-width: 95%;
+    margin: 0 auto;
+    border-radius: 10px;
+    padding: 10px 40px 25px 40px;
+    position: relative;
+    box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.3);
+}
+
+.popup-box .mfp-close {
+    opacity: 1;
+    color: transparent;
+    text-indent: -9999px;
+    background: url(https://image.flaticon.com/icons/png/512/106/106830.png) no-repeat center center;
+    background-size: contain;
+    top: 11px;
+    right: 10px;
+}
+
+.popup-box .mfp-close:hover {
+    opacity: 0.8;
+}
+
+.emenu-dialog-crop {
+  max-width: fit-content;
+  padding: 0;
+
+  .input-range {
+    width: 300px;
+  }
+
+  .e-menu-dialog-title {
+    font-size: 20px;
+    padding-top: 15px;
+    margin-bottom: 0;
+  }
+
+  .input-range__slider {
+    touch-action: pan-x;
+    background: #f17a22;
+    border: 1px solid #f17a22;
+
+    &:active {
+      transform: scale(1.2);
+    }
+  }
+
+  .input-range__track--active {
+    background: none;
+  }
+
+  .e-dialog-body {
+    padding: 10px 40px 0;
+  }
+
+  .content-end {
+    border-top: 1px solid #eee;
+    padding: 10px 15px;
+
+    label {
+      display: flex;
+    }
+  }
+
+  .button-zooms {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px 0;
+
+    .zoom {
+      background: #fafafafa;
+      border: none;
+      outline: 0;
+      display: block;
+      width: 60px;
+      height: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 20px;
+      border: 1px solid rgba(0, 0, 0, 0.03);
+      margin: 0 5px;
+      cursor: pointer;
+
+      &:hover {
+        background: #f5f5f5;
+      }
+
+      &:active {
+        background: #eee;
+      }
+
+      svg {
+        fill: #8b8b8b;
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
+
+  .cropper-view-box {
+    outline: none;
+  }
+
+  .cropper-container {
+    & * {
+      transition: none !important;
+    }
+
+    overflow: hidden;
+  }
+}
+
+.emenu-crop-image {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  width: 200px;
+  border: 1px dashed #d9d9d9;
+  border-radius: 3px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #fafafa;
+  position: relative;
+
+  &.blob {
+    background: #fff;
+    border: 1px solid #d9d9d9;
+  }
+
+  &:not(.blob):hover {
+    border-color: #1890ff;
+  }
+
+  &:active:not(.blob) {
+    background: #eee;
+  }
+
+  img {
+    width: calc(100% - 10px);
+    height: calc(100% - 10px);
+    margin: 5px;
+    border-radius: 2px;
+  }
+
+  &.loading {
+
+    &:before {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      top: 0;
+      background: #fff;
+    }
+
+    .e-logo-loading {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      svg {
+        width: 36px;
+        height: 36px;
+        animation: rotation 2s infinite linear;
+      }
+    }
+  }
+}
+
+.crop-image-box {
+  position: relative;
+
+  .e-crop-thumb {
+    width: 120px;
+    height: 120px;
+    position: relative
+  }
+
+  .crop-remove {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 26px;
+    height: 26px;
+    background: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 3px;
+    z-index: 1;
+    margin: 5px;
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+  }
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(359deg);
+  }
+}

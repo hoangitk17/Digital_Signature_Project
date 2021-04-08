@@ -16,6 +16,7 @@ import Validator from "../../../utils/validator";
 import Swal from "sweetalert2";
 import InputFile from "../../../common/InputFile";
 import "../styles.scss";
+import CropImage from "../../../common/CropImage";
 const iconEye = <FontAwesomeIcon icon={faEye} />;
 const iconEyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
 
@@ -23,16 +24,34 @@ class UpdateSignImage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            event: null,
-
+            srcImageSign: this.props?.InfoAfterSignIn ? this.props?.InfoAfterSignIn.signImage : "",
+            InfoAfterSignIn: this.props?.InfoAfterSignIn ? this.props?.InfoAfterSignIn : {}
         };
 
     }
 
+    UpdateSignImage = () => {
+        //const avatar = await this.cropImage.uploadImage(); Lấy link ảnh từ server
+    }
+
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.userList[0]?.signImage !== prevState.srcImageSign || nextProps.InfoAfterSignIn !== prevState.InfoAfterSignIn) {
+            console.log("1")
+            return {
+                srcImageSign: nextProps.userList[0]?.signImage,
+                InfoAfterSignIn: nextProps.InfoAfterSignIn
+            };
+        }
+        return null;
+    }
+
+
 
     render() {
-        const { } = this.state;
+        const { srcImageSign, InfoAfterSignIn } = this.state;
         const {  } = this.props;
+
+        console.log("props", InfoAfterSignIn, srcImageSign)
         return (
             <div className="popup-edit-info-user">
                 {/* Modal Update Image Sign */}
@@ -45,9 +64,18 @@ class UpdateSignImage extends Component {
                             </div>
                             <div className="modal-body">
                                     <div className="row">
-                                    <div className="col-md-12" style={{ padding: "70px 100px 80px"}}>
-                                            <InputFile
+                                    <div className="col-md-12" style={{ padding: "50px", display: "flex", justifyContent: "center"}}>
+                                            {/* <InputFile
                                                 onChange={event => this.setState({ event })}
+                                            /> */}
+                                            <CropImage
+                                                ref={element => (this.cropImage = element)}
+                                                src={srcImageSign}
+                                                name="image-sign"
+                                                textAdd="THÊM ẢNH"
+                                                title="CHỈNH SỬA KÍCH THƯỚC ẢNH"
+                                                btnChoseFile="Chọn Ảnh"
+                                                btnDone="Đồng Ý"
                                             />
                                         </div>
                                     </div>
@@ -55,7 +83,7 @@ class UpdateSignImage extends Component {
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
                                 <div className="form-group">
-                                    <button onClick={() => {}}
+                                    <button onClick={() => {this.UpdateSignImage()}}
                                         type="submit" className="btn btn-primary btn-block float-right">Cập Nhật</button>
                                 </div>
                             </div>

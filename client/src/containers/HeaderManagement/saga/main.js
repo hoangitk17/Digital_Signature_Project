@@ -18,7 +18,9 @@ function* handleSignIn(action) {
     try {
         console.log("run saga")
         res = yield call(apiUser.signIn, action.payload);
-        console.log("res saga login", res.data)
+        /* console.log("id user", res.data.data, res.data.data.id)
+        const resUserById = yield call(apiUser.getUserListById, {id: res.data.data.id});
+        console.log("res saga login", res.data, resUserById) */
         yield put(actions.signInSuccess(res.data));
         yield Swal.fire(
             'Thông báo',

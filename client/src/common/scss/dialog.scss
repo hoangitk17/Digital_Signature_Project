@@ -1,0 +1,29 @@
+.emenu-dialog {
+  position: fixed;
+  overflow: auto;
+  z-index: 9999;
+  .mfp-content {
+    padding: 0;
+    margin: 40px auto;
+  }
+
+  .background-after {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  .button-color {
+    position: "absolute";
+    width: "120px";
+    height: "120px";
+    cursor: pointer;
+  }
+
+  .e-menu-dialog-title {
+    font-size: 25px;
+    text-align: center;
+  }
+}
