@@ -19,3 +19,7 @@ export const signUp = payload => {
     const { data } =  payload ;
     return api.post(`/user/signup`, data);
 };
+
+export const getPublicKeyServer = payload => {
+  return api.get(`/auth/getPublicKeyServer`);
+};
