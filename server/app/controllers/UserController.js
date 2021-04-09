@@ -1,5 +1,4 @@
 const User = require('../models/User');
-const jwt = require('jsonwebtoken');
 class UserController {
 
   async exists (req, res, next) {
@@ -8,25 +7,6 @@ class UserController {
     try {
       const oldUser = await User.findOne({ userName });
       res.status(200).json({ result: oldUser ? true: false });
-    } catch (err) {
-      res.status(500).json({ message: "Something went wrong" });
-    }
-  };
-  async signIn (req, res, next) {
-    const { userName, password } = req.body;
-    try {
-      const oldUser = await User.findOne({ userName });
-
-      if (!oldUser) return res.status(404).json({ message: "Tài khoản này không tồn tại!" });
-
-      const isPasswordCorrect = password === oldUser.password;
-
-      if (!isPasswordCorrect) return res.status(400).json({ message: "Mật khẩu không chính xác!" });
-
-      //const token = jwt.sign({ email: oldUser.email, id: oldUser._id }, secret, { expiresIn: "1h" });
-
-      //res.status(200).json({ result: oldUser, token });
-      res.status(200).json({ result: oldUser });
     } catch (err) {
       res.status(500).json({ message: "Something went wrong" });
     }
