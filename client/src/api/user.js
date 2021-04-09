@@ -12,7 +12,7 @@ export const getUserListById = payload => {
 export const signIn = payload => {
     const { data } = payload;
     console.log("data login api", data)
-    return api.post(`/user/signin`, data);
+    return api.post(`/auth/signin`, data);
 };
 
 export const signUp = payload => {

@@ -19,33 +19,33 @@ instance.interceptors.request.use(
   err => err
 );
 
-// const getNewTokenAndReattemptRequest = async (config, refToken) => {
-//   try {
-//     const getNewToken = await axios.post(
-//       "Account/RefreshToken?secret=4f396a1ee7ba84cc&language=vi",
-//       {
-//         refresh_token: refToken
-//       },
-//       {
-//         headers: {
-//           "x-client-id": "1b88e978-a8ba-43d2-a950-50995a89c9cc",
-//           "device_id" : get("deviceId"),
-//           "x-client-version": "web-browser"
-//         }
-//       }
-//     );
-//     const { token, refreshToken } = getNewToken.data.data;
-//     save("accessToken", token);
-//     save("refreshToken", refreshToken);
-//     config.headers["Authorization"] = `Bearer ${token}`;
-//     return await axios(config);
-//   } catch (err) {
-//     console.log(err);
-//     clearAll();
-//     history.push("/login");
-//     return Promise.reject(err);
-//   }
-// };
+const getNewTokenAndReattemptRequest = async (config, refToken) => {
+  try {
+    const getNewToken = await axios.post(
+      "Account/RefreshToken?secret=4f396a1ee7ba84cc&language=vi",
+      {
+        refresh_token: refToken
+      },
+      {
+        headers: {
+          "x-client-id": "1b88e978-a8ba-43d2-a950-50995a89c9cc",
+          "device_id": get("deviceId"),
+          "x-client-version": "web-browser"
+        }
+      }
+    );
+    const { token, refreshToken } = getNewToken.data.data;
+    save("accessToken", token);
+    save("refreshToken", refreshToken);
+    config.headers["Authorization"] = `Bearer ${token}`;
+    return await axios(config);
+  } catch (err) {
+    console.log(err);
+    clearAll();
+    history.push("/login");
+    return Promise.reject(err);
+  }
+};
 
 instance.interceptors.response.use(
   res => res,
@@ -56,9 +56,9 @@ instance.interceptors.response.use(
       response: { status },
       message,
     } = error;
-      console.log(error.response)
-      if (validateStatus()) return Promise.reject(error.response);
-    /* if ((status ? status : -1) === 401) {
+    console.log(error.response)
+    if (validateStatus()) return Promise.reject(error.response);
+    if ((status ? status : -1) === 401) {
       const refreshToken = get("refreshToken");
       if (refreshToken)
         return getNewTokenAndReattemptRequest(config, refreshToken);
@@ -66,8 +66,8 @@ instance.interceptors.response.use(
         history.push("/login");
         return Promise.reject(error);
       }
-    } */
-      return Promise.reject(error.response);
+    }
+    return Promise.reject(error.response);
   }
 );
 
