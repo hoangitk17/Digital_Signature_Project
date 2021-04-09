@@ -39,21 +39,21 @@ class Header extends Component {
             messenger: "",
             InfoAfterSignIn: this.props.InfoAfterSignIn ? this.props.InfoAfterSignIn : {},
             /* infoSignUp: { */
-                name: "",
-                email: "",
-                phoneNumber: "",
-                userName: "",
-                password: "",
-                cardId: "",
-                dateOfBirth: new Date(4500),
-                address: "",
-                privateKey: "",
-                publicKey: "",
-                status: 1, //0 la khoa tai khoan, 1 la tai khoan dang hoat dong
-                signImage: "",
-                avatar: "",
-                gender: true, //true la nam, false la nu
-                oldPassword: "",
+            name: "",
+            email: "",
+            phoneNumber: "",
+            userName: "",
+            password: "",
+            cardId: "",
+            dateOfBirth: new Date(4500),
+            address: "",
+            privateKey: "",
+            publicKey: "",
+            status: 1, //0 la khoa tai khoan, 1 la tai khoan dang hoat dong
+            signImage: "",
+            avatar: "",
+            gender: true, //true la nam, false la nu
+            oldPassword: "",
             /* }, */
             errors: {},
         };
@@ -85,8 +85,7 @@ class Header extends Component {
             {
                 field: "phoneNumber",
                 method: (phoneNumber) => {
-                    if (phoneNumber.toString().length === 10 && phoneNumber.toString().indexOf("0") === 0)
-                    {
+                    if (phoneNumber.toString().length === 10 && phoneNumber.toString().indexOf("0") === 0) {
                         return true
                     }
                     return false
@@ -121,8 +120,7 @@ class Header extends Component {
             {
                 field: "cardId",
                 method: (cardId) => {
-                    if (cardId.toString().length === 9 || cardId.toString().length === 12)
-                    {
+                    if (cardId.toString().length === 9 || cardId.toString().length === 12) {
                         return true;
                     }
                     return false;
@@ -146,7 +144,7 @@ class Header extends Component {
                         age--;
                     }
                     console.log("age", age)
-                    if(age < 18){
+                    if (age < 18) {
                         return false
                     }
                     return true
@@ -304,12 +302,13 @@ class Header extends Component {
             if (password !== oldPassword) {
                 console.log('old', password, oldPassword)
                 this.setState({
-                    errors: { ...this.validator.validate(this.state), oldPassword: "Nhập lại mật khẩu không đúng"
+                    errors: {
+                        ...this.validator.validate(this.state), oldPassword: "Nhập lại mật khẩu không đúng"
                     }
                 });
             } else {
                 this.setState({
-                    errors: { ...this.validator.validate(this.state)}
+                    errors: { ...this.validator.validate(this.state) }
                 });
             }
         }
@@ -474,7 +473,7 @@ class Header extends Component {
                                         <input onChange={(e) => {
                                             if (e.target.value === "") {
                                                 this.setState({
-                                                     name: e.target.value , errors: {
+                                                    name: e.target.value, errors: {
                                                         ...errors, name: e.target.value === ""
                                                             ? (this.validator.validate(this.state).name
                                                                 ? this.validator.validate(this.state).name
@@ -483,7 +482,7 @@ class Header extends Component {
                                                 })
                                             } else {
                                                 delete errors.name;
-                                                this.setState({  name: e.target.value , errors: { ...errors, name: "" } })
+                                                this.setState({ name: e.target.value, errors: { ...errors, name: "" } })
                                             }
                                         }}
                                             className="form-control mt-2" placeholder="Nhập họ và tên..." type="text" value={this.state.name}
@@ -501,7 +500,7 @@ class Header extends Component {
                                         <input onChange={(e) => {
                                             if (e.target.value === "") {
                                                 this.setState({
-                                                     email: e.target.value, errors: {
+                                                    email: e.target.value, errors: {
                                                         ...errors, email: e.target.value === ""
                                                             ? (this.validator.validate(this.state).email
                                                                 ? this.validator.validate(this.state).email
@@ -510,9 +509,9 @@ class Header extends Component {
                                                 })
                                             } else {
                                                 delete errors.email;
-                                                this.setState({  email: e.target.value, errors: { ...errors, email: "" } })
+                                                this.setState({ email: e.target.value, errors: { ...errors, email: "" } })
                                             }
-                                        }} className="form-control mt-2" placeholder="Nhập email..." type="email" value={this.state.email}/>
+                                        }} className="form-control mt-2" placeholder="Nhập email..." type="email" value={this.state.email} />
                                         {errors.email ? (
                                             <div
                                                 className="message-err-signup mt-1"
@@ -526,7 +525,7 @@ class Header extends Component {
                                         <input onChange={(e) => {
                                             if (e.target.value === "") {
                                                 this.setState({
-                                                     cardId: e.target.value , errors: {
+                                                    cardId: e.target.value, errors: {
                                                         ...errors, cardId: e.target.value === ""
                                                             ? (this.validator.validate(this.state).cardId
                                                                 ? this.validator.validate(this.state).cardId
@@ -535,9 +534,9 @@ class Header extends Component {
                                                 })
                                             } else {
                                                 delete errors.cardId;
-                                                this.setState({  cardId: e.target.value , errors: { ...errors, cardId: "" } })
+                                                this.setState({ cardId: e.target.value, errors: { ...errors, cardId: "" } })
                                             }
-                                        }} className="form-control mt-2" placeholder="Nhập số căn cước công dân..." type="number" value={this.state.cardId}/>
+                                        }} className="form-control mt-2" placeholder="Nhập số căn cước công dân..." type="number" value={this.state.cardId} />
                                         {errors.cardId ? (
                                             <div
                                                 className="message-err-signup mt-1"
@@ -551,7 +550,7 @@ class Header extends Component {
                                         <input onChange={(e) => {
                                             if (e.target.value === "") {
                                                 this.setState({
-                                                     address: e.target.value , errors: {
+                                                    address: e.target.value, errors: {
                                                         ...errors, address: e.target.value === ""
                                                             ? (this.validator.validate(this.state).address
                                                                 ? this.validator.validate(this.state).address
@@ -560,9 +559,9 @@ class Header extends Component {
                                                 })
                                             } else {
                                                 delete errors.address;
-                                                this.setState({  address: e.target.value , errors: { ...errors, address: "" } })
+                                                this.setState({ address: e.target.value, errors: { ...errors, address: "" } })
                                             }
-                                        }} className="form-control mt-2" placeholder="Nhập địa chỉ..." type="text" value={this.state.address}/>
+                                        }} className="form-control mt-2" placeholder="Nhập địa chỉ..." type="text" value={this.state.address} />
                                         {errors.address ? (
                                             <div
                                                 className="message-err-signup mt-1"
@@ -576,7 +575,7 @@ class Header extends Component {
                                         <input onChange={(e) => {
                                             if (e.target.value === "") {
                                                 this.setState({
-                                                     phoneNumber: e.target.value, errors: {
+                                                    phoneNumber: e.target.value, errors: {
                                                         ...errors, phoneNumber: e.target.value === ""
                                                             ? (this.validator.validate(this.state).phoneNumber
                                                                 ? this.validator.validate(this.state).phoneNumber
@@ -585,9 +584,9 @@ class Header extends Component {
                                                 })
                                             } else {
                                                 delete errors.phoneNumber;
-                                                this.setState({  phoneNumber: e.target.value, errors: { ...errors, phoneNumber: "" } })
+                                                this.setState({ phoneNumber: e.target.value, errors: { ...errors, phoneNumber: "" } })
                                             }
-                                        }} className="form-control mt-2" placeholder="Nhập số điện thoại..." type="number" value={this.state.phoneNumber}/>
+                                        }} className="form-control mt-2" placeholder="Nhập số điện thoại..." type="number" value={this.state.phoneNumber} />
                                         {errors.phoneNumber ? (
                                             <div
                                                 className="message-err-signup mt-1"
@@ -599,12 +598,12 @@ class Header extends Component {
                                     <div className="form-group mt-3">
                                         <label>Giới Tính</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
                                         <div className="d-flex mt-2">
-                                            <div className="form-check" onClick={() => { this.setState({  gender: true }) }}>
-                                                <input className="form-check-input" type="radio" name="gender" id="nam" defaultChecked/>
+                                            <div className="form-check" onClick={() => { this.setState({ gender: true }) }}>
+                                                <input className="form-check-input" type="radio" name="gender" id="nam" defaultChecked />
                                                 <label className="form-check-label" htmlFor="nam">Nam</label>
                                             </div>
-                                            <div className="form-check" style={{ marginLeft: 100 }} onClick={() => { this.setState({  gender: false }) }}>
-                                                <input className="form-check-input" type="radio" name="gender" id="nu"/>
+                                            <div className="form-check" style={{ marginLeft: 100 }} onClick={() => { this.setState({ gender: false }) }}>
+                                                <input className="form-check-input" type="radio" name="gender" id="nu" />
                                                 <label className="form-check-label" htmlFor="nu">Nữ</label>
                                             </div>
                                         </div>
@@ -648,7 +647,7 @@ class Header extends Component {
                                         <input onChange={(e) => {
                                             if (e.target.value === "") {
                                                 this.setState({
-                                                     userName: e.target.value, errors: {
+                                                    userName: e.target.value, errors: {
                                                         ...errors, userName: e.target.value === ""
                                                             ? (this.validator.validate(this.state).userName
                                                                 ? this.validator.validate(this.state).userName
@@ -657,9 +656,9 @@ class Header extends Component {
                                                 })
                                             } else {
                                                 delete errors.userName;
-                                                this.setState({  userName: e.target.value, errors: { ...errors, userName: "" } })
+                                                this.setState({ userName: e.target.value, errors: { ...errors, userName: "" } })
                                             }
-                                        }} className="form-control mt-2" placeholder="Nhập tài khoản..." type="text" value={this.state.userName}/>
+                                        }} className="form-control mt-2" placeholder="Nhập tài khoản..." type="text" value={this.state.userName} />
                                         {errors.userName ? (
                                             <div
                                                 className="message-err-signup mt-1"
@@ -673,7 +672,7 @@ class Header extends Component {
                                         <input onChange={(e) => {
                                             if (e.target.value === "") {
                                                 this.setState({
-                                                     password: e.target.value, errors: {
+                                                    password: e.target.value, errors: {
                                                         ...errors, password: e.target.value === ""
                                                             ? (this.validator.validate(this.state).password
                                                                 ? this.validator.validate(this.state).password
@@ -682,9 +681,9 @@ class Header extends Component {
                                                 })
                                             } else {
                                                 delete errors.password;
-                                                this.setState({  password: e.target.value, errors: { ...errors, password: "" } })
+                                                this.setState({ password: e.target.value, errors: { ...errors, password: "" } })
                                             }
-                                        }} className="form-control mt-2" placeholder="Nhập mật khẩu..." type={hidePasswordSignUp ? "password" : "text"} value={this.state.password}/>
+                                        }} className="form-control mt-2" placeholder="Nhập mật khẩu..." type={hidePasswordSignUp ? "password" : "text"} value={this.state.password} />
                                         <span
                                             className="icon-showpass-singup eyeAction"
                                             onClick={this.setHidePasswordSignUp}
@@ -704,7 +703,7 @@ class Header extends Component {
                                         <input onChange={(e) => {
                                             if (e.target.value === "") {
                                                 this.setState({
-                                                     oldPassword: e.target.value, errors: {
+                                                    oldPassword: e.target.value, errors: {
                                                         ...errors, oldPassword: e.target.value === ""
                                                             ? (this.validator.validate(this.state).oldPassword
                                                                 ? this.validator.validate(this.state).oldPassword
@@ -713,9 +712,9 @@ class Header extends Component {
                                                 })
                                             } else {
                                                 delete errors.oldPassword;
-                                                this.setState({  oldPassword: e.target.value, errors: { ...errors, oldPassword: "" } })
+                                                this.setState({ oldPassword: e.target.value, errors: { ...errors, oldPassword: "" } })
                                             }
-                                        }} className="form-control mt-2" placeholder="Nhập lại mật khẩu..." type={hidePasswordSignUpAgain ? "password" : "text"} value={this.state.oldPassword}/>
+                                        }} className="form-control mt-2" placeholder="Nhập lại mật khẩu..." type={hidePasswordSignUpAgain ? "password" : "text"} value={this.state.oldPassword} />
                                         <span
                                             className="icon-showpass-singup eyeAction"
                                             onClick={this.setHidePasswordSignUpAgain}
@@ -733,7 +732,7 @@ class Header extends Component {
                                 </form>
                                 <div className="message-err mt-3">
                                     {
-                                        messengerSignUp && messengerSignUp !== "" ? <><hr/><b>{messengerSignUp}</b></> : ""
+                                        messengerSignUp && messengerSignUp !== "" ? <><hr /><b>{messengerSignUp}</b></> : ""
                                     }
                                 </div>
                             </div>
@@ -748,9 +747,9 @@ class Header extends Component {
                         </div>
                     </div>
                 </div>
-            <PopupEditInfoUser />
-            <CreateSignForFile />
-            <UpdateSignImage />
+                <PopupEditInfoUser InfoAfterSignIn={InfoAfterSignIn} />
+                <CreateSignForFile />
+                <UpdateSignImage />
             </header>
 
         )

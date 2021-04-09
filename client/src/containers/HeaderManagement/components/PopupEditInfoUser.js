@@ -15,6 +15,7 @@ import $ from 'jquery';
 import Validator from "../../../utils/validator";
 import Swal from "sweetalert2";
 import InputFile from "../../../common/InputFile";
+import CropImage from "../../../common/CropImage";
 import "../styles.scss";
 const iconEye = <FontAwesomeIcon icon={faEye} />;
 const iconEyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
@@ -29,21 +30,22 @@ class PopupEditInfoUser extends Component {
             messenger: "",
             event: null,
             /* infoSignUp: { */
-                name: "",
-                email: "",
-                phoneNumber: "",
-                userName: "",
-                password: "",
-                cardId: "",
-                dateOfBirth: new Date(4500),
-                address: "",
-                privateKey: "",
-                publicKey: "",
-                status: 1, //0 la khoa tai khoan, 1 la tai khoan dang hoat dong
-                signImage: "",
-                avatar: "",
-                gender: true, //true la nam, false la nu
-                oldPassword: "",
+            name: props.InfoAfterSignIn?.name,
+            email: props.InfoAfterSignIn?.email,
+            phoneNumber: props.InfoAfterSignIn?.phoneNumber,
+            userName: props.InfoAfterSignIn?.userName,
+            password: props.InfoAfterSignIn?.password,
+            cardId: props.InfoAfterSignIn?.cardId,
+            dateOfBirth: props.InfoAfterSignIn?.dateOfBirth ? new Date(props.InfoAfterSignIn?.dateOfBirth) : new Date(4500) ,
+            address: props.InfoAfterSignIn?.address,
+            privateKey: props.InfoAfterSignIn?.privateKey,
+            publicKey: props.InfoAfterSignIn?.publicKey,
+            status: 1, //0 la khoa tai khoan, 1 la tai khoan dang hoat dong
+            signImage: props.InfoAfterSignIn?.signImage,
+            avatar: props.InfoAfterSignIn?.avatar,
+            gender: true, //true la nam, false la nu
+            oldPassword: props.InfoAfterSignIn?.oldPassword,
+            oldNewPassword: "",
             /* }, */
             errors: {},
         };
@@ -172,14 +174,28 @@ class PopupEditInfoUser extends Component {
     }
 
 
-    // static getDerivedStateFromProps(nextProps, prevState) {
-    //     if (nextProps.isLogin !== prevState.isLogin) {
-    //         return {
-    //             isLogin: nextProps.isLogin
-    //         };
-    //     }
-    //     return null;
-    // }
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.InfoAfterSignIn.userName !== prevState.userName) {
+            return {
+                name: nextProps.InfoAfterSignIn?.name,
+                email: nextProps.InfoAfterSignIn?.email,
+                phoneNumber: nextProps.InfoAfterSignIn?.phoneNumber,
+                userName: nextProps.InfoAfterSignIn?.userName,
+                password: nextProps.InfoAfterSignIn?.password,
+                cardId: nextProps.InfoAfterSignIn?.cardId,
+                dateOfBirth: nextProps.InfoAfterSignIn?.dateOfBirth ? new Date(nextProps.InfoAfterSignIn?.dateOfBirth) : new Date(4500),
+                address: nextProps.InfoAfterSignIn?.address,
+                privateKey: nextProps.InfoAfterSignIn?.privateKey,
+                publicKey: nextProps.InfoAfterSignIn?.publicKey,
+                status: 1, //0 la khoa tai khoan, 1 la tai khoan dang hoat dong
+                signImage: nextProps.InfoAfterSignIn?.signImage,
+                avatar: nextProps.InfoAfterSignIn?.avatar,
+                gender: true, //true la nam, false la nu
+                oldPassword: nextProps.InfoAfterSignIn?.oldPassword,
+            };
+        }
+        return null;
+    }
 
     updateInfoUser = () => {
         const {
@@ -276,9 +292,8 @@ class PopupEditInfoUser extends Component {
     render() {
         const { infoSignUp, hidePassword, hidePasswordSignUp, hidePasswordSignUpAgain, txtusername, txtpassword, errors, isLogin/* messenger */, dateOfBirth } = this.state;
         const { isError, errorMessage, InfoAfterSignIn, errorMessageSignUp } = this.props;
-        var messenger = !isError ? "" : errorMessage;
         var messengerSignUp = errorMessageSignUp ? errorMessageSignUp : null;
-        console.log("event", this.state.event)
+        console.log("event", this.state.event, InfoAfterSignIn, this.state.userName, this.state.dateOfBirth)
         return (
             <div className="popup-edit-info-user">
                 {/* Modal Edit Info User */}
@@ -292,9 +307,18 @@ class PopupEditInfoUser extends Component {
                             <div className="modal-body">
                                 <form>
                                     <div className="row">
-                                        <div className="col-md-3" style={{ padding: "70px 20px 80px 15px"}}>
-                                            <InputFile
+                                        <div className="col-md-3" style={{ padding: "0 40px", margin: "auto"}}>
+                                            {/* <InputFile
                                                 onChange={event => this.setState({ event })}
+                                            /> */}
+                                            <CropImage
+                                                ref={element => (this.cropImage = element)}
+                                                src={this.state.avatar}
+                                                name="image-sign"
+                                                textAdd="THÊM ẢNH"
+                                                title="CHỈNH SỬA KÍCH THƯỚC ẢNH"
+                                                btnChoseFile="Chọn Ảnh"
+                                                btnDone="Đồng Ý"
                                             />
                                         </div>
                                         <div className="col-md-9">
@@ -451,7 +475,7 @@ class PopupEditInfoUser extends Component {
                                                             </div>
                                                         </div>
                                                         <div className="margin-5 col-md-4 line-height-55">
-                                                            <label>Mật Khẩu Cũ</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
+                                                            <label>Mật Khẩu Cũ</label>
                                                         </div>
                                                         <div className="margin-5 col-md-8" style={{position: "relative"}}>
                                                             <input onChange={(e) => {
@@ -477,7 +501,7 @@ class PopupEditInfoUser extends Component {
                                                             </span>
                                                         </div>
                                                         <div className="margin-5 col-md-4 line-height-55">
-                                                            <label>Mật Khẩu Mới</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
+                                                            <label>Mật Khẩu Mới</label>
                                                         </div>
                                                         <div className="margin-5 col-md-8" style={{position: "relative"}}>
                                                             <input onChange={(e) => {
@@ -503,24 +527,24 @@ class PopupEditInfoUser extends Component {
                                                             </span>
                                                         </div>
                                                         <div className="margin-5 col-md-4 line-height-55">
-                                                            <label>Nhập Lại MKM</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
+                                                            <label>Nhập Lại MKM</label>
                                                         </div>
                                                         <div className="margin-5 col-md-8" style={{ position: "relative" }}>
                                                             <input onChange={(e) => {
                                                                 if (e.target.value === "") {
                                                                     this.setState({
-                                                                        oldPassword: e.target.value, errors: {
-                                                                            ...errors, oldPassword: e.target.value === ""
-                                                                                ? (this.validator.validate(this.state).oldPassword
-                                                                                    ? this.validator.validate(this.state).oldPassword
+                                                                        oldNewPassword: e.target.value, errors: {
+                                                                            ...errors, oldNewPassword: e.target.value === ""
+                                                                                ? (this.validator.validate(this.state).oldNewPassword
+                                                                                    ? this.validator.validate(this.state).oldNewPassword
                                                                                     : "Nhập lại mật khẩu mới không đúng") : null
                                                                         }
                                                                     })
                                                                 } else {
-                                                                    delete errors.oldPassword;
-                                                                    this.setState({ oldPassword: e.target.value, errors: { ...errors, oldPassword: "" } })
+                                                                    delete errors.oldNewPassword;
+                                                                    this.setState({ oldNewPassword: e.target.value, errors: { ...errors, oldNewPassword: "" } })
                                                                 }
-                                                            }} className="form-control mt-2" placeholder="Nhập lại mật khẩu mới..." type={hidePasswordSignUpAgain ? "password" : "text"} value={this.state.oldPassword} />
+                                                            }} className="form-control mt-2" placeholder="Nhập lại mật khẩu mới..." type={hidePasswordSignUpAgain ? "password" : "text"} value={this.state.oldNewPassword} />
                                                             <span
                                                                 className="icon-showpass-edit eyeAction"
                                                                 onClick={this.setHidePasswordSignUpAgain}
