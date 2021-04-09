@@ -22,7 +22,6 @@ export const login = (payload, deviceId) => {
 export const logout = (payload, deviceId) => {
     const data = payload;
     data.device_id = deviceId;
-    console.log(data)
     let config = {
         headers: {
             "device_id": deviceId,

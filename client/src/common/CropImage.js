@@ -22,22 +22,26 @@ export default class CropImage extends Component {
         fileName: ''
     };
 
+    toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+
     /**
      * Upload image after that return data image new
      */
     uploadImage = async () => {
       const { blob, fileName } = this.state;
       const { src } = this.props;
-      let dataPath = "";
+      var base64data = "";
 
-      if (blob) {
+    if (blob) {
         try {
-          /* let form = new FormData();
-          form.append("files", blob, fileName);
-          const res = await Api.post(`${END_POINT}`, form);
-          let dataPath = res.data.data[0].path; */
-            console.log("file", blob, fileName)
-          return dataPath;
+                base64data = await this.toBase64(blob);
+                return base64data;
+
         } catch (error) {
           return src
         }
@@ -116,7 +120,7 @@ export default class CropImage extends Component {
                 this.setState({
                     source: event.target.result,
                     show: true,
-                    fileName: file.name
+                    fileName: file.name,
                 });
             }
             reader.readAsDataURL(file);

@@ -9,6 +9,10 @@ export const getUserList = createAction(CONST.GETUSERLIST);
 export const getUserListSuccess = createAction(CONST.GETUSERLIST_SUCCESS);
 export const getUserListFail = createAction(CONST.GETUSERLIST_FAIL);
 
+export const getUserById = createAction(CONST.GETUSERBYID);
+export const getUserByIdSuccess = createAction(CONST.GETUSERBYID_SUCCESS);
+export const getUserByIdFail = createAction(CONST.GETUSERBYID_FAIL);
+
 export const signIn = createAction(CONST.SIGNIN);
 export const signInSuccess = createAction(CONST.SIGNIN_SUCCESS);
 export const signInFail = createAction(CONST.SIGNIN_FAIL);
@@ -16,5 +20,9 @@ export const signInFail = createAction(CONST.SIGNIN_FAIL);
 export const signUp = createAction(CONST.SIGNUP);
 export const signUpSuccess = createAction(CONST.SIGNUP_SUCCESS);
 export const signUpFail = createAction(CONST.SIGNUP_FAIL);
+
+export const updateInfoUser = createAction(CONST.UPDATEINFOUSER);
+export const updateInfoUserSuccess = createAction(CONST.UPDATEINFOUSER_SUCCESS);
+export const updateInfoUserFail = createAction(CONST.UPDATEINFOUSER_FAIL);
 
 
