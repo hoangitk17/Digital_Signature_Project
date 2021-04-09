@@ -175,18 +175,20 @@ class Header extends Component {
         });
     }
 
+    onCloseModalSignIn = () => {
+        this.setState({
+            txtusername: "",
+            txtpassword: "",
+        });
+        document.querySelector('#close-modal-signin').click();
+    }
+
     onSubmit = () => {
         var { txtpassword, txtusername, savelogin } = this.state;
         console.log("run login", txtpassword, txtusername, this.props)
         const data = { userName: txtusername, password: txtpassword, savelogin };
         this.props.actions.signIn({
-            data, closeModal: () => {
-                this.setState({
-                    txtusername: "",
-                    txtpassword: "",
-                });
-                document.querySelector('#close-modal-signin').click();
-            }
+            data, closeModal: this.onCloseModalSignIn
         });
     }
 
@@ -214,6 +216,27 @@ class Header extends Component {
             };
         }
         return null;
+    }
+
+    onCloseModalSignUp = () => {
+        this.setState({
+            name: "",
+            email: "",
+            phoneNumber: "",
+            userName: "",
+            password: "",
+            cardId: "",
+            dateOfBirth: new Date(4500),
+            address: "",
+            privateKey: "",
+            publicKey: "",
+            status: 1, //0 la khoa tai khoan, 1 la tai khoan dang hoat dong
+            signImage: "",
+            avatar: "",
+            gender: true, //true la nam, false la nu
+            oldPassword: "",
+        });
+        document.querySelector('#modalSignUpTemp').click();
     }
 
     signUp = () => {
@@ -270,26 +293,8 @@ class Header extends Component {
             }).then((result) => {
                 if (result.isConfirmed) {
                     this.props.actions.signUp({
-                        data, closeModal: () => {
-                            this.setState({
-                                name: "",
-                                email: "",
-                                phoneNumber: "",
-                                userName: "",
-                                password: "",
-                                cardId: "",
-                                dateOfBirth: new Date(4500),
-                                address: "",
-                                privateKey: "",
-                                publicKey: "",
-                                status: 1, //0 la khoa tai khoan, 1 la tai khoan dang hoat dong
-                                signImage: "",
-                                avatar: "",
-                                gender: true, //true la nam, false la nu
-                                oldPassword: "",
-                            });
-                            document.querySelector('#modalSignUpTemp').click();
-                        }});
+                        data, closeModal: this.onCloseModalSignUp
+                    });
                 }
             })
         } else {
@@ -392,7 +397,7 @@ class Header extends Component {
                             <div className="modal-header">
                                 <h5 className="modal-title" id="modalLoginLabel">Đăng Nhập</h5>
                                 <a href="#" className="float-right btn btn-outline-primary" style={{ marginLeft: 260 }} onClick={this.onShowPopupSignUp}>Đăng Ký</a>
-                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
+                                <button onClick={this.onCloseModalSignIn} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
                             </div>
                             <div className="modal-body">
                                 <form>
@@ -432,7 +437,7 @@ class Header extends Component {
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" id="close-modal-signin">Hủy</button>
+                                <button onClick={this.onCloseModalSignIn} type="button" className="btn btn-secondary" data-bs-dismiss="modal" id="close-modal-signin">Hủy</button>
                                 <div className="form-group">
                                     <button onClick={this.onSubmit} type="submit" className="btn btn-primary btn-block float-right"> Đăng Nhập</button>
                                 </div>
@@ -448,7 +453,7 @@ class Header extends Component {
                             <div className="modal-header">
                                 <h5 className="modal-title" id="modalSignUpLabel">Đăng Ký</h5>
                                 {/* <a href className="float-right btn btn-outline-primary" style={{ marginLeft: 260 }}>Đăng Nhập</a> */}
-                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
+                                <button onClick={this.onCloseModalSignUp} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
                             </div>
                             <div className="modal-body">
                                 <form>
@@ -721,7 +726,7 @@ class Header extends Component {
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                <button onClick={this.onCloseModalSignUp} type="button" className="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
                                 <div className="form-group">
                                     <button onClick={this.signUp}
                                         type="submit" className="btn btn-primary btn-block float-right"> Đăng Ký</button>

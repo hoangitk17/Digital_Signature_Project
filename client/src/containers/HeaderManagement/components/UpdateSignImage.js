@@ -30,8 +30,20 @@ class UpdateSignImage extends Component {
 
     }
 
-    UpdateSignImage = () => {
-        //const avatar = await this.cropImage.uploadImage(); Lấy link ảnh từ server
+    UpdateSignImage = async() => {
+        const { srcImageSign } = this.state;
+        const avatar = await this.cropImage.uploadImage();
+        console.log("avatar", avatar, avatar === srcImageSign, JSON.stringify(avatar) === JSON.stringify(srcImageSign))
+        if (avatar === srcImageSign)
+        {
+            Swal.fire(
+                'Thông báo',
+                'Bạn chưa chọn hình ảnh chữ ký mới để cập nhật.',
+                'error'
+            )
+        }else {
+
+        }
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {

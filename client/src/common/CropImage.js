@@ -19,25 +19,34 @@ export default class CropImage extends Component {
         image: '',
         show: false,
         loading: true,
-        fileName: ''
+        fileName: '',
+        file: null
     };
 
     /**
      * Upload image after that return data image new
      */
     uploadImage = async () => {
-      const { blob, fileName } = this.state;
+      const { blob, fileName, file } = this.state;
       const { src } = this.props;
-      let dataPath = "";
+      var base64data = "";
 
-      if (blob) {
+      if (file) {
         try {
           /* let form = new FormData();
           form.append("files", blob, fileName);
           const res = await Api.post(`${END_POINT}`, form);
           let dataPath = res.data.data[0].path; */
-            console.log("file", blob, fileName)
-          return dataPath;
+            console.log("file", blob, fileName, file)
+            if (file) {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onloadend = function () {
+                    base64data = reader.result;
+                    console.log("file 1", base64data);
+                }
+            }
+        return base64data;
         } catch (error) {
           return src
         }
@@ -116,7 +125,8 @@ export default class CropImage extends Component {
                 this.setState({
                     source: event.target.result,
                     show: true,
-                    fileName: file.name
+                    fileName: file.name,
+                    file: file
                 });
             }
             reader.readAsDataURL(file);

@@ -113,6 +113,23 @@ class UserController {
             console.log(error);
         }
     }
+
+    //[POST] /user/image-sign/:id
+    async updateImageSign(req, res, next) {
+        const { id } = req.params;
+        const { signImage } = req.body;
+
+        try {
+            const updatedPost = { signImage, _id: id };
+
+            await User.findByIdAndUpdate(id, updatedPost, { new: true });
+
+            res.json(updatedPost);
+            } catch (error) {
+                res.status(500).json({ message: "Something went wrong" });
+                console.log(error);
+        }
+    }
 }
 
 module.exports = new UserController();
