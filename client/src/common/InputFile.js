@@ -22,7 +22,6 @@ export default class InputFile extends React.Component {
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.image !== prevState.image && nextProps.image != undefined) {
-      console.log("1")
       return {
         image: nextProps.image
       };

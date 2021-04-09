@@ -17,7 +17,7 @@ import Swal from "sweetalert2";
 import PopupEditInfoUser from "./PopupEditInfoUser";
 import CreateSignForFile from "./CreateSignForFile";
 import UpdateSignImage from "./UpdateSignImage";
-import { get } from '../../../services/localStorage';
+import { get, remove } from '../../../services/localStorage';
 const iconEye = <FontAwesomeIcon icon={faEye} />;
 const iconEyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
 // import {
@@ -37,6 +37,7 @@ class Header extends Component {
             savelogin: false,
             isLogin: props?.isLogin ? props?.isLogin : false,
             messenger: "",
+            InfoAfterSignIn: this.props.InfoAfterSignIn ? this.props.InfoAfterSignIn : {},
             /* infoSignUp: { */
                 name: "",
                 email: "",
@@ -199,6 +200,8 @@ class Header extends Component {
 
     logOut = () => {
         this.props.actions.signInFail();
+        remove("accessToken");
+        remove("refreshToken");
         Swal.fire(
             'Thông báo',
             'Đăng xuất thành công!',
@@ -312,11 +315,21 @@ class Header extends Component {
         }
     }
 
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (JSON.stringify(nextProps.InfoAfterSignIn) !== JSON.stringify(prevState.InfoAfterSignIn)) {
+            return {
+                InfoAfterSignIn: nextProps.InfoAfterSignIn
+            };
+        }
+        return null;
+    }
+
+
 
     render() {
-        const { infoSignUp, hidePassword, hidePasswordSignUp, hidePasswordSignUpAgain, txtusername, txtpassword, errors /*, isLogin messenger */, dateOfBirth } = this.state;
-        console.log("data", txtusername, txtpassword, this.props.InfoAfterSignIn)
-        const { isError, errorMessage, InfoAfterSignIn, errorMessageSignUp } = this.props;
+        const { InfoAfterSignIn, hidePassword, hidePasswordSignUp, hidePasswordSignUpAgain, txtusername, txtpassword, errors /*, isLogin messenger */, dateOfBirth } = this.state;
+        console.log("data", txtusername, txtpassword, this.state.InfoAfterSignIn)
+        const { isError, errorMessage, errorMessageSignUp } = this.props;
         var messenger = !isError ? "" : errorMessage;
         var messengerSignUp = errorMessageSignUp ? errorMessageSignUp : null;
         /* if (isError) {
@@ -324,7 +337,6 @@ class Header extends Component {
                 messenger: errorMessage
             })
         } */
-        console.log("mess", messenger, isError, infoSignUp)
         return (
             <header className="header">
                 <div className="navbar-area">

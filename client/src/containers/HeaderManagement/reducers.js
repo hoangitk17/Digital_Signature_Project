@@ -40,6 +40,26 @@ export default handleActions(
                 isError: true
             })
         },
+        [actions.getUserById]: (state, action) => {
+            return freeze({
+                ...state,
+                isLoading: true
+            })
+        },
+        [actions.getUserByIdSuccess]: (state, action) => {
+            console.log("user by id reducer", action.payload.data, action.payload)
+            return freeze({
+                ...state,
+                InfoAfterSignIn: action.payload,
+                isLoading: false
+            })
+        },
+        [actions.getUserByIdFail]: (state, action) => {
+            return freeze({
+                ...state,
+                isError: true
+            })
+        },
         [actions.signIn]: (state, action) => {
             return freeze({
                 ...state,
@@ -86,6 +106,26 @@ export default handleActions(
             return freeze({
                 ...state,
                 errorMessageSignUp: action.payload,
+            })
+        },
+        [actions.updateInfoUser]: (state, action) => {
+            return freeze({
+                ...state,
+                isLoading: true
+            })
+        },
+        [actions.updateInfoUserSuccess]: (state, action) => {
+            console.log("info update user", action.payload.result, action.payload)
+            return freeze({
+                ...state,
+                isLoading: false,
+            })
+        },
+        [actions.updateInfoUserFail]: (state, action) => {
+            console.log("info update user err", action.payload)
+            return freeze({
+                ...state,
+                isLoading: false,
             })
         },
 

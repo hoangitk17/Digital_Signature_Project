@@ -17,6 +17,9 @@ import Swal from "sweetalert2";
 import InputFile from "../../../common/InputFile";
 import "../styles.scss";
 import CropImage from "../../../common/CropImage";
+import common from "../../../utils/common";
+import { get } from "../../../services/localStorage";
+const infoUser = common.decodeToken(get("accessToken"));
 const iconEye = <FontAwesomeIcon icon={faEye} />;
 const iconEyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
 
@@ -34,7 +37,9 @@ class UpdateSignImage extends Component {
         const { srcImageSign } = this.state;
         const avatar = await this.cropImage.uploadImage();
         console.log("avatar", avatar, avatar === srcImageSign, JSON.stringify(avatar) === JSON.stringify(srcImageSign))
-        if (avatar === srcImageSign)
+        console.log("123", infoUser.data._id, avatar);
+        await this.props.actions.updateInfoUser({ id: infoUser.data._id, data: {signImage: avatar} });
+        /* if (avatar === srcImageSign)
         {
             Swal.fire(
                 'Thông báo',
@@ -42,8 +47,9 @@ class UpdateSignImage extends Component {
                 'error'
             )
         }else {
-
-        }
+            console.log("123", infoUser.data._id, avatar);
+            this.props.actions.updateInfoUser({ id: infoUser.data._id, signImage: avatar});
+        } */
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
@@ -57,13 +63,15 @@ class UpdateSignImage extends Component {
         return null;
     }
 
+    componentDidMount () {
+        this.props.actions.getUserById({ id: infoUser.data._id});
+    }
+
 
 
     render() {
         const { srcImageSign, InfoAfterSignIn } = this.state;
         const {  } = this.props;
-
-        console.log("props", InfoAfterSignIn, srcImageSign)
         return (
             <div className="popup-edit-info-user">
                 {/* Modal Update Image Sign */}

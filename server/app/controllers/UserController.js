@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const { mongooseToObject } = require('../../utils/mongoose');
 class UserController {
 
   async exists (req, res, next) {
@@ -81,28 +82,34 @@ class UserController {
 
     // [GET] /user/:id
     async getListUserById(req, res, next) {
-        const {
-            id
-        } = req.body;
+        const { id } = req.params;
+        console.log(id)
         try {
-            User.find({ id }, function (err, users) {
-                res.json(users);
-            });
+            const user = await User.findOne({ _id: id });
+            console.log(user)
+            const userObj = mongooseToObject(user);
+            const userObjTemp = { ...userObj };
+            delete userObjTemp.privateKey;
+            delete userObjTemp.publicKey;
+            delete userObjTemp.password;
+            res.json(userObjTemp);
         } catch (error) {
             res.status(500).json({ message: "Something went wrong" });
             console.log(error);
         }
     }
 
-    //[POST] /user/image-sign/:id
+    //[PUT] /user/image-sign/:id
     async updateImageSign(req, res, next) {
         const { id } = req.params;
         const { signImage } = req.body;
 
+        console.log(signImage, req.body)
+
         try {
             const updatedPost = { signImage, _id: id };
 
-            await User.findByIdAndUpdate(id, updatedPost, { new: true });
+            await User.findByIdAndUpdate({ _id: id }, { $set: updatedPost }, { upsert: true, new: true });
 
             res.json(updatedPost);
             } catch (error) {
