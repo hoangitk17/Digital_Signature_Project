@@ -175,7 +175,7 @@ class PopupEditInfoUser extends Component {
 
 
     static getDerivedStateFromProps(nextProps, prevState) {
-        if (nextProps.InfoAfterSignIn.userName !== prevState.userName) {
+        if (nextProps.InfoAfterSignIn?.userName !== prevState.userName) {
             return {
                 name: nextProps.InfoAfterSignIn?.name,
                 email: nextProps.InfoAfterSignIn?.email,
@@ -314,7 +314,7 @@ class PopupEditInfoUser extends Component {
                                             <CropImage
                                                 ref={element => (this.cropImage = element)}
                                                 src={this.state.avatar}
-                                                name="image-sign"
+                                                name="image-avatar"
                                                 textAdd="THÊM ẢNH"
                                                 title="CHỈNH SỬA KÍCH THƯỚC ẢNH"
                                                 btnChoseFile="Chọn Ảnh"
