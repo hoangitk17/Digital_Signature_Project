@@ -53,10 +53,10 @@ class UpdateSignImage extends Component {
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
-        if (nextProps.InfoAfterSignIn.signImage !== prevState.srcImageSign || nextProps.InfoAfterSignIn !== prevState.InfoAfterSignIn) {
+        if (nextProps.InfoAfterSignIn?.signImage !== prevState.srcImageSign || nextProps.InfoAfterSignIn !== prevState.InfoAfterSignIn) {
             console.log("1")
             return {
-                srcImageSign: nextProps.InfoAfterSignIn.signImage,
+                srcImageSign: nextProps.InfoAfterSignIn?.signImage,
                 InfoAfterSignIn: nextProps.InfoAfterSignIn
             };
         }

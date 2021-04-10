@@ -101,7 +101,7 @@ class UserController {
       const userObjTemp = { ...userObj };
       delete userObjTemp.privateKey;
       delete userObjTemp.publicKey;
-      delete userObjTemp.password;
+      //delete userObjTemp.password;
       res.json(userObjTemp);
     } catch (error) {
       res.status(500).json({ message: "Something went wrong" });
@@ -112,12 +112,39 @@ class UserController {
   //[PUT] /user/image-sign/:id
   async updateImageSign(req, res, next) {
     const { id } = req.params;
-    const { signImage } = req.body;
+      const { signImage, password,
+          name,
+          email,
+          phoneNumber,
+          userName,
+          cardId,
+          address,
+          avatar,
+          dateOfBirth,
+          gender } = req.body;
 
     console.log(signImage, req.body)
 
+    let updatedPost = null;
+
     try {
-      const updatedPost = { signImage, _id: id };
+      if(signImage)
+      {
+          updatedPost = { signImage, _id: id };
+      }else {
+          updatedPost = {
+              password,
+              name,
+              email,
+              phoneNumber,
+              userName,
+              cardId,
+              address,
+              avatar,
+              dateOfBirth,
+              gender, _id: id };
+      }
+
 
       await User.findByIdAndUpdate({ _id: id }, { $set: updatedPost }, { upsert: true, new: true });
 

@@ -138,17 +138,20 @@ class Header extends Component {
             {
                 field: "dateOfBirth",
                 method: (dateOfBirth) => {
-                    var today = new Date();
-                    var age = today.getFullYear() - dateOfBirth.getFullYear();
-                    var m = today.getMonth() - dateOfBirth.getMonth();
-                    if (m < 0 || (m === 0 && today.getDate() < dateOfBirth.getDate())) {
-                        age--;
+                    if (dateOfBirth) {
+                        var today = new Date();
+                        var age = today.getFullYear() - dateOfBirth.getFullYear();
+                        var m = today.getMonth() - dateOfBirth.getMonth();
+                        if (m < 0 || (m === 0 && today.getDate() < dateOfBirth.getDate())) {
+                            age--;
+                        }
+                        console.log("age", age)
+                        if (age < 18) {
+                            return false;
+                        }
+                        return true;
                     }
-                    console.log("age", age)
-                    if (age < 18) {
-                        return false
-                    }
-                    return true
+                    return true;
                 },
                 validWhen: true,
                 message: "Tuổi phải từ 18 trở lên"
@@ -346,7 +349,7 @@ class Header extends Component {
                             <div className="col-lg-12">
                                 <nav className="navbar navbar-expand-lg">
                                     <a className="navbar-brand scroll-top-header" href="#">
-                                        <img src={Logo} alt="Logo" width="120px" height="auto" />
+                                        <img src={Logo} alt="Logo" width="110px" height="auto" />
                                     </a>
                                     <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                                         <span className="toggler-icon" />

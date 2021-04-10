@@ -17,6 +17,10 @@ import Swal from "sweetalert2";
 import InputFile from "../../../common/InputFile";
 import CropImage from "../../../common/CropImage";
 import "../styles.scss";
+import md5 from "md5";
+import common from "../../../utils/common";
+import { get } from "../../../services/localStorage";
+const infoUser = common.decodeToken(get("accessToken"));
 const iconEye = <FontAwesomeIcon icon={faEye} />;
 const iconEyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
 
@@ -27,6 +31,7 @@ class PopupEditInfoUser extends Component {
             hidePassword: true,
             hidePasswordSignUp: true,
             hidePasswordSignUpAgain: true,
+            hidePasswordNew: true,
             messenger: "",
             event: null,
             /* infoSignUp: { */
@@ -34,9 +39,10 @@ class PopupEditInfoUser extends Component {
             email: props.InfoAfterSignIn?.email,
             phoneNumber: props.InfoAfterSignIn?.phoneNumber,
             userName: props.InfoAfterSignIn?.userName,
-            password: props.InfoAfterSignIn?.password,
+            password: /* props.InfoAfterSignIn?.password */"",
+            oldPassword: props.InfoAfterSignIn?.password, //Lưu vết lại mật khẩu để kiểm tra có nhập đúng mk cũ hay ko?
             cardId: props.InfoAfterSignIn?.cardId,
-            dateOfBirth: props.InfoAfterSignIn?.dateOfBirth ? new Date(props.InfoAfterSignIn?.dateOfBirth) : new Date(4500) ,
+            dateOfBirth: props.InfoAfterSignIn?.dateOfBirth ? new Date(props.InfoAfterSignIn?.dateOfBirth) : new Date(4500),
             address: props.InfoAfterSignIn?.address,
             privateKey: props.InfoAfterSignIn?.privateKey,
             publicKey: props.InfoAfterSignIn?.publicKey,
@@ -44,7 +50,7 @@ class PopupEditInfoUser extends Component {
             signImage: props.InfoAfterSignIn?.signImage,
             avatar: props.InfoAfterSignIn?.avatar,
             gender: true, //true la nam, false la nu
-            oldPassword: props.InfoAfterSignIn?.oldPassword,
+            newPassword: "",
             oldNewPassword: "",
             /* }, */
             errors: {},
@@ -77,8 +83,7 @@ class PopupEditInfoUser extends Component {
             {
                 field: "phoneNumber",
                 method: (phoneNumber) => {
-                    if (phoneNumber.toString().length === 10 && phoneNumber.toString().indexOf("0") === 0)
-                    {
+                    if (phoneNumber.toString().length === 10 && phoneNumber.toString().indexOf("0") === 0) {
                         return true
                     }
                     return false
@@ -86,23 +91,29 @@ class PopupEditInfoUser extends Component {
                 validWhen: true,
                 message: "Số điện thoại phải bắt đầu với số 0 và đủ mười số"
             },
-            {
-                field: "oldPassword",
+            /* {
+                field: "password",
                 method: "isEmpty",
                 validWhen: false,
-                message: "Nhập lại mật khẩu không được để trống"
+                message: "Mật khẩu cũ không được để trống"
             },
+            {
+                field: "newPassword",
+                method: "isEmpty",
+                validWhen: false,
+                message: "Nhập mật khẩu mới không được để trống"
+            },
+            {
+                field: "oldNewPassword",
+                method: "isEmpty",
+                validWhen: false,
+                message: "Nhập lại mật khẩu mới không được để trống"
+            }, */
             {
                 field: "userName",
                 method: "isEmpty",
                 validWhen: false,
                 message: "Tài khoản không được để trống"
-            },
-            {
-                field: "password",
-                method: "isEmpty",
-                validWhen: false,
-                message: "Mật khẩu không được để trống"
             },
             {
                 field: "cardId",
@@ -113,8 +124,7 @@ class PopupEditInfoUser extends Component {
             {
                 field: "cardId",
                 method: (cardId) => {
-                    if (cardId.toString().length === 9 || cardId.toString().length === 12)
-                    {
+                    if (cardId.toString().length === 9 || cardId.toString().length === 12) {
                         return true;
                     }
                     return false;
@@ -131,15 +141,17 @@ class PopupEditInfoUser extends Component {
             {
                 field: "dateOfBirth",
                 method: (dateOfBirth) => {
-                    var today = new Date();
-                    var age = today.getFullYear() - dateOfBirth.getFullYear();
-                    var m = today.getMonth() - dateOfBirth.getMonth();
-                    if (m < 0 || (m === 0 && today.getDate() < dateOfBirth.getDate())) {
-                        age--;
-                    }
-                    console.log("age", age)
-                    if(age < 18){
-                        return false
+                    if (dateOfBirth) {
+                        var today = new Date();
+                        var age = today.getFullYear() - dateOfBirth.getFullYear();
+                        var m = today.getMonth() - dateOfBirth.getMonth();
+                        if (m < 0 || (m === 0 && today.getDate() < dateOfBirth.getDate())) {
+                            age--;
+                        }
+                        if (age < 18) {
+                            return false
+                        }
+                        return true
                     }
                     return true
                 },
@@ -168,6 +180,12 @@ class PopupEditInfoUser extends Component {
         });
     }
 
+    setHidePasswordNew = () => {
+        this.setState({
+            hidePasswordNew: !this.state.hidePasswordNew,
+        });
+    }
+
     onShowPopupSignUp = () => {
         document.querySelector('#close-modal-signin').click();
         document.querySelector('#modalSignUpTemp').click();
@@ -181,7 +199,7 @@ class PopupEditInfoUser extends Component {
                 email: nextProps.InfoAfterSignIn?.email,
                 phoneNumber: nextProps.InfoAfterSignIn?.phoneNumber,
                 userName: nextProps.InfoAfterSignIn?.userName,
-                password: nextProps.InfoAfterSignIn?.password,
+                password: /* nextProps.InfoAfterSignIn?.password */"",
                 cardId: nextProps.InfoAfterSignIn?.cardId,
                 dateOfBirth: nextProps.InfoAfterSignIn?.dateOfBirth ? new Date(nextProps.InfoAfterSignIn?.dateOfBirth) : new Date(4500),
                 address: nextProps.InfoAfterSignIn?.address,
@@ -190,8 +208,9 @@ class PopupEditInfoUser extends Component {
                 status: 1, //0 la khoa tai khoan, 1 la tai khoan dang hoat dong
                 signImage: nextProps.InfoAfterSignIn?.signImage,
                 avatar: nextProps.InfoAfterSignIn?.avatar,
-                gender: true, //true la nam, false la nu
-                oldPassword: nextProps.InfoAfterSignIn?.oldPassword,
+                gender: nextProps.InfoAfterSignIn?.gender, //true la nam, false la nu
+                newPassword: "",
+                oldPassword: nextProps.InfoAfterSignIn?.password
             };
         }
         return null;
@@ -200,100 +219,183 @@ class PopupEditInfoUser extends Component {
     updateInfoUser = () => {
         const {
             password,
-            oldPassword,
+            newPassword,
             name,
             email,
             phoneNumber,
             userName,
             cardId,
             address,
-            privateKey,
-            publicKey,
-            signImage,
             avatar,
             dateOfBirth,
-            status,
             gender,
+            oldNewPassword,
+            oldPassword,
             errors
         } = this.state;
-        const data = {
-            password,
-            name,
-            email,
-            phoneNumber,
-            userName,
-            cardId,
-            address,
-            privateKey,
-            publicKey,
-            signImage,
-            avatar,
-            dateOfBirth,
-            status,
-            gender
-        }
-        console.log("Data sign Up", data, this.state.errors, this.validator.validate(this.state))
+        console.log("so sanh password cu", password, oldPassword)
         if (
             Object.entries(this.validator.validate(this.state)).length === 0 &&
-            this.validator.validate(this.state).constructor === Object &&
-            password === oldPassword
+            this.validator.validate(this.state).constructor === Object
         ) {
-            this.setState({
-                errors: {}
-            });
-            Swal.fire({
-                title: "Thông báo",
-                text: "Bạn có muốn đăng ký tài khoản không?",
-                icon: 'info',
-                showCancelButton: true,
-                confirmButtonText: "Đồng ý",
-                cancelButtonText: "Hủy",
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    this.props.actions.signUp({
-                        data, closeModal: () => {
+            if (password) {
+                //TH: có cập nhật lại mật khẩu
+                if (md5(password) !== oldPassword) {
+                    this.setState({
+                        errors: {
+                            ...this.validator.validate(this.state), password: "Mật khẩu cũ không đúng"
+                        }
+                    });
+                } else {
+                    if (oldNewPassword === newPassword && newPassword !== "") {
+                        const data = {
+                            password: md5(newPassword),
+                            name,
+                            email,
+                            phoneNumber,
+                            userName,
+                            cardId,
+                            address,
+                            avatar,
+                            dateOfBirth,
+                            gender
+                        }
+                        console.log("Data Update User 1", data)
+                        this.setState({
+                            errors: {}
+                        });
+                        Swal.fire({
+                            title: "Thông báo",
+                            text: "Bạn có muốn cập nhật thông tin tài khoản không?",
+                            icon: 'info',
+                            showCancelButton: true,
+                            confirmButtonText: "Đồng ý",
+                            cancelButtonText: "Hủy",
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                this.props.actions.updateInfoUser({
+                                    id: infoUser?.data?._id,
+                                    data, closeModal: () => {
+                                        this.setState({
+                                            // name: "",
+                                            // email: "",
+                                            // phoneNumber: "",
+                                            // userName: "",
+                                            // cardId: "",
+                                            // dateOfBirth: new Date(4500),
+                                            // address: "",
+                                            // privateKey: "",
+                                            // publicKey: "",
+                                            // status: 1, //0 la khoa tai khoan, 1 la tai khoan dang hoat dong
+                                            // signImage: "",
+                                            // avatar: "",
+                                            // gender: true, //true la nam, false la nu
+
+                                            password: "",
+                                            newPassword: "",
+                                            oldNewPassword: ""
+                                        });
+                                        document.querySelector('#closeModalUpdateInfoUser').click();
+                                    }
+                                });
+                            }
+                        })
+                    } else {
+                        if (newPassword === "") {
+                            if (oldNewPassword) {
+                                this.setState({
+                                    errors: {
+                                        ...this.validator.validate(this.state), oldNewPassword: "Nhập lại mật khẩu mới không được để trống"
+                                    }
+                                });
+                            }
                             this.setState({
-                                name: "",
-                                email: "",
-                                phoneNumber: "",
-                                userName: "",
-                                password: "",
-                                cardId: "",
-                                dateOfBirth: new Date(4500),
-                                address: "",
-                                privateKey: "",
-                                publicKey: "",
-                                status: 1, //0 la khoa tai khoan, 1 la tai khoan dang hoat dong
-                                signImage: "",
-                                avatar: "",
-                                gender: true, //true la nam, false la nu
-                                oldPassword: "",
+                                errors: {
+                                    ...this.validator.validate(this.state), newPassword: "Mật khẩu mới không được để trống"
+                                }
                             });
-                            document.querySelector('#modalSignUpTemp').click();
-                        }});
-                }
-            })
-        } else {
-            if (password !== oldPassword) {
-                console.log('old', password, oldPassword)
-                this.setState({
-                    errors: { ...this.validator.validate(this.state), oldPassword: "Nhập lại mật khẩu không đúng"
+                        } else {
+                            if (oldNewPassword !== newPassword) {
+                                console.log('old', password, newPassword)
+                                this.setState({
+                                    errors: {
+                                        ...this.validator.validate(this.state), oldNewPassword: "Nhập lại mật khẩu mới không đúng"
+                                    }
+                                });
+                            } else {
+                                this.setState({
+                                    errors: { ...this.validator.validate(this.state) }
+                                });
+                            }
+                        }
                     }
-                });
+                }
             } else {
+                const data = {
+                    password: oldPassword,
+                    name,
+                    email,
+                    phoneNumber,
+                    userName,
+                    cardId,
+                    address,
+                    avatar,
+                    dateOfBirth,
+                    gender
+                }
+                console.log("Data Update User 2", data)
+                //TH: Không cập nhật mật khẩu
                 this.setState({
-                    errors: { ...this.validator.validate(this.state)}
+                    errors: {}
                 });
+                Swal.fire({
+                    title: "Thông báo",
+                    text: "Bạn có muốn cập nhật thông tin tài khoản không?",
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonText: "Đồng ý",
+                    cancelButtonText: "Hủy",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.props.actions.updateInfoUser({
+                            id: infoUser?.data?._id,
+                            data, closeModal: () => {
+                                this.setState({
+                                    //     name: "",
+                                    //     email: "",
+                                    //     phoneNumber: "",
+                                    //     userName: "",
+                                    //     cardId: "",
+                                    //     dateOfBirth: new Date(4500),
+                                    //     address: "",
+                                    //     privateKey: "",
+                                    //     publicKey: "",
+                                    //     status: 1, //0 la khoa tai khoan, 1 la tai khoan dang hoat dong
+                                    //     signImage: "",
+                                    //     avatar: "",
+                                    //     gender: true, //true la nam, false la nu
+
+                                    password: "",
+                                    newPassword: "",
+                                    oldNewPassword: "",
+                                });
+                                document.querySelector('#closeModalUpdateInfoUser').click();
+                            }
+                        });
+                    }
+                })
             }
+
         }
     }
 
 
     render() {
-        const { infoSignUp, hidePassword, hidePasswordSignUp, hidePasswordSignUpAgain, txtusername, txtpassword, errors, isLogin/* messenger */, dateOfBirth } = this.state;
+        const { infoSignUp, hidePassword, hidePasswordNew, hidePasswordSignUp, hidePasswordSignUpAgain, txtusername, txtpassword, errors, isLogin/* messenger */, dateOfBirth } = this.state;
         const { isError, errorMessage, InfoAfterSignIn, errorMessageSignUp } = this.props;
         var messengerSignUp = errorMessageSignUp ? errorMessageSignUp : null;
         console.log("event", this.state.event, InfoAfterSignIn, this.state.userName, this.state.dateOfBirth)
+        console.log("Password", this.state.password)
         return (
             <div className="popup-edit-info-user">
                 {/* Modal Edit Info User */}
@@ -307,7 +409,7 @@ class PopupEditInfoUser extends Component {
                             <div className="modal-body">
                                 <form>
                                     <div className="row">
-                                        <div className="col-md-3" style={{ padding: "0 40px", margin: "auto"}}>
+                                        <div className="col-md-3" style={{ padding: "81px 42px" }}>
                                             {/* <InputFile
                                                 onChange={event => this.setState({ event })}
                                             /> */}
@@ -343,7 +445,7 @@ class PopupEditInfoUser extends Component {
                                                                     delete errors.userName;
                                                                     this.setState({ userName: e.target.value, errors: { ...errors, userName: "" } })
                                                                 }
-                                                            }} className="form-control mt-2 disabled" placeholder="Nhập tài khoản..." type="text" value={this.state.userName} disabled/>
+                                                            }} className="form-control mt-2 disabled" placeholder="Nhập tài khoản..." type="text" value={this.state.userName} disabled />
                                                         </div>
                                                         <div className="margin-5 col-md-4 line-height-55">
                                                             <label>Họ Và Tên</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
@@ -367,6 +469,13 @@ class PopupEditInfoUser extends Component {
                                                                 className="form-control mt-2" placeholder="Nhập họ và tên..." type="text" value={this.state.name}
                                                             />
                                                         </div>
+                                                        {errors.name ? (
+                                                            <div
+                                                                className="message-err-signup mt-1 ms-1"
+                                                            >
+                                                                <b>{errors.name}</b>
+                                                            </div>
+                                                        ) : null}
                                                         <div className="margin-5 col-md-4 line-height-55">
                                                             <label>CCCD</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
                                                         </div>
@@ -387,6 +496,13 @@ class PopupEditInfoUser extends Component {
                                                                 }
                                                             }} className="form-control mt-2" placeholder="Nhập số căn cước công dân..." type="number" value={this.state.cardId} />
                                                         </div>
+                                                        {errors.cardId ? (
+                                                            <div
+                                                                className="message-err-signup mt-1 ms-1"
+                                                            >
+                                                                <b>{errors.cardId}</b>
+                                                            </div>
+                                                        ) : null}
                                                         <div className="margin-5 col-md-4 line-height-55">
                                                             <label>Số Điện Thoại</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
                                                         </div>
@@ -407,6 +523,13 @@ class PopupEditInfoUser extends Component {
                                                                 }
                                                             }} className="form-control mt-2" placeholder="Nhập số điện thoại..." type="number" value={this.state.phoneNumber} />
                                                         </div>
+                                                        {errors.phoneNumber ? (
+                                                            <div
+                                                                className="message-err-signup mt-1 ms-1"
+                                                            >
+                                                                <b>{errors.phoneNumber}</b>
+                                                            </div>
+                                                        ) : null}
                                                         <div className="margin-5 col-md-4 line-height-55">
                                                             <label>Ngày Sinh</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
                                                         </div>
@@ -435,6 +558,13 @@ class PopupEditInfoUser extends Component {
                                                                 locale="languageDate"
                                                             /></div>
                                                         </div>
+                                                        {errors.dateOfBirth ? (
+                                                            <div
+                                                                className="message-err-signup mt-1 ms-1"
+                                                            >
+                                                                <b>{errors.dateOfBirth}</b>
+                                                            </div>
+                                                        ) : null}
                                                     </div>
                                                 </div>
                                                 <div className="col-md-6">
@@ -459,17 +589,26 @@ class PopupEditInfoUser extends Component {
                                                                 }
                                                             }} className="form-control mt-2" placeholder="Nhập email..." type="email" value={this.state.email} />
                                                         </div>
+                                                        {errors.email ? (
+                                                            <div
+                                                                className="message-err-signup mt-1 ms-1"
+                                                            >
+                                                                <b>{errors.email}</b>
+                                                            </div>
+                                                        ) : null}
                                                         <div className="margin-5 col-md-4 line-height-55">
                                                             <label>Giới Tính</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
                                                         </div>
-                                                        <div className="margin-5 col-md-8" style={{position: "relative"}}>
-                                                            <div className="d-flex" style={{marginTop: 14}}>
+                                                        <div className="margin-5 col-md-8" style={{ position: "relative" }}>
+                                                            <div className="d-flex" style={{ marginTop: 14 }}>
                                                                 <div className="form-check" onClick={() => { this.setState({ gender: true }) }}>
-                                                                    <input className="form-check-input" type="radio" name="gender" id="nam" defaultChecked />
+                                                                    <input /* onChange={() => { this.setState({ gender: true }) }} */
+                                                                        className="form-check-input" type="radio" name="gender" id="nam" checked={this.state.gender ? true : false} />
                                                                     <label className="form-check-label" htmlFor="nam">Nam</label>
                                                                 </div>
                                                                 <div className="form-check" style={{ marginLeft: 100 }} onClick={() => { this.setState({ gender: false }) }}>
-                                                                    <input className="form-check-input" type="radio" name="gender" id="nu" />
+                                                                    <input /* onChange={() => { this.setState({ gender: false }) }} */
+                                                                        className="form-check-input" type="radio" name="gender" id="nu" checked={this.state.gender ? false : true} />
                                                                     <label className="form-check-label" htmlFor="nu">Nữ</label>
                                                                 </div>
                                                             </div>
@@ -477,7 +616,7 @@ class PopupEditInfoUser extends Component {
                                                         <div className="margin-5 col-md-4 line-height-55">
                                                             <label>Mật Khẩu Cũ</label>
                                                         </div>
-                                                        <div className="margin-5 col-md-8" style={{position: "relative"}}>
+                                                        <div className="margin-5 col-md-8" style={{ position: "relative" }}>
                                                             <input onChange={(e) => {
                                                                 if (e.target.value === "") {
                                                                     this.setState({
@@ -500,25 +639,32 @@ class PopupEditInfoUser extends Component {
                                                                 {hidePasswordSignUp ? iconEyeSlash : iconEye}
                                                             </span>
                                                         </div>
+                                                        {errors.password ? (
+                                                            <div
+                                                                className="message-err-signup mt-1 ms-1"
+                                                            >
+                                                                <b>{errors.password}</b>
+                                                            </div>
+                                                        ) : null}
                                                         <div className="margin-5 col-md-4 line-height-55">
                                                             <label>Mật Khẩu Mới</label>
                                                         </div>
-                                                        <div className="margin-5 col-md-8" style={{position: "relative"}}>
+                                                        <div className="margin-5 col-md-8" style={{ position: "relative" }}>
                                                             <input onChange={(e) => {
                                                                 if (e.target.value === "") {
                                                                     this.setState({
-                                                                        oldPassword: e.target.value, errors: {
-                                                                            ...errors, oldPassword: e.target.value === ""
-                                                                                ? (this.validator.validate(this.state).oldPassword
-                                                                                    ? this.validator.validate(this.state).oldPassword
+                                                                        newPassword: e.target.value, errors: {
+                                                                            ...errors, newPassword: e.target.value === ""
+                                                                                ? (this.validator.validate(this.state).newPassword
+                                                                                    ? this.validator.validate(this.state).newPassword
                                                                                     : "Nhập mật khẩu mới không được để trống") : null
                                                                         }
                                                                     })
                                                                 } else {
-                                                                    delete errors.oldPassword;
-                                                                    this.setState({ oldPassword: e.target.value, errors: { ...errors, oldPassword: "" } })
+                                                                    delete errors.newPassword;
+                                                                    this.setState({ newPassword: e.target.value, errors: { ...errors, newPassword: "" } })
                                                                 }
-                                                            }} className="form-control mt-2" placeholder="Nhập mật khẩu mới..." type={hidePasswordSignUpAgain ? "password" : "text"} value={this.state.oldPassword} />
+                                                            }} className="form-control mt-2" placeholder="Nhập mật khẩu mới..." type={hidePasswordSignUpAgain ? "password" : "text"} value={this.state.newPassword} />
                                                             <span
                                                                 className="icon-showpass-edit eyeAction"
                                                                 onClick={this.setHidePasswordSignUpAgain}
@@ -526,6 +672,13 @@ class PopupEditInfoUser extends Component {
                                                                 {hidePasswordSignUpAgain ? iconEyeSlash : iconEye}
                                                             </span>
                                                         </div>
+                                                        {errors.newPassword ? (
+                                                            <div
+                                                                className="message-err-signup mt-1 ms-1"
+                                                            >
+                                                                <b>{errors.newPassword}</b>
+                                                            </div>
+                                                        ) : null}
                                                         <div className="margin-5 col-md-4 line-height-55">
                                                             <label>Nhập Lại MKM</label>
                                                         </div>
@@ -547,19 +700,27 @@ class PopupEditInfoUser extends Component {
                                                             }} className="form-control mt-2" placeholder="Nhập lại mật khẩu mới..." type={hidePasswordSignUpAgain ? "password" : "text"} value={this.state.oldNewPassword} />
                                                             <span
                                                                 className="icon-showpass-edit eyeAction"
-                                                                onClick={this.setHidePasswordSignUpAgain}
+                                                                onClick={this.setHidePasswordNew}
                                                             >
-                                                                {hidePasswordSignUpAgain ? iconEyeSlash : iconEye}
+                                                                {hidePasswordNew ? iconEyeSlash : iconEye}
                                                             </span>
                                                         </div>
+                                                        {errors.oldNewPassword ? (
+                                                            <div
+                                                                className="message-err-signup mt-1 ms-1"
+                                                            >
+                                                                <b>{errors.oldNewPassword}</b>
+                                                            </div>
+                                                        ) : null}
+
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="row col-md-12" style={{marginBottom: 5}}>
+                                            <div className="row col-md-12" style={{ marginBottom: 5 }}>
                                                 <div className="margin-5 col-md-2 line-height-55">
                                                     <label>Địa chỉ</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
                                                 </div>
-                                                <div className="margin-5 col-md-9" style={{marginLeft: 4}}>
+                                                <div className="margin-5 col-md-9" style={{ marginLeft: 4 }}>
                                                     <input onChange={(e) => {
                                                         if (e.target.value === "") {
                                                             this.setState({
@@ -576,6 +737,13 @@ class PopupEditInfoUser extends Component {
                                                         }
                                                     }} className="form-control mt-2" placeholder="Nhập địa chỉ..." type="text" value={this.state.address} />
                                                 </div>
+                                                {errors.address ? (
+                                                    <div
+                                                        className="message-err-signup mt-1 ms-1"
+                                                    >
+                                                        <b>{errors.address}</b>
+                                                    </div>
+                                                ) : null}
                                             </div>
                                         </div>
                                     </div>
@@ -818,29 +986,29 @@ class PopupEditInfoUser extends Component {
                                         <input onChange={(e) => {
                                             if (e.target.value === "") {
                                                 this.setState({
-                                                     oldPassword: e.target.value, errors: {
-                                                        ...errors, oldPassword: e.target.value === ""
-                                                            ? (this.validator.validate(this.state).oldPassword
-                                                                ? this.validator.validate(this.state).oldPassword
+                                                     newPassword: e.target.value, errors: {
+                                                        ...errors, newPassword: e.target.value === ""
+                                                            ? (this.validator.validate(this.state).newPassword
+                                                                ? this.validator.validate(this.state).newPassword
                                                                 : "Nhập lại mật khẩu không đúng") : null
                                                     }
                                                 })
                                             } else {
-                                                delete errors.oldPassword;
-                                                this.setState({  oldPassword: e.target.value, errors: { ...errors, oldPassword: "" } })
+                                                delete errors.newPassword;
+                                                this.setState({  newPassword: e.target.value, errors: { ...errors, newPassword: "" } })
                                             }
-                                        }} className="form-control mt-2" placeholder="Nhập lại mật khẩu..." type={hidePasswordSignUpAgain ? "password" : "text"} value={this.state.oldPassword}/>
+                                        }} className="form-control mt-2" placeholder="Nhập lại mật khẩu..." type={hidePasswordSignUpAgain ? "password" : "text"} value={this.state.newPassword}/>
                                         <span
                                             className="icon-showpass-edit eyeAction"
                                             onClick={this.setHidePasswordSignUpAgain}
                                         >
                                             {hidePasswordSignUpAgain ? iconEyeSlash : iconEye}
                                         </span>
-                                        {errors.oldPassword ? (
+                                        {errors.newPassword ? (
                                             <div
                                                 className="message-err-signup mt-1"
                                             >
-                                                <b>{errors.oldPassword}</b>
+                                                <b>{errors.newPassword}</b>
                                             </div>
                                         ) : null}
                                     </div>
@@ -852,7 +1020,7 @@ class PopupEditInfoUser extends Component {
                                 </div>
                             </div> */}
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                <button id="closeModalUpdateInfoUser" type="button" className="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
                                 <div className="form-group">
                                     <button onClick={this.updateInfoUser}
                                         type="submit" className="btn btn-primary btn-block float-right"> Chỉnh Sửa</button>

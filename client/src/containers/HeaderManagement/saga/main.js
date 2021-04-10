@@ -104,14 +104,14 @@ function* handleUpdateInfoUser(action) {
         console.log("res saga by id update user", res.data)
         yield Swal.fire(
             'Thông báo',
-            'Cập nhật hình ảnh chữ ký thành công!',
+            'Cập nhật thành công!',
             'success'
         )
         yield put(actions.updateInfoUserSuccess(res.data));
     } catch (error) {
         yield Swal.fire(
             'Thông báo',
-            'Cập nhật hình ảnh chữ ký thất bại!',
+            'Cập nhật thất bại!',
             'error'
         )
         console.log("err saga update", error);
