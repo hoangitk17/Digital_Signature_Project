@@ -18,6 +18,7 @@ import PopupEditInfoUser from "./PopupEditInfoUser";
 import CreateSignForFile from "./CreateSignForFile";
 import UpdateSignImage from "./UpdateSignImage";
 import { get, remove } from '../../../services/localStorage';
+import md5 from 'md5';
 const iconEye = <FontAwesomeIcon icon={faEye} />;
 const iconEyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
 // import {
@@ -185,7 +186,7 @@ class Header extends Component {
     onSubmit = () => {
         var { txtpassword, txtusername, savelogin } = this.state;
         console.log("run login", txtpassword, txtusername, this.props)
-        const data = { userName: txtusername, password: txtpassword, savelogin };
+        const data = { userName: txtusername, password: md5(txtpassword), savelogin };
         this.props.actions.signIn({
             data, closeModal: this.onCloseModalSignIn
         });
@@ -260,7 +261,7 @@ class Header extends Component {
             errors
         } = this.state;
         const data = {
-            password,
+            password: md5(password),
             name,
             email,
             phoneNumber,
@@ -336,6 +337,7 @@ class Header extends Component {
                 messenger: errorMessage
             })
         } */
+        console.log("md5", md5("abc123"))
         return (
             <header className="header">
                 <div className="navbar-area">
