@@ -68,7 +68,6 @@ export default handleActions(
         },
         [actions.signInSuccess]: (state, action) => {
             console.log("info", action.payload.result, action.payload)
-            save("isLogin", true);
             save("name-user", action?.payload?.result?.name)
             return freeze({
                 ...state,

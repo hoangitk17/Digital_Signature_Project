@@ -1,8 +1,8 @@
 const User = require('../models/User');
 const jwtHelper = require("../../helpers/jwt.helper");
 const { mongooseToObject } = require('../../utils/mongoose');
-const { generateRSAKey, encrytAES, decryptAES } = require('../../utils/nodeforge');
-const { generateRSAKey4096 } = require('../../utils/hybridcrypto');
+const { generateRSAKey, encrytAES, decryptRSA } = require('../../utils/nodeforge');
+const forge = require('node-forge');
 // Biến cục bộ trên server này sẽ lưu trữ tạm danh sách token
 // Trong dự án thực tế, nên lưu chỗ khác, có thể lưu vào Redis hoặc DB
 let tokenList = {};
@@ -16,14 +16,13 @@ const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET || "access-token-for-s
 const refreshTokenLife = process.env.REFRESH_TOKEN_LIFE || "3650d";
 // Mã secretKey này phải được bảo mật tuyệt đối, các bạn có thể lưu vào biến môi trường hoặc file
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || "refresh-token-for-sinature-app@";
-
 const keyPair = generateRSAKey();
-class AuthController {
 
+class AuthController {
+  
   async getPublicKeyRSA(req, res, next) {
     try {
-      const keyPair4096 = await generateRSAKey4096();
-      return res.status(200).json({ publicKey: keyPair.publicKeyPem, keyPair: keyPair4096});
+      return res.status(200).json({ publicKey: keyPair.publicKeyPem});
     } catch (err) {
       res.status(500).json({ message: "Something went wrong" });
     }
@@ -40,12 +39,15 @@ class AuthController {
 
       if (!isPasswordCorrect) return res.status(400).json({ message: "Mật khẩu không chính xác!" });
 
-      const userObj = mongooseToObject(user);
+      const userObj = user ? await mongooseToObject(user) : {};
       let sentUser = null;
       let { _id, privateKey, publicKey } = userObj;
       if (key) {
-        sentUser = { _id, privateKey: encrytAES(privateKey, key), publicKey}
+        let aesKey = await decryptRSA(key, keyPair.privateKey);
+        let encryptedPrivateKey = await encrytAES(privateKey, forge.util.decode64(aesKey));
+        sentUser = { _id, privateKey: JSON.stringify(encryptedPrivateKey), publicKey}
       } else {
+        console.log("400")
         res.status(400).json({ message: "Not found key in data" })
       }
       const accessToken = await jwtHelper.generateToken(sentUser, accessTokenSecret, accessTokenLife);

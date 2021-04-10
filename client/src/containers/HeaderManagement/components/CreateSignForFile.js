@@ -20,9 +20,11 @@ import Webviewer from '@pdftron/webviewer';
 import { Crypt, RSA } from 'hybrid-crypto-js';
 import { imgDownload } from '../../../images/base64/Download';
 import { imgVerify } from "../../../images/base64/Verify"
+import common from "../../../utils/common";
+import nodeForge from "../../../utils/nodeforge";
+import forge from 'node-forge';
 const iconEye = <FontAwesomeIcon icon={faEye} />;
 const iconEyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
-
 var crypt = new Crypt({
   md: 'sha256', // Options: sha1, sha256, sha384, sha512, and md5
 });
@@ -37,12 +39,31 @@ class CreateSignForFile extends Component {
     this.viewerDiv = React.createRef();
   }
 
-  onStart = () => {
-    var rsa = new RSA();
-    rsa.generateKeyPairAsync().then(keyPair => {
-      privateKey = keyPair.privateKey;
-      publicKey = keyPair.publicKey;
-    });
+  str2ab = (str) => {
+    var encoder = new TextEncoder('utf-8');
+    return encoder.encode(str);
+  }
+
+ ab2str = (buf) => {
+    var decoder = new TextDecoder('utf-8');
+    return decoder.decode(buf);
+  }
+
+
+  onStart = async () => {
+    const accessToken = get("accessToken");
+    const infoUser = await common.decodeToken(accessToken).data;
+    const aesKeyPem = get("aesKeyPem");
+    var buffer = forge.util.createBuffer(JSON.parse(infoUser.privateKey), 'raw')
+    privateKey = nodeForge.decryptAES(buffer, aesKeyPem);
+    publicKey = infoUser.publicKey;
+    console.log(publicKey, privateKey);
+
+    // var rsa = new RSA();
+    // rsa.generateKeyPairAsync().then(keyPair => {
+    //   privateKey = keyPair.privateKey;
+    //   publicKey = keyPair.publicKey;
+    // });
   }
 
   concatTypedArrays = (a, b) => { // a, b TypedArray of same type
@@ -52,7 +73,7 @@ class CreateSignForFile extends Component {
     return c;
   }
 
-  
+
 
   signTheFile2 = async (file) => {
     // Click handler. Reads the selected file, then signs it to
@@ -111,7 +132,7 @@ class CreateSignForFile extends Component {
           window.URL.revokeObjectURL(url);
         };
       }());
-      saveData(blob);
+      saveData(blob, "signed_file");
 
 
     } // end of processTheFile

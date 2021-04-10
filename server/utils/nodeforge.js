@@ -18,7 +18,7 @@ module.exports = {
     cipher.update(forge.util.createBuffer(message, "utf8"), "utf8");
     // hoàn tất việc mã hóa
     cipher.finish();
-    return cipher.output.data;
+    return cipher.output;
   },
   decryptAES: function (encrypted, key) {
     let cipher = forge.rc2.createDecryptionCipher(key);
@@ -29,6 +29,11 @@ module.exports = {
     // hoàn tất việc giải mã
     cipher.finish();
     return cipher.output.data;
+  },
+  decryptRSA: function (message, privateKey) {
+    // decrypt data with a public key (defaults to RSAES PKCS#1 v1.5)
+    const decrypted = privateKey.decrypt(message);
+    return decrypted;
   }
 
 };

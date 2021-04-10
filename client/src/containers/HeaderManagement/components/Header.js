@@ -749,7 +749,7 @@ class Header extends Component {
                     </div>
                 </div>
             <PopupEditInfoUser />
-            <CreateSignForFile />
+            { get("isLogin") === true ? <CreateSignForFile /> : null}
             <UpdateSignImage />
             </header>
 

@@ -17,7 +17,7 @@ let generateToken = (user, secretSignature, tokenLife) => {
     delete userSign["signImage"];
     delete userSign["avatar"];
     jwt.sign(
-      {data: userSign},
+      { data: userSign },
       secretSignature,
       {
         algorithm: "HS256",
@@ -28,7 +28,7 @@ let generateToken = (user, secretSignature, tokenLife) => {
           return reject(error);
         }
         resolve(token);
-    });
+      });
   });
 }
 

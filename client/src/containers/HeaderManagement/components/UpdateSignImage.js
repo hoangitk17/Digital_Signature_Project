@@ -63,8 +63,9 @@ class UpdateSignImage extends Component {
         return null;
     }
 
-    componentDidMount () {
-        this.props.actions.getUserById({ id: infoUser.data._id});
+  componentDidMount() {
+      if(infoUser?.data?._id)
+        this.props.actions.getUserById({ id: infoUser?.data?._id});
     }
 
 
