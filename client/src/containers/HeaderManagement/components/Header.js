@@ -20,6 +20,7 @@ import UpdateSignImage from "./UpdateSignImage";
 import { get, remove } from '../../../services/localStorage';
 import md5 from 'md5';
 import Loading from "../../../common/Loading";
+import common from "../../../utils/common";
 const iconEye = <FontAwesomeIcon icon={faEye} />;
 const iconEyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
 // import {
@@ -325,11 +326,16 @@ class Header extends Component {
     }
 
     componentDidMount = () => {
+        const infoUser = common.decodeToken(get("accessToken"));
         setTimeout(() => {
             this.setState({
                 isLoading: false
             })
         }, 2000)
+        if (infoUser?.data?._id)
+        {
+            this.props.actions.getUserById({ id: infoUser?.data?._id });
+        }
     }
 
     render() {

@@ -408,7 +408,7 @@ class PopupEditInfoUser extends Component {
                             <div className="modal-body">
                                 <form>
                                     <div className="row">
-                                        <div className="col-md-3" style={{ padding: "81px 42px" }}>
+                                        <div className="col-md-3" style={{ padding: "95px 42px" }}>
                                             {/* <InputFile
                                                 onChange={event => this.setState({ event })}
                                             /> */}
