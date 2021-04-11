@@ -29,3 +29,8 @@ export const updateInfoUser = payload => {
     console.log("data api", id, data, payload)
     return api.put(`/user/image-sign/${id}`, data);
 };
+
+export const getUserInfoByPublicKey = payload => {
+  const { data } = payload;
+  return api.post(`/user/getUserInfoByPublicKey`, data);
+};

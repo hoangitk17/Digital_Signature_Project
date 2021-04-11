@@ -763,7 +763,7 @@ class Header extends Component {
                     </div>
                 </div>
 
-                { get("isLogin") === true ? <><UpdateSignImage /><CreateSignForFile /><PopupEditInfoUser InfoAfterSignIn={InfoAfterSignIn} /></> : null}
+                { get("isLogin") === true ? <><UpdateSignImage /><CreateSignForFile {...this.props} /><PopupEditInfoUser InfoAfterSignIn={InfoAfterSignIn} /></> : null}
 
             </header>
 

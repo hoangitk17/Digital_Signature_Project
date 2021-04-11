@@ -48,15 +48,15 @@ function* handleSignIn(action) {
         )
         yield action.payload.closeModal();
     } catch (error) {
+        yield put(actions.signInFail(error?.data?.message || "Server not start"));
+      
         yield Swal.fire(
             'Thông báo',
             'Đăng nhập thất bại!',
             'error'
         )
         console.log("err saga login", error);
-        if (error?.data?.message) {
-            yield put(actions.signInFail(error?.data?.message));
-        }/*  else {
+        /*  else {
             yield put(actions.signInFail("Network error"));
         } */
     }
@@ -75,15 +75,16 @@ function* handleSignUp(action) {
         )
         yield action.payload.closeModal();
     } catch (error) {
+
+        yield put(actions.signUpFail(error?.data?.message || ""));
+    
         yield Swal.fire(
             'Thông báo',
             'Đăng ký tài khoản thất bại!',
             'error'
         )
-        console.log("err saga login", error);
-        if (error?.data?.message) {
-            yield put(actions.signUpFail(error?.data?.message));
-        }/*  else {
+      console.log("err saga login", error);
+        /*  else {
             yield put(actions.signInFail("Network error"));
         } */
     }
@@ -98,6 +99,7 @@ function* handleGetUserById(action) {
         yield put(actions.getUserByIdFail(error));
     }
 }
+
 function* handleUpdateInfoUser(action) {
     try {
         const res = yield call(apiUser.updateInfoUser, action.payload);
@@ -110,15 +112,41 @@ function* handleUpdateInfoUser(action) {
         )
         yield action.payload.closeModal();
     } catch (error) {
+      yield put(actions.updateInfoUserFail(error));
         yield Swal.fire(
             'Thông báo',
             'Cập nhật thất bại!',
             'error'
         )
         console.log("err saga update", error);
-        yield put(actions.updateInfoUserFail(error));
     }
 }
+
+function* handleGetUserInfoByPublicKey(action) {
+  try {
+    if (JSON.stringify(action.payload) === '{}') {
+      yield put(actions.getUserInfoByPublicKeySuccess({}));
+      return;
+    }
+      const res = yield call(apiUser.getUserInfoByPublicKey, action.payload);
+      console.log("data by public key", res.data)
+    yield put(actions.getUserInfoByPublicKeySuccess(res.data));
+    yield Swal.fire(
+      'Thông báo',
+      'Tệp văn bản này đã được kí!',
+      'info'
+    )
+  } catch (error) {
+    yield put(actions.getUserInfoByPublicKeyFail(error));
+      yield Swal.fire(
+          'Thông báo',
+          'Lấy thông tin người ký thất bại!',
+          'error'
+      )
+      console.log("err saga update", error);
+  }
+}
+
 
 function* getUserList() {
     yield takeEvery(actions.getUserList, handleGetUserList);
@@ -136,10 +164,15 @@ function* updateInfoUser() {
     yield takeEvery(actions.updateInfoUser, handleUpdateInfoUser);
 }
 
+function* getUserInfoByPublicKey() {
+  yield takeEvery(actions.getUserInfoByPublicKey, handleGetUserInfoByPublicKey);
+}
+
 export default [
     getUserList,
     signIn,
     signUp,
     getUserById,
-    updateInfoUser
+    updateInfoUser,
+    getUserInfoByPublicKey,
 ];

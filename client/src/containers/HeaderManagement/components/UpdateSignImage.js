@@ -19,7 +19,6 @@ import "../styles.scss";
 import CropImage from "../../../common/CropImage";
 import common from "../../../utils/common";
 import { get } from "../../../services/localStorage";
-const infoUser = common.decodeToken(get("accessToken"));
 const iconEye = <FontAwesomeIcon icon={faEye} />;
 const iconEyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
 
@@ -33,7 +32,8 @@ class UpdateSignImage extends Component {
 
     }
 
-    UpdateSignImage = async() => {
+  UpdateSignImage = async () => {
+        const infoUser = common.decodeToken(get("accessToken"));
         const { srcImageSign } = this.state;
         const avatar = await this.cropImage.uploadImage();
         console.log("avatar", avatar, avatar === srcImageSign, JSON.stringify(avatar) === JSON.stringify(srcImageSign))

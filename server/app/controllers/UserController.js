@@ -155,6 +155,24 @@ class UserController {
       console.log(error);
     }
   }
+
+  // [GET] /user/:id
+  async getUserInfoByPublicKey(req, res, next) {
+    const { publicKey } = req.body;
+    try {
+      const user = await User.findOne({ publicKey });
+      const userObj = await mongooseToObject(user);
+      const userObjTemp = { ...userObj };
+      delete userObjTemp.privateKey;
+      delete userObjTemp.publicKey;
+      delete userObjTemp.password;
+      //delete userObjTemp.password;
+      res.json(userObjTemp);
+    } catch (error) {
+      res.status(500).json({ message: "Something went wrong" });
+      console.log(error);
+    }
+  }
 }
 
 module.exports = new UserController();

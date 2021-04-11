@@ -35,6 +35,7 @@ class CreateSignForFile extends Component {
     super(props);
     this.state = {
       documentFile: null,
+      oldDocumentFile: null
     };
     this.viewerDiv = React.createRef();
   }
@@ -44,7 +45,7 @@ class CreateSignForFile extends Component {
     return encoder.encode(str);
   }
 
- ab2str = (buf) => {
+  ab2str = (buf) => {
     var decoder = new TextDecoder('utf-8');
     return decoder.decode(buf);
   }
@@ -147,7 +148,9 @@ class CreateSignForFile extends Component {
     // and places a link to that Blob in the download-results section.
 
     var sourceFile = document.getElementById("input-sign-file").files[0];
-
+    if (!sourceFile) {
+      return;
+    }
     var reader = new FileReader();
     reader.onload = processTheFile;
     reader.readAsArrayBuffer(sourceFile);
@@ -165,6 +168,7 @@ class CreateSignForFile extends Component {
       }
 
       var successful = false;
+      let newPublicKey = null;
       try {
         console.log(data);
         let isByteOdd = data.byteLength % 2 !== 0;
@@ -184,7 +188,7 @@ class CreateSignForFile extends Component {
         console.log(plaintext)
         var signature = JSON.parse(ab2str(signatureArrBuffer));
         var message = ab2str(plaintext);
-        let newPublicKey = ab2str(publicKeyArrBuffer);
+        newPublicKey = ab2str(publicKeyArrBuffer);
         successful = crypt.verify(
           newPublicKey,
           signature,
@@ -192,7 +196,12 @@ class CreateSignForFile extends Component {
         );
       } catch (e) {
         console.log(e)
-        alert("File chưa được kí")
+        await Swal.fire(
+          'Thông báo',
+          'Tệp văn bản chưa được kí!',
+          'info'
+        )
+        await _this.props.actions.getUserInfoByPublicKey({})
       }
       var blob = null;
       if (successful) {
@@ -202,15 +211,21 @@ class CreateSignForFile extends Component {
       }
 
       if (blob === null) {
-        alert("không hợp lệ");
+        await _this.props.actions.getUserInfoByPublicKey({})
+        // await Swal.fire(
+        //   'Thông báo',
+        //   'Tệp văn bản chưa được kí!',
+        //   'error'
+        // )
       } else {
-        alert("Chữ kí hợp lệ");
+        await _this.props.actions.getUserInfoByPublicKey({ data: { publicKey: newPublicKey } })
       }
     } // end of processTheFile
   } // end of decryptTheFile
 
   //useEffect
   async componentDidMount() {
+    let _this = this;
     await this.onStart();
     Webviewer({
       path: 'lib', initialDoc: '',
@@ -230,6 +245,7 @@ class CreateSignForFile extends Component {
       ],
     }, this.viewerDiv.current).then(instance => {
       const { docViewer, annotManager, CoreControls } = instance;
+      const signatureTool = docViewer.getTool('AnnotationCreateSignature');
       let newArr = instance.annotationPopup.getItems().filter(item => item.dataElement === "annotationDeleteButton") || [];
       instance.annotationPopup.update(newArr);
       // instance.disableElements(['toolsHeader']);
@@ -238,7 +254,14 @@ class CreateSignForFile extends Component {
 
         // Get the file from the input
         const file = input.files[0];
-        instance.loadDocument(file, { filename: file.name });
+        if (file) {
+          instance.loadDocument(file, { filename: file.name });
+          _this.verifyTheFile();
+        }
+      });
+
+      docViewer.on('documentLoaded', () => {
+        signatureTool.importSignatures([_this.props.InfoAfterSignIn?.signImage]);
       });
 
       instance.setHeaderItems(header => {
@@ -279,7 +302,7 @@ class CreateSignForFile extends Component {
 
   render() {
     const { } = this.state;
-    const { } = this.props;
+    const { userInfoSigned } = this.props;
     console.log("data", this.state.documentFile)
     return (
       <div className="create-sign-for-file">
@@ -290,9 +313,9 @@ class CreateSignForFile extends Component {
               <div className="modal-header">
                 <h4 className="modal-title" id="modalCreateFileForFileLabel" style={{ marginLeft: "46%", fontWeight: "600" }}>KÝ VĂN BẢN</h4>
                 <button onClick={() => {
-                  this.setState({
-                    documentFile: null
-                  })
+                  // this.setState({
+                  //   documentFile: null
+                  // })
                 }} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
               </div>
               <div className="modal-body">
@@ -302,47 +325,39 @@ class CreateSignForFile extends Component {
                       <div className="form-group files">
                         <input
                           onChange={(e) => {
-                            this.setState({
-                              documentFile: e.target.value
-                            })
+                            console.log("e", e.target.value);
+                            if (e?.target?.value !== "")
+                            {
+                              this.setState({
+                                documentFile: e.target.value
+                              })
+                            }
                           }}
                           id="input-sign-file"
                           type="file" className="form-control" multiple="" style={{ marginTop: 4 }}
-                          value={this.state?.documentFile ? this.state?.documentFile : ""}
+                          value={this.state?.documentFile ? this.state?.documentFile : null}
                         />
                       </div>
                     </form>
-                    <div style={{ color: "green", fontSize: "16px", marginTop: 8, textAlign: "center" }}>Tệp văn bản này đã được ký</div>
-                    <h6 style={{ textAlign: "center", margin: "5px 0", fontWeight: "bold" }}>THÔNG TIN NGƯỜI ĐÃ KÝ VĂN BẢN</h6>
-                    <div className="card mt-2" style={{ width: "100%", fontSize: "14px !important" }}>
-                      <div style={{ backgroundColor: "#f0f0f0" }}>
-                        <div id="avatar" style={{ margin: "8px auto", backgroundImage: 'url(https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/1024px-No_image_available.svg.png)' }}></div>
-                      </div>
-                      {/* <div style={{ backgroundColor: "#f0f0f0" }}>
-                                                <div id="avatar" style={{ margin: "8px auto", backgroundImage: `url(${AnhDaiDien})` }}></div>
-                                            </div> */}
-                      {/* <img style={{ padding: "10px 50px 0px" }} className="card-img-top" alt="..." src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/1024px-No_image_available.svg.png"/> */}
-                      <div className="card-body">
-                        <h6 className="card-title" style={{ fontWeight: "bold" }}>Họ Và Tên</h6>
-                        <p className="card-text">Nguyễn Văn Hoàng</p>
-                        <h6 className="card-title" style={{ fontWeight: "bold" }}>Email</h6>
-                        <p className="card-text">hoangitk172gmail.com</p>
-                        <h6 className="card-title" style={{ fontWeight: "bold" }}>Số điện thoại</h6>
-                        <p className="card-text">0963-203-425</p>
-                      </div>
-                    </div>
-                    {/* <section id="sign-and-verify">
-                                            <input type="file" id="source-file" />
-                                            <button id="sign" onClick={this.signTheFile}>Sign File</button>
-                                            <button id="verify" onClick={this.verifyTheFile}>Verify Signature</button>
-                                        </section>
-
-                                        <section id="results">
-                                            Download results:
-                                            <ul id="download-links">
-                                            </ul>
-                                        </section>
-                                        <button onClick={this.onSign}>Sign sample</button> */}
+                    {
+                      JSON.stringify(userInfoSigned) !== JSON.stringify({}) ? (
+                        <><div style={{ color: "green", fontSize: "16px", marginTop: 8, textAlign: "center" }}>Tệp văn bản này đã được ký</div>
+                          <h6 style={{ textAlign: "center", margin: "5px 0", fontWeight: "bold" }}>THÔNG TIN NGƯỜI ĐÃ KÝ VĂN BẢN</h6>
+                          <div className="card mt-2" style={{ width: "100%", fontSize: "14px !important" }}>
+                            <div style={{ backgroundColor: "#f0f0f0" }}>
+                              <div id="avatar" style={{ margin: "8px auto", backgroundImage: `url(${userInfoSigned.avatar}),url(https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/1024px-No_image_available.svg.png)` }}></div>
+                            </div>
+                            <div className="card-body">
+                              <h6 className="card-title" style={{ fontWeight: "bold" }}>Họ Và Tên</h6>
+                              <p className="card-text">{userInfoSigned.userName || ""}</p>
+                              <h6 className="card-title" style={{ fontWeight: "bold" }}>Email</h6>
+                              <p className="card-text">{userInfoSigned.email || ""}</p>
+                              <h6 className="card-title" style={{ fontWeight: "bold" }}>Số điện thoại</h6>
+                              <p className="card-text">{userInfoSigned.phoneNumber || ""}</p>
+                            </div>
+                          </div></>
+                      ) : null
+                    }
                   </div>
                   <div className="col-md-9 webviewer" ref={this.viewerDiv}>
 

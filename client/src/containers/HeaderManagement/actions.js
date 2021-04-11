@@ -25,4 +25,8 @@ export const updateInfoUser = createAction(CONST.UPDATEINFOUSER);
 export const updateInfoUserSuccess = createAction(CONST.UPDATEINFOUSER_SUCCESS);
 export const updateInfoUserFail = createAction(CONST.UPDATEINFOUSER_FAIL);
 
+export const getUserInfoByPublicKey = createAction(CONST.GETUSERINFOBYPUBLICKEY);
+export const getUserInfoByPublicKeySuccess = createAction(CONST.GETUSERINFOBYPUBLICKEY_SUCCESS);
+export const getUserInfoByPublicKeyFail = createAction(CONST.GETUSERINFOBYPUBLICKEY_FAIL);
+
 

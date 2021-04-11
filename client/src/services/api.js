@@ -50,12 +50,13 @@ const getNewTokenAndReattemptRequest = async (config, refToken) => {
 instance.interceptors.response.use(
   res => res,
   error => {
+    let err = typeof error === undefined && { validateStatus: () => true, status: 504 };
     const {
       config,
       config: { validateStatus },
       response: { status },
       message,
-    } = error;
+    } = err;
     console.log(error.response)
     if (validateStatus()) return Promise.reject(error.response);
     if ((status ? status : -1) === 401) {

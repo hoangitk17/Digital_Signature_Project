@@ -12,6 +12,7 @@ const initialState = freeze({
     errorMessageSignUp: "",
     InfoAfterSignIn: {},
     InfoAfterSignUp: {},
+    userInfoSigned: {},
     isLogin: false
 })
 
@@ -85,7 +86,8 @@ export default handleActions(
                 ...state,
                 isError: true,
                 isLogin: false,
-                errorMessage: action?.payload ? action?.payload : null
+                errorMessage: action?.payload ? action?.payload : null,
+                isLoading: false
             })
         },
         [actions.signUp]: (state, action) => {
@@ -130,6 +132,28 @@ export default handleActions(
                 isLoading: false,
             })
         },
+            
+        [actions.getUserInfoByPublicKey]: (state, action) => {
+          return freeze({
+              ...state,
+              isLoading: true
+          })
+      },
+      [actions.getUserInfoByPublicKeySuccess]: (state, action) => {
+        console.log("info by public key", action.payload.result, action.payload)
+          return freeze({
+              ...state,
+              isLoading: false,
+              userInfoSigned: {...action.payload},
+          })
+      },
+      [actions.getUserInfoByPublicKeyFail]: (state, action) => {
+  
+          return freeze({
+              ...state,
+              isLoading: false,
+          })
+      },
 
     },
     initialState
