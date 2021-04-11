@@ -102,12 +102,13 @@ function* handleUpdateInfoUser(action) {
     try {
         const res = yield call(apiUser.updateInfoUser, action.payload);
         console.log("res saga by id update user", res.data)
+        yield put(actions.updateInfoUserSuccess(res.data));
         yield Swal.fire(
             'Thông báo',
             'Cập nhật thành công!',
             'success'
         )
-        yield put(actions.updateInfoUserSuccess(res.data));
+        yield action.payload.closeModal();
     } catch (error) {
         yield Swal.fire(
             'Thông báo',
@@ -115,7 +116,7 @@ function* handleUpdateInfoUser(action) {
             'error'
         )
         console.log("err saga update", error);
-        yield put(actions.updateInfoUserSuccess(error));
+        yield put(actions.updateInfoUserFail(error));
     }
 }
 

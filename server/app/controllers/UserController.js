@@ -112,7 +112,8 @@ class UserController {
   //[PUT] /user/image-sign/:id
   async updateImageSign(req, res, next) {
     const { id } = req.params;
-      const { signImage, password,
+      const { signImage,
+          password,
           name,
           email,
           phoneNumber,

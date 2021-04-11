@@ -38,7 +38,10 @@ class UpdateSignImage extends Component {
         const avatar = await this.cropImage.uploadImage();
         console.log("avatar", avatar, avatar === srcImageSign, JSON.stringify(avatar) === JSON.stringify(srcImageSign))
         console.log("123", infoUser.data._id, avatar);
-        await this.props.actions.updateInfoUser({ id: infoUser.data._id, data: {signImage: avatar} });
+        await this.props.actions.updateInfoUser({ id: infoUser.data._id, data: {signImage: avatar},
+        closeModal: () => {
+            document.querySelector('#closeModalUpdateSignImage').click();
+        } });
         /* if (avatar === srcImageSign)
         {
             Swal.fire(
@@ -102,7 +105,7 @@ class UpdateSignImage extends Component {
                                     </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                <button id="closeModalUpdateSignImage" type="button" className="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
                                 <div className="form-group">
                                     <button onClick={() => {this.UpdateSignImage()}}
                                         type="submit" className="btn btn-primary btn-block float-right">Cập Nhật</button>

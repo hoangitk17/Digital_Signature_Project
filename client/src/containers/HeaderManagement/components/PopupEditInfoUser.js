@@ -216,7 +216,8 @@ class PopupEditInfoUser extends Component {
         return null;
     }
 
-    updateInfoUser = () => {
+    updateInfoUser = async() => {
+        const avatar = await this.cropImage.uploadImage();
         const {
             password,
             newPassword,
@@ -226,7 +227,6 @@ class PopupEditInfoUser extends Component {
             userName,
             cardId,
             address,
-            avatar,
             dateOfBirth,
             gender,
             oldNewPassword,
@@ -290,7 +290,6 @@ class PopupEditInfoUser extends Component {
                                             // signImage: "",
                                             // avatar: "",
                                             // gender: true, //true la nam, false la nu
-
                                             password: "",
                                             newPassword: "",
                                             oldNewPassword: ""
@@ -302,18 +301,18 @@ class PopupEditInfoUser extends Component {
                         })
                     } else {
                         if (newPassword === "") {
-                            if (oldNewPassword) {
-                                this.setState({
-                                    errors: {
-                                        ...this.validator.validate(this.state), oldNewPassword: "Nhập lại mật khẩu mới không được để trống"
-                                    }
-                                });
-                            }
                             this.setState({
                                 errors: {
                                     ...this.validator.validate(this.state), newPassword: "Mật khẩu mới không được để trống"
                                 }
                             });
+                            /* if (oldNewPassword) {
+                                this.setState({
+                                    errors: {
+                                        ...this.validator.validate(this.state), oldNewPassword: "Nhập lại mật khẩu mới không được để trống"
+                                    }
+                                });
+                            } */
                         } else {
                             if (oldNewPassword !== newPassword) {
                                 console.log('old', password, newPassword)
@@ -531,6 +530,33 @@ class PopupEditInfoUser extends Component {
                                                             </div>
                                                         ) : null}
                                                         <div className="margin-5 col-md-4 line-height-55">
+                                                            <label>Email</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
+                                                        </div>
+                                                        <div className="margin-5 col-md-8">
+                                                            <input onChange={(e) => {
+                                                                if (e.target.value === "") {
+                                                                    this.setState({
+                                                                        email: e.target.value, errors: {
+                                                                            ...errors, email: e.target.value === ""
+                                                                                ? (this.validator.validate(this.state).email
+                                                                                    ? this.validator.validate(this.state).email
+                                                                                    : "Email không được để trống") : null
+                                                                        }
+                                                                    })
+                                                                } else {
+                                                                    delete errors.email;
+                                                                    this.setState({ email: e.target.value, errors: { ...errors, email: "" } })
+                                                                }
+                                                            }} className="form-control mt-2" placeholder="Nhập email..." type="email" value={this.state.email} />
+                                                        </div>
+                                                        {errors.email ? (
+                                                            <div
+                                                                className="message-err-signup mt-1 ms-1"
+                                                            >
+                                                                <b>{errors.email}</b>
+                                                            </div>
+                                                        ) : null}
+                                                        <div className="margin-5 col-md-4 line-height-55">
                                                             <label>Ngày Sinh</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
                                                         </div>
                                                         <div className="margin-5 col-md-8">
@@ -570,34 +596,7 @@ class PopupEditInfoUser extends Component {
                                                 <div className="col-md-6">
                                                     <div className="row">
                                                         <div className="margin-5 col-md-4 line-height-55">
-                                                            <label>Email</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
-                                                        </div>
-                                                        <div className="margin-5 col-md-8">
-                                                            <input onChange={(e) => {
-                                                                if (e.target.value === "") {
-                                                                    this.setState({
-                                                                        email: e.target.value, errors: {
-                                                                            ...errors, email: e.target.value === ""
-                                                                                ? (this.validator.validate(this.state).email
-                                                                                    ? this.validator.validate(this.state).email
-                                                                                    : "Email không được để trống") : null
-                                                                        }
-                                                                    })
-                                                                } else {
-                                                                    delete errors.email;
-                                                                    this.setState({ email: e.target.value, errors: { ...errors, email: "" } })
-                                                                }
-                                                            }} className="form-control mt-2" placeholder="Nhập email..." type="email" value={this.state.email} />
-                                                        </div>
-                                                        {errors.email ? (
-                                                            <div
-                                                                className="message-err-signup mt-1 ms-1"
-                                                            >
-                                                                <b>{errors.email}</b>
-                                                            </div>
-                                                        ) : null}
-                                                        <div className="margin-5 col-md-4 line-height-55">
-                                                            <label>Giới Tính</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
+                                                            <label>Giới Tính</label>{/* <span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span> */}
                                                         </div>
                                                         <div className="margin-5 col-md-8" style={{ position: "relative" }}>
                                                             <div className="d-flex" style={{ marginTop: 14 }}>
@@ -613,6 +612,7 @@ class PopupEditInfoUser extends Component {
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                        <span style={{ fontWeight: "600", textAlign: "center" }}>-------&nbsp;Đổi mật khẩu&nbsp;(nếu cần)&nbsp;---------------------------------</span>
                                                         <div className="margin-5 col-md-4 line-height-55">
                                                             <label>Mật Khẩu Cũ</label>
                                                         </div>
@@ -620,12 +620,12 @@ class PopupEditInfoUser extends Component {
                                                             <input onChange={(e) => {
                                                                 if (e.target.value === "") {
                                                                     this.setState({
-                                                                        password: e.target.value, errors: {
+                                                                        password: e.target.value/* , errors: {
                                                                             ...errors, password: e.target.value === ""
                                                                                 ? (this.validator.validate(this.state).password
                                                                                     ? this.validator.validate(this.state).password
-                                                                                    : "Mật khẩu không được để trống") : null
-                                                                        }
+                                                                                    : "Mật khẩu cũ không được để trống") : null
+                                                                        } */
                                                                     })
                                                                 } else {
                                                                     delete errors.password;
@@ -653,12 +653,12 @@ class PopupEditInfoUser extends Component {
                                                             <input onChange={(e) => {
                                                                 if (e.target.value === "") {
                                                                     this.setState({
-                                                                        newPassword: e.target.value, errors: {
+                                                                        newPassword: e.target.value/* , errors: {
                                                                             ...errors, newPassword: e.target.value === ""
                                                                                 ? (this.validator.validate(this.state).newPassword
                                                                                     ? this.validator.validate(this.state).newPassword
-                                                                                    : "Nhập mật khẩu mới không được để trống") : null
-                                                                        }
+                                                                                    : "Mật khẩu mới không được để trống") : null
+                                                                        } */
                                                                     })
                                                                 } else {
                                                                     delete errors.newPassword;
@@ -686,12 +686,12 @@ class PopupEditInfoUser extends Component {
                                                             <input onChange={(e) => {
                                                                 if (e.target.value === "") {
                                                                     this.setState({
-                                                                        oldNewPassword: e.target.value, errors: {
+                                                                        oldNewPassword: e.target.value/* , errors: {
                                                                             ...errors, oldNewPassword: e.target.value === ""
                                                                                 ? (this.validator.validate(this.state).oldNewPassword
                                                                                     ? this.validator.validate(this.state).oldNewPassword
                                                                                     : "Nhập lại mật khẩu mới không đúng") : null
-                                                                        }
+                                                                        } */
                                                                     })
                                                                 } else {
                                                                     delete errors.oldNewPassword;
@@ -712,6 +712,7 @@ class PopupEditInfoUser extends Component {
                                                                 <b>{errors.oldNewPassword}</b>
                                                             </div>
                                                         ) : null}
+                                                        <span style={{ fontWeight: "600", textAlign: "center" }}>---------------------------------------------------------------------------</span>
 
                                                     </div>
                                                 </div>
@@ -749,276 +750,6 @@ class PopupEditInfoUser extends Component {
                                     </div>
                                 </form>
                             </div>
-                            {/* <div className="modal-body">
-                                <form>
-                                    <div className="form-group">
-                                        <label>Họ Và Tên</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
-                                        <input onChange={(e) => {
-                                            if (e.target.value === "") {
-                                                this.setState({
-                                                     name: e.target.value , errors: {
-                                                        ...errors, name: e.target.value === ""
-                                                            ? (this.validator.validate(this.state).name
-                                                                ? this.validator.validate(this.state).name
-                                                                : "Họ và tên không được để trống") : null
-                                                    }
-                                                })
-                                            } else {
-                                                delete errors.name;
-                                                this.setState({  name: e.target.value , errors: { ...errors, name: "" } })
-                                            }
-                                        }}
-                                            className="form-control mt-2" placeholder="Nhập họ và tên..." type="text" value={this.state.name}
-                                        />
-                                        {errors.name ? (
-                                            <div
-                                                className="message-err-signup mt-1"
-                                            >
-                                                <b>{errors.name}</b>
-                                            </div>
-                                        ) : null}
-                                    </div>
-                                    <div className="form-group mt-3">
-                                        <label>Email</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
-                                        <input onChange={(e) => {
-                                            if (e.target.value === "") {
-                                                this.setState({
-                                                     email: e.target.value, errors: {
-                                                        ...errors, email: e.target.value === ""
-                                                            ? (this.validator.validate(this.state).email
-                                                                ? this.validator.validate(this.state).email
-                                                                : "Email không được để trống") : null
-                                                    }
-                                                })
-                                            } else {
-                                                delete errors.email;
-                                                this.setState({  email: e.target.value, errors: { ...errors, email: "" } })
-                                            }
-                                        }} className="form-control mt-2" placeholder="Nhập email..." type="email" value={this.state.email}/>
-                                        {errors.email ? (
-                                            <div
-                                                className="message-err-signup mt-1"
-                                            >
-                                                <b>{errors.email}</b>
-                                            </div>
-                                        ) : null}
-                                    </div>
-                                    <div className="form-group mt-3">
-                                        <label>Số Căn Cước Công Dân</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
-                                        <input onChange={(e) => {
-                                            if (e.target.value === "") {
-                                                this.setState({
-                                                     cardId: e.target.value , errors: {
-                                                        ...errors, cardId: e.target.value === ""
-                                                            ? (this.validator.validate(this.state).cardId
-                                                                ? this.validator.validate(this.state).cardId
-                                                                : "Số căn cước công dân không được để trống") : null
-                                                    }
-                                                })
-                                            } else {
-                                                delete errors.cardId;
-                                                this.setState({  cardId: e.target.value , errors: { ...errors, cardId: "" } })
-                                            }
-                                        }} className="form-control mt-2" placeholder="Nhập số căn cước công dân..." type="number" value={this.state.cardId}/>
-                                        {errors.cardId ? (
-                                            <div
-                                                className="message-err-signup mt-1"
-                                            >
-                                                <b>{errors.cardId}</b>
-                                            </div>
-                                        ) : null}
-                                    </div>
-                                    <div className="form-group mt-3">
-                                        <label>Địa chỉ</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
-                                        <input onChange={(e) => {
-                                            if (e.target.value === "") {
-                                                this.setState({
-                                                     address: e.target.value , errors: {
-                                                        ...errors, address: e.target.value === ""
-                                                            ? (this.validator.validate(this.state).address
-                                                                ? this.validator.validate(this.state).address
-                                                                : "Địa chỉ không được để trống") : null
-                                                    }
-                                                })
-                                            } else {
-                                                delete errors.address;
-                                                this.setState({  address: e.target.value , errors: { ...errors, address: "" } })
-                                            }
-                                        }} className="form-control mt-2" placeholder="Nhập địa chỉ..." type="text" value={this.state.address}/>
-                                        {errors.address ? (
-                                            <div
-                                                className="message-err-signup mt-1"
-                                            >
-                                                <b>{errors.address}</b>
-                                            </div>
-                                        ) : null}
-                                    </div>
-                                    <div className="form-group mt-3">
-                                        <label>Số Điện Thoại</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
-                                        <input onChange={(e) => {
-                                            if (e.target.value === "") {
-                                                this.setState({
-                                                     phoneNumber: e.target.value, errors: {
-                                                        ...errors, phoneNumber: e.target.value === ""
-                                                            ? (this.validator.validate(this.state).phoneNumber
-                                                                ? this.validator.validate(this.state).phoneNumber
-                                                                : "Số điện thoại không được để trống") : null
-                                                    }
-                                                })
-                                            } else {
-                                                delete errors.phoneNumber;
-                                                this.setState({  phoneNumber: e.target.value, errors: { ...errors, phoneNumber: "" } })
-                                            }
-                                        }} className="form-control mt-2" placeholder="Nhập số điện thoại..." type="number" value={this.state.phoneNumber}/>
-                                        {errors.phoneNumber ? (
-                                            <div
-                                                className="message-err-signup mt-1"
-                                            >
-                                                <b>{errors.phoneNumber}</b>
-                                            </div>
-                                        ) : null}
-                                    </div>
-                                    <div className="form-group mt-3">
-                                        <label>Giới Tính</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
-                                        <div className="d-flex mt-2">
-                                            <div className="form-check" onClick={() => { this.setState({  gender: true }) }}>
-                                                <input className="form-check-input" type="radio" name="gender" id="nam" defaultChecked/>
-                                                <label className="form-check-label" htmlFor="nam">Nam</label>
-                                            </div>
-                                            <div className="form-check" style={{ marginLeft: 100 }} onClick={() => { this.setState({  gender: false }) }}>
-                                                <input className="form-check-input" type="radio" name="gender" id="nu"/>
-                                                <label className="form-check-label" htmlFor="nu">Nữ</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="form-group mt-3">
-                                        <label>Ngày Sinh</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
-                                        <div className="mt-2"><DatePicker
-                                            className="date-picker"
-                                            selected={dateOfBirth}
-                                            onChange={(dateOfBirth) => {
-                                                if (!dateOfBirth) {
-                                                    console.log("Date", dateOfBirth)
-                                                    this.setState({
-                                                        dateOfBirth: dateOfBirth, errors: {
-                                                            ...errors, dateOfBirth: !dateOfBirth
-                                                                ? (this.validator.validate(this.state).dateOfBirth
-                                                                    ? this.validator.validate(this.state).dateOfBirth
-                                                                    : "Ngày sinh không hợp lệ") : null
-                                                        }
-                                                    })
-                                                } else {
-                                                    console.log("Date", dateOfBirth)
-                                                    delete errors.dateOfBirth;
-                                                    this.setState({ dateOfBirth: dateOfBirth, errors: { ...errors, dateOfBirth: "" } })
-                                                }
-                                            }}
-                                            dateFormat="dd/MM/yyyy"
-                                            locale="languageDate"
-                                        />
-                                            {errors.dateOfBirth ? (
-                                                <div
-                                                    className="message-err-signup mt-1"
-                                                >
-                                                    <b>{errors.dateOfBirth}</b>
-                                                </div>
-                                            ) : null}
-                                        </div>
-                                    </div>
-                                    <div className="form-group mt-3">
-                                        <label>Tài Khoản</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
-                                        <input onChange={(e) => {
-                                            if (e.target.value === "") {
-                                                this.setState({
-                                                     userName: e.target.value, errors: {
-                                                        ...errors, userName: e.target.value === ""
-                                                            ? (this.validator.validate(this.state).userName
-                                                                ? this.validator.validate(this.state).userName
-                                                                : "Tài khoản không được để trống") : null
-                                                    }
-                                                })
-                                            } else {
-                                                delete errors.userName;
-                                                this.setState({  userName: e.target.value, errors: { ...errors, userName: "" } })
-                                            }
-                                        }} className="form-control mt-2" placeholder="Nhập tài khoản..." type="text" value={this.state.userName}/>
-                                        {errors.userName ? (
-                                            <div
-                                                className="message-err-signup mt-1"
-                                            >
-                                                <b>{errors.userName}</b>
-                                            </div>
-                                        ) : null}
-                                    </div>
-                                    <div className="form-group mt-3" style={{ position: "relative" }}>
-                                        <label>Mật Khẩu</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
-                                        <input onChange={(e) => {
-                                            if (e.target.value === "") {
-                                                this.setState({
-                                                     password: e.target.value, errors: {
-                                                        ...errors, password: e.target.value === ""
-                                                            ? (this.validator.validate(this.state).password
-                                                                ? this.validator.validate(this.state).password
-                                                                : "Mật khẩu không được để trống") : null
-                                                    }
-                                                })
-                                            } else {
-                                                delete errors.password;
-                                                this.setState({  password: e.target.value, errors: { ...errors, password: "" } })
-                                            }
-                                        }} className="form-control mt-2" placeholder="Nhập mật khẩu..." type={hidePasswordSignUp ? "password" : "text"} value={this.state.password}/>
-                                        <span
-                                            className="icon-showpass-edit eyeAction"
-                                            onClick={this.setHidePasswordSignUp}
-                                        >
-                                            {hidePasswordSignUp ? iconEyeSlash : iconEye}
-                                        </span>
-                                        {errors.password ? (
-                                            <div
-                                                className="message-err-signup mt-1"
-                                            >
-                                                <b>{errors.password}</b>
-                                            </div>
-                                        ) : null}
-                                    </div>
-                                    <div className="form-group mt-3" style={{ position: "relative" }}>
-                                        <label>Nhập Lại Mật Khẩu</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
-                                        <input onChange={(e) => {
-                                            if (e.target.value === "") {
-                                                this.setState({
-                                                     newPassword: e.target.value, errors: {
-                                                        ...errors, newPassword: e.target.value === ""
-                                                            ? (this.validator.validate(this.state).newPassword
-                                                                ? this.validator.validate(this.state).newPassword
-                                                                : "Nhập lại mật khẩu không đúng") : null
-                                                    }
-                                                })
-                                            } else {
-                                                delete errors.newPassword;
-                                                this.setState({  newPassword: e.target.value, errors: { ...errors, newPassword: "" } })
-                                            }
-                                        }} className="form-control mt-2" placeholder="Nhập lại mật khẩu..." type={hidePasswordSignUpAgain ? "password" : "text"} value={this.state.newPassword}/>
-                                        <span
-                                            className="icon-showpass-edit eyeAction"
-                                            onClick={this.setHidePasswordSignUpAgain}
-                                        >
-                                            {hidePasswordSignUpAgain ? iconEyeSlash : iconEye}
-                                        </span>
-                                        {errors.newPassword ? (
-                                            <div
-                                                className="message-err-signup mt-1"
-                                            >
-                                                <b>{errors.newPassword}</b>
-                                            </div>
-                                        ) : null}
-                                    </div>
-                                </form>
-                                <div className="message-err mt-3">
-                                    {
-                                        messengerSignUp && messengerSignUp !== "" ? <><hr/><b>{messengerSignUp}</b></> : ""
-                                    }
-                                </div>
-                            </div> */}
                             <div className="modal-footer">
                                 <button id="closeModalUpdateInfoUser" type="button" className="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
                                 <div className="form-group">

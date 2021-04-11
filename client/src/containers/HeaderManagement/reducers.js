@@ -37,7 +37,8 @@ export default handleActions(
         [actions.getUserListFail]: (state, action) => {
             return freeze({
                 ...state,
-                isError: true
+                isError: true,
+                isLoading: false
             })
         },
         [actions.getUserById]: (state, action) => {
@@ -57,7 +58,8 @@ export default handleActions(
         [actions.getUserByIdFail]: (state, action) => {
             return freeze({
                 ...state,
-                isError: true
+                isError: true,
+                isLoading: false
             })
         },
         [actions.signIn]: (state, action) => {
@@ -105,6 +107,7 @@ export default handleActions(
             return freeze({
                 ...state,
                 errorMessageSignUp: action.payload,
+                isLoading: false
             })
         },
         [actions.updateInfoUser]: (state, action) => {

@@ -19,6 +19,7 @@ import CreateSignForFile from "./CreateSignForFile";
 import UpdateSignImage from "./UpdateSignImage";
 import { get, remove } from '../../../services/localStorage';
 import md5 from 'md5';
+import Loading from "../../../common/Loading";
 const iconEye = <FontAwesomeIcon icon={faEye} />;
 const iconEyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
 // import {
@@ -57,6 +58,7 @@ class Header extends Component {
             oldPassword: "",
             /* }, */
             errors: {},
+            isLoading: props.isLoading ? props.isLoading : true ,
         };
         const rules = [
             {
@@ -215,9 +217,13 @@ class Header extends Component {
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
-        if (nextProps.isLogin !== prevState.isLogin) {
+        if (JSON.stringify(nextProps.InfoAfterSignIn) !== JSON.stringify(prevState.InfoAfterSignIn) ||
+            nextProps.isLogin !== prevState.isLogin
+            || nextProps.isLoading !== prevState.isLoading) {
             return {
-                isLogin: nextProps.isLogin
+                InfoAfterSignIn: nextProps.InfoAfterSignIn,
+                isLogin: nextProps.isLogin,
+                isLoading: nextProps.isLoading
             };
         }
         return null;
@@ -318,16 +324,13 @@ class Header extends Component {
         }
     }
 
-    static getDerivedStateFromProps(nextProps, prevState) {
-        if (JSON.stringify(nextProps.InfoAfterSignIn) !== JSON.stringify(prevState.InfoAfterSignIn)) {
-            return {
-                InfoAfterSignIn: nextProps.InfoAfterSignIn
-            };
-        }
-        return null;
+    componentDidMount = () => {
+        setTimeout(() => {
+            this.setState({
+                isLoading: false
+            })
+        }, 2000)
     }
-
-
 
     render() {
         const { InfoAfterSignIn, hidePassword, hidePasswordSignUp, hidePasswordSignUpAgain, txtusername, txtpassword, errors /*, isLogin messenger */, dateOfBirth } = this.state;
@@ -343,6 +346,7 @@ class Header extends Component {
         console.log("md5", md5("abc123"))
         return (
             <header className="header">
+                <Loading show={this.state.isLoading} />
                 <div className="navbar-area">
                     <div className="container">
                         <div className="row align-items-center">
@@ -601,7 +605,7 @@ class Header extends Component {
                                         ) : null}
                                     </div>
                                     <div className="form-group mt-3">
-                                        <label>Giới Tính</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
+                                        <label>Giới Tính</label>{/* <span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span> */}
                                         <div className="d-flex mt-2">
                                             <div className="form-check" onClick={() => { this.setState({ gender: true }) }}>
                                                 <input className="form-check-input" type="radio" name="gender" id="nam" defaultChecked />
