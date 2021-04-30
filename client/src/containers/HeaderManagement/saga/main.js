@@ -49,7 +49,7 @@ function* handleSignIn(action) {
         yield action.payload.closeModal();
     } catch (error) {
         yield put(actions.signInFail(error?.data?.message || "Server not start"));
-      
+
         yield Swal.fire(
             'Thông báo',
             'Đăng nhập thất bại!',
@@ -77,7 +77,7 @@ function* handleSignUp(action) {
     } catch (error) {
 
         yield put(actions.signUpFail(error?.data?.message || ""));
-    
+
         yield Swal.fire(
             'Thông báo',
             'Đăng ký tài khoản thất bại!',
@@ -105,6 +105,7 @@ function* handleUpdateInfoUser(action) {
         const res = yield call(apiUser.updateInfoUser, action.payload);
         console.log("res saga by id update user", res.data)
         yield put(actions.updateInfoUserSuccess(res.data));
+        yield put(actions.getUserById({ id: res?.data?._id }));
         yield Swal.fire(
             'Thông báo',
             'Cập nhật thành công!',

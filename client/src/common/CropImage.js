@@ -19,7 +19,7 @@ export default class CropImage extends Component {
         image: '',
         show: false,
         loading: true,
-        fileName: ''
+        file: ''
     };
 
     toBase64 = file => new Promise((resolve, reject) => {
@@ -33,15 +33,14 @@ export default class CropImage extends Component {
      * Upload image after that return data image new
      */
     uploadImage = async () => {
-      const { blob, fileName } = this.state;
+      const { blob, file } = this.state;
       const { src } = this.props;
       var base64data = "";
 
     if (blob) {
         try {
                 base64data = await this.toBase64(blob);
-                return base64data;
-
+                return file;
         } catch (error) {
           return src
         }
@@ -73,8 +72,8 @@ export default class CropImage extends Component {
     saveCropImage = async (e) => {
         await this.saveBlob();
         const { save } = this.props;
-        const { image, blob, fileName } = this.state;
-        save({ image, blob, fileName });
+        const { image, blob, file } = this.state;
+        save({ image, blob, file });
         this.close();
     }
 
@@ -120,7 +119,7 @@ export default class CropImage extends Component {
                 this.setState({
                     source: event.target.result,
                     show: true,
-                    fileName: file.name,
+                    file: file,
                 });
             }
             reader.readAsDataURL(file);
@@ -205,6 +204,38 @@ export default class CropImage extends Component {
         this.input = null;
 
         return (
+        <form action="" method="" encType="multipart/form-data">
+                {/* <button
+                    className="btn btn-primary"
+                    onClick={(evt) => {
+                        evt.preventDefault()
+                        if (!this.state.file) {
+                            alert('Bạn chưa chọn file.')
+                            return;
+                        }
+                        const formData = new FormData();
+                        formData.append("avatar", this.state.file);
+                        const config = {
+                            headers: {
+                                'content-type': 'multipart/form-data'
+                            }
+                        }
+                        post('http://localhost:8082/api/upload/avatar', formData, config).then(res => {
+                            console.log('RES', res.data.fileNameInServer)
+                            let filePath = res.data.fileNameInServer
+                            if (filePath) {
+                                // NOTE: Vì tôi viết trên windows nên split theo dấu "\", nếu bạn chạy app trên Mac or linux mà gặp lỗi chỗ này thì xem xét đổi thành "/". nếu đổi sang "/" thì chỉ dùng 1 dấu "/" chứ ko phải hai dấu như "\\".
+                                filePath = filePath.split('\\')[1]
+                            }
+                            this.setState({
+                                imageUrl: 'http://localhost:8082/api/view-image/' + filePath
+                            })
+                        })
+                    }}
+                    type="button"
+                >
+                    UPLOAD
+    </button> */}
             <label
                 className={`emenu-crop-image ${showLoading ? 'loading' : ''} ${classBlob} ${innerClass || ''}`}
                 htmlFor={`crop-for-${name}`}
@@ -215,7 +246,8 @@ export default class CropImage extends Component {
                     hidden
                     onChange={this.onChange}
                     accept="image/x-png, image/gif, image/jpeg, image/png"
-                    name={name}
+                   /*  name={name} */
+                    name="image"
                     id={`crop-for-${name}`}
                 />
                 <RenderImage
@@ -281,6 +313,7 @@ export default class CropImage extends Component {
                     </div>
                 </Dialog>
             </label>
+        </form>
         );
     }
 }

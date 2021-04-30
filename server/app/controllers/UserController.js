@@ -1,6 +1,8 @@
 const User = require('../models/User');
 const { mongooseToObject } = require('../../utils/mongoose');
 const { generateRSAKey4096 } = require('../../utils/hybridcrypto');
+const fs = require('fs');
+const path = require('path');
 class UserController {
 
   async exists(req, res, next) {
@@ -109,9 +111,23 @@ class UserController {
     }
   }
 
+  //[GET] /user/:name
+async getImageSign(req, res)
+  {
+    const fileName = req.params.name;
+    console.log('fileName', fileName);
+    if (!fileName) {
+        return res.send({
+            status: false,
+            message: 'no filename specified',
+        })
+    }
+    res.sendFile(path.resolve(`./images/${fileName}`));
+  }
+
   //[PUT] /user/image-sign/:id
   async updateImageSign(req, res, next) {
-    const { id } = req.params;
+      const { id } = req.params;
       const { signImage,
           password,
           name,
@@ -124,14 +140,29 @@ class UserController {
           dateOfBirth,
           gender } = req.body;
 
-    console.log(signImage, req.body)
-
     let updatedPost = null;
 
+    const processedFile = req.file || {}; // MULTER xử lý và gắn đối tượng FILE vào req
     try {
-      if(signImage)
+      if(processedFile && JSON.stringify(processedFile) !== JSON.stringify({}))
       {
-          updatedPost = { signImage, _id: id };
+          let orgName = processedFile.originalname || ''; // Tên gốc trong máy tính của người upload
+          orgName = orgName.trim().replace(/ /g, "-")
+          const fullPathInServ = processedFile.path; // Đường dẫn đầy đủ của file vừa đc upload lên server
+          // Đổi tên của file vừa upload lên, vì multer đang đặt default ko có đuôi file
+          const newFullPath = `${fullPathInServ}-${orgName}`;
+          fs.renameSync(fullPathInServ, newFullPath);
+          res.send({
+              status: true,
+              message: 'file uploaded',
+              signImage: newFullPath
+          })
+
+          console.log(newFullPath)
+
+          console.log(signImage, req.body, newFullPath)
+          updatedPost = { signImage: newFullPath, _id: id };
+          await User.findByIdAndUpdate({ _id: id }, { $set: updatedPost }, { upsert: true, new: true });
       }else {
           updatedPost = {
               password,
@@ -144,12 +175,12 @@ class UserController {
               avatar,
               dateOfBirth,
               gender, _id: id };
+
+          await User.findByIdAndUpdate({ _id: id }, { $set: updatedPost }, { upsert: true, new: true });
+
+          res.json(updatedPost);
       }
 
-
-      await User.findByIdAndUpdate({ _id: id }, { $set: updatedPost }, { upsert: true, new: true });
-
-      res.json(updatedPost);
     } catch (error) {
       res.status(500).json({ message: "Something went wrong" });
       console.log(error);

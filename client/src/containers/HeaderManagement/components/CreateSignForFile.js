@@ -55,7 +55,7 @@ class CreateSignForFile extends Component {
     const accessToken = get("accessToken");
     const infoUser = await common.decodeToken(accessToken).data;
     const aesKeyPem = get("aesKeyPem");
-    var buffer = forge.util.createBuffer(JSON.parse(infoUser.privateKey), 'raw')
+    var buffer = forge.util.createBuffer(JSON.parse(infoUser?.privateKey), 'raw')
     privateKey = nodeForge.decryptAES(buffer, aesKeyPem);
     publicKey = infoUser.publicKey;
     console.log(publicKey, privateKey);
@@ -250,7 +250,7 @@ class CreateSignForFile extends Component {
       instance.annotationPopup.update(newArr);
       // instance.disableElements(['toolsHeader']);
       var input = document.getElementById("input-sign-file");
-      input.addEventListener('change', () => {
+      input?.addEventListener('change', () => {
 
         // Get the file from the input
         const file = input.files[0];

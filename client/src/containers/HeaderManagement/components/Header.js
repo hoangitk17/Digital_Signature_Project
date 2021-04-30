@@ -327,6 +327,7 @@ class Header extends Component {
 
     componentDidMount = () => {
         const infoUser = common.decodeToken(get("accessToken"));
+        console.log("infoUser, ", infoUser)
         setTimeout(() => {
             this.setState({
                 isLoading: false
@@ -334,6 +335,7 @@ class Header extends Component {
         }, 2000)
         if (infoUser?.data?._id)
         {
+            console.log("infoUser", infoUser?.data?._id)
             this.props.actions.getUserById({ id: infoUser?.data?._id });
         }
     }

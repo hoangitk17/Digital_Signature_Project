@@ -19,6 +19,7 @@ import "../styles.scss";
 import CropImage from "../../../common/CropImage";
 import common from "../../../utils/common";
 import { get } from "../../../services/localStorage";
+import axios from "axios";
 const iconEye = <FontAwesomeIcon icon={faEye} />;
 const iconEyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
 
@@ -26,7 +27,7 @@ class UpdateSignImage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            srcImageSign: this.props?.InfoAfterSignIn ? this.props?.InfoAfterSignIn.signImage : "",
+            srcImageSign: this.props?.InfoAfterSignIn ? 'http://localhost:5000/user/' + this.props?.InfoAfterSignIn.signImage : "",
             InfoAfterSignIn: this.props?.InfoAfterSignIn ? this.props?.InfoAfterSignIn : {}
         };
 
@@ -37,12 +38,7 @@ class UpdateSignImage extends Component {
         const { srcImageSign } = this.state;
         const avatar = await this.cropImage.uploadImage();
         console.log("avatar", avatar, avatar === srcImageSign, JSON.stringify(avatar) === JSON.stringify(srcImageSign))
-        console.log("123", infoUser.data._id, avatar);
-        await this.props.actions.updateInfoUser({ id: infoUser.data._id, data: {signImage: avatar},
-        closeModal: () => {
-            document.querySelector('#closeModalUpdateSignImage').click();
-        } });
-        /* if (avatar === srcImageSign)
+        if (avatar === srcImageSign)
         {
             Swal.fire(
                 'Thông báo',
@@ -50,16 +46,55 @@ class UpdateSignImage extends Component {
                 'error'
             )
         }else {
-            console.log("123", infoUser.data._id, avatar);
-            this.props.actions.updateInfoUser({ id: infoUser.data._id, signImage: avatar});
-        } */
+            const formData = new FormData();
+            formData.append("image", avatar);
+            const config = {
+                headers: {
+                    'content-type': 'multipart/form-data'
+                }
+            }
+            console.log("123", infoUser.data._id, avatar, formData);
+            /* await this.props.actions.updateInfoUser({ id: infoUser.data._id, data: {signImage: formData},
+            closeModal: () => {
+                document.querySelector('#closeModalUpdateSignImage').click();
+            } }); */
+            await axios.put(`http://localhost:5000/user/image-sign/${infoUser.data._id}`, formData, config).then(res => {
+                console.log('RES', res.data.signImage, res)
+                let filePath = res.data.signImage
+                if (filePath) {
+                    // NOTE: Vì tôi viết trên windows nên split theo dấu "\", nếu bạn chạy app trên Mac or linux mà gặp lỗi chỗ này thì xem xét đổi thành "/". nếu đổi sang "/" thì chỉ dùng 1 dấu "/" chứ ko phải hai dấu như "\\".
+                    filePath = filePath.split('\\')[1];
+                    Swal.fire(
+                        'Thông báo',
+                        'Cập nhật thành công!',
+                        'success'
+                    ).then(result => {
+                        if (result.isConfirmed) {
+                            document.querySelector('#closeModalUpdateSignImage').click();
+                        } else {
+                            document.querySelector('#closeModalUpdateSignImage').click();
+                        }
+                    })
+                }
+                console.log("file Path", filePath)
+                this.setState({
+                    srcImageSign: 'http://localhost:5000/user/' + filePath
+                })
+            }).catch(err => {
+                Swal.fire(
+                    'Thông báo',
+                    'Cập nhật thất bại!',
+                    'error'
+                )
+            })
+        }
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
         if (nextProps.InfoAfterSignIn?.signImage !== prevState.srcImageSign || nextProps.InfoAfterSignIn !== prevState.InfoAfterSignIn) {
             console.log("1")
             return {
-                srcImageSign: nextProps.InfoAfterSignIn?.signImage,
+                srcImageSign: 'http://localhost:5000/user/' + nextProps.InfoAfterSignIn?.signImage,
                 InfoAfterSignIn: nextProps.InfoAfterSignIn
             };
         }
@@ -76,6 +111,7 @@ class UpdateSignImage extends Component {
     render() {
         const { srcImageSign, InfoAfterSignIn } = this.state;
         const {  } = this.props;
+        console.log("srcImageSign", srcImageSign)
         return (
             <div className="popup-edit-info-user">
                 {/* Modal Update Image Sign */}

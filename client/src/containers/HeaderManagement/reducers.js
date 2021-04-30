@@ -13,7 +13,8 @@ const initialState = freeze({
     InfoAfterSignIn: {},
     InfoAfterSignUp: {},
     userInfoSigned: {},
-    isLogin: false
+    isLogin: false,
+    infoUserUpdate: {}
 })
 
 export default handleActions(
@@ -120,9 +121,14 @@ export default handleActions(
         },
         [actions.updateInfoUserSuccess]: (state, action) => {
             console.log("info update user", action.payload.result, action.payload)
+            if(action.payload && action.payload.name )
+            {
+                save("name-user", action.payload.name)
+            }
             return freeze({
                 ...state,
                 isLoading: false,
+                infoUserUpdate: action.payload
             })
         },
         [actions.updateInfoUserFail]: (state, action) => {
@@ -132,7 +138,7 @@ export default handleActions(
                 isLoading: false,
             })
         },
-            
+
         [actions.getUserInfoByPublicKey]: (state, action) => {
           return freeze({
               ...state,
@@ -148,7 +154,7 @@ export default handleActions(
           })
       },
       [actions.getUserInfoByPublicKeyFail]: (state, action) => {
-  
+
           return freeze({
               ...state,
               isLoading: false,
