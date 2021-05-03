@@ -20,6 +20,7 @@ import CropImage from "../../../common/CropImage";
 import common from "../../../utils/common";
 import { get } from "../../../services/localStorage";
 import axios from "axios";
+import { link_server } from "../constants";
 const iconEye = <FontAwesomeIcon icon={faEye} />;
 const iconEyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
 
@@ -27,7 +28,7 @@ class UpdateSignImage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            srcImageSign: this.props?.InfoAfterSignIn ? 'http://localhost:5000/user/' + this.props?.InfoAfterSignIn.signImage : "",
+            srcImageSign: this.props?.InfoAfterSignIn ? link_server + this.props?.InfoAfterSignIn.signImage : "",
             InfoAfterSignIn: this.props?.InfoAfterSignIn ? this.props?.InfoAfterSignIn : {}
         };
 
@@ -78,7 +79,7 @@ class UpdateSignImage extends Component {
                 }
                 console.log("file Path", filePath)
                 this.setState({
-                    srcImageSign: 'http://localhost:5000/user/' + filePath
+                    srcImageSign: link_server + filePath
                 })
             }).catch(err => {
                 Swal.fire(
@@ -94,7 +95,7 @@ class UpdateSignImage extends Component {
         if (nextProps.InfoAfterSignIn?.signImage !== prevState.srcImageSign || nextProps.InfoAfterSignIn !== prevState.InfoAfterSignIn) {
             console.log("1")
             return {
-                srcImageSign: 'http://localhost:5000/user/' + nextProps.InfoAfterSignIn?.signImage,
+                srcImageSign: link_server + nextProps.InfoAfterSignIn?.signImage,
                 InfoAfterSignIn: nextProps.InfoAfterSignIn
             };
         }
@@ -111,7 +112,7 @@ class UpdateSignImage extends Component {
     render() {
         const { srcImageSign, InfoAfterSignIn } = this.state;
         const {  } = this.props;
-        console.log("srcImageSign", srcImageSign)
+        console.log("srcImageSign", srcImageSign, link_server + 'undefined', srcImageSign === link_server + '/undefined')
         return (
             <div className="popup-edit-info-user">
                 {/* Modal Update Image Sign */}
@@ -130,7 +131,7 @@ class UpdateSignImage extends Component {
                                             /> */}
                                             <CropImage
                                                 ref={element => (this.cropImage = element)}
-                                                src={srcImageSign}
+                                                src={srcImageSign === link_server + 'undefined' ? "" : srcImageSign}
                                                 name="image-sign"
                                                 textAdd="THÊM ẢNH"
                                                 title="CHỈNH SỬA KÍCH THƯỚC ẢNH"
