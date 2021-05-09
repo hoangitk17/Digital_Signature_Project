@@ -38,7 +38,6 @@ class UpdateSignImage extends Component {
         const infoUser = common.decodeToken(get("accessToken"));
         const { srcImageSign } = this.state;
         const avatar = await this.cropImage.uploadImage();
-        console.log("avatar", avatar, avatar === srcImageSign, JSON.stringify(avatar) === JSON.stringify(srcImageSign))
         if (avatar === srcImageSign) {
             Swal.fire(
                 'Thông báo',
@@ -53,13 +52,11 @@ class UpdateSignImage extends Component {
                     'content-type': 'multipart/form-data'
                 }
             }
-            console.log("123", infoUser.data._id, avatar, formData);
             /* await this.props.actions.updateInfoUser({ id: infoUser.data._id, data: {signImage: formData},
             closeModal: () => {
                 document.querySelector('#closeModalUpdateSignImage').click();
             } }); */
             await axios.put(`http://localhost:5000/user/image-sign/${infoUser.data._id}`, formData, config).then(res => {
-                console.log('RES', res.data.signImage, res)
                 let filePath = res.data.signImage
                 if (filePath) {
                     this.props.actions.getUserById({ id: infoUser.data._id });
@@ -77,7 +74,6 @@ class UpdateSignImage extends Component {
                         }
                     })
                 }
-                console.log("file Path", filePath)
                 this.setState({
                     srcImageSign: link_server + filePath
                 })
@@ -104,7 +100,6 @@ class UpdateSignImage extends Component {
     render() {
         const { srcImageSign, InfoAfterSignIn } = this.state;
         const { show, isCheckClosePopup } = this.props;
-        console.log("srcImageSign", srcImageSign, link_server + 'undefined', srcImageSign === link_server + '/undefined')
         return (
             <div className="popup-edit-info-user">
                 {/* Modal Update Image Sign */}

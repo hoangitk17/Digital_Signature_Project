@@ -17,10 +17,8 @@ import * as actions from "../actions";
 function* handleGetUserList(action) {
     try {
         const res = yield call(apiUser.getUserList, action.payload);
-        console.log("res saga", res.data)
         yield put(actions.getUserListSuccess(res.data));
     } catch(error) {
-        console.log("err saga", error);
         yield put(actions.getUserListFail(error));
     }
 }

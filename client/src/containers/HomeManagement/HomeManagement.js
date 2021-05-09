@@ -9,7 +9,6 @@ import * as action from "./actions";
 class HomeManagement extends React.Component {
 
     componentDidMount = () => {
-        console.log("run")
         this.props.actions.getUserList();
     }
 

@@ -39,15 +39,12 @@ class UserController {
       if (oldUser) return res.status(400).json({ message: "Tài khoản này đã tồn tại" });
       let keyPair = null;
       let usableKey = false;
-      console.log("trước do")
       do {
         keyPair = await generateRSAKey4096();
-        console.log(keyPair)
         let userHasPublic = await User.findOne({ publicKey: keyPair.publicKey });
         let userHasPrivate = await User.findOne({ privateKey: keyPair.privateKey });
         usableKey = (userHasPublic || userHasPrivate);
       } while (usableKey)
-      console.log("create")
       const result = await User.create({
         name,
         email,
@@ -69,14 +66,12 @@ class UserController {
       res.status(201).json({ result });
     } catch (error) {
       res.status(500).json({ message: "Something went wrong" });
-      console.log(error);
     }
   }
 
   // [GET] /user/list-user
   async getListUser(req, res, next) {
     try {
-      //console.log("abc", req, res, next)
       /* await User.find({}, (err, users) => res.status(200).json({ users })); */
       User.find({}, function (err, users) {
         // var userMap = {};
@@ -89,14 +84,12 @@ class UserController {
       });
     } catch (error) {
       res.status(500).json({ message: "Something went wrong" });
-      console.log(error);
     }
   }
 
   // [GET] /user/:id
   async getListUserById(req, res, next) {
     const { id } = req.params;
-    console.log(id)
     try {
       const user = await User.findOne({ _id: id });
       const userObj = mongooseToObject(user);
@@ -107,7 +100,6 @@ class UserController {
       res.json(userObjTemp);
     } catch (error) {
       res.status(500).json({ message: "Something went wrong" });
-      console.log(error);
     }
   }
 
@@ -115,7 +107,6 @@ class UserController {
 async getImageSign(req, res)
   {
     const fileName = req.params.name;
-    console.log('fileName', fileName);
     if (!fileName) {
         return res.send({
             status: false,
@@ -158,9 +149,7 @@ async getImageSign(req, res)
               signImage: newFullPath
           })
 
-          console.log(newFullPath)
 
-          console.log(signImage, req.body, newFullPath)
           updatedPost = { signImage: newFullPath, _id: id };
           await User.findByIdAndUpdate({ _id: id }, { $set: updatedPost }, { upsert: true, new: true });
       }else {
@@ -183,7 +172,6 @@ async getImageSign(req, res)
 
     } catch (error) {
       res.status(500).json({ message: "Something went wrong" });
-      console.log(error);
     }
   }
 
@@ -201,7 +189,6 @@ async getImageSign(req, res)
       res.json(userObjTemp);
     } catch (error) {
       res.status(500).json({ message: "Something went wrong" });
-      console.log(error);
     }
   }
 }

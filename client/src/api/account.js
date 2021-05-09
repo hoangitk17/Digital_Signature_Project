@@ -83,7 +83,6 @@ export const updateAvatar = payload => {
 
 export const changeStatusUser = payload => {
     const { data } = payload;
-    console.log("user_id", data.user_id)
     return api.post(
         `${endPoint}/${data.user_id}/ChangeStatus?language=vi&status=${data.status}`
     );

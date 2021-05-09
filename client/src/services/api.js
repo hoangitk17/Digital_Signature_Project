@@ -40,7 +40,6 @@ const getNewTokenAndReattemptRequest = async (config, refToken) => {
     config.headers["Authorization"] = `Bearer ${token}`;
     return await axios(config);
   } catch (err) {
-    console.log(err);
     clearAll();
     history.push("/login");
     return Promise.reject(err);
@@ -57,7 +56,6 @@ instance.interceptors.response.use(
       response: { status },
       message,
     } = err;
-    console.log(error.response)
     if (validateStatus()) return Promise.reject(error.response);
     if ((status ? status : -1) === 401) {
       const refreshToken = get("refreshToken");

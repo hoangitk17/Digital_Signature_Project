@@ -183,7 +183,6 @@ export default class CropImage extends Component {
     setDataImage = () => {
         const { isCheckClosePopup } = this.props;
         const { image } = this.state;
-        console.log("RUN")
         if (isCheckClosePopup === true && image && image !== "")
         {
             this.setState({
@@ -219,8 +218,6 @@ export default class CropImage extends Component {
         if (isCheckClosePopup === true && image && image !== "") {
             this.setDataImage();
         }
-
-        console.log("imge", image, src)
 
         return (
         <form action="" method="" encType="multipart/form-data">

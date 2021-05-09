@@ -149,7 +149,6 @@ class Header extends Component {
                         if (m < 0 || (m === 0 && today.getDate() < dateOfBirth.getDate())) {
                             age--;
                         }
-                        console.log("age", age)
                         if (age < 18) {
                             return false;
                         }
@@ -187,12 +186,12 @@ class Header extends Component {
             txtusername: "",
             txtpassword: "",
         });
+        this.props.actions.updateMessageErrorInit();
         document.querySelector('#close-modal-signin').click();
     }
 
     onSubmit = () => {
         var { txtpassword, txtusername, savelogin } = this.state;
-        console.log("run login", txtpassword, txtusername, this.props)
         const data = { userName: txtusername, password: md5(txtpassword), savelogin };
         this.props.actions.signIn({
             data, closeModal: this.onCloseModalSignIn
@@ -248,6 +247,7 @@ class Header extends Component {
             avatar: "",
             gender: true, //true la nam, false la nu
             oldPassword: "",
+            errors: {}
         });
         document.querySelector('#modalSignUpTemp').click();
     }
@@ -287,7 +287,6 @@ class Header extends Component {
             status,
             gender
         }
-        console.log("Data sign Up", data, this.state.errors, this.validator.validate(this.state))
         if (
             Object.entries(this.validator.validate(this.state)).length === 0 &&
             this.validator.validate(this.state).constructor === Object &&
@@ -312,7 +311,6 @@ class Header extends Component {
             })
         } else {
             if (password !== oldPassword) {
-                console.log('old', password, oldPassword)
                 this.setState({
                     errors: {
                         ...this.validator.validate(this.state), oldPassword: "Nhập lại mật khẩu không đúng"
@@ -328,7 +326,6 @@ class Header extends Component {
 
     componentDidMount = () => {
         const infoUser = common.decodeToken(get("accessToken"));
-        console.log("infoUser, ", infoUser)
         setTimeout(() => {
             this.setState({
                 isLoading: false
@@ -336,7 +333,6 @@ class Header extends Component {
         }, 2000)
         if (infoUser?.data?._id)
         {
-            console.log("infoUser", infoUser?.data?._id)
             this.props.actions.getUserById({ id: infoUser?.data?._id });
         }
     }
@@ -347,9 +343,14 @@ class Header extends Component {
         })
     }
 
+    setDataInfoUser = () => {
+        this.setState({
+            InfoAfterSignIn: this.props.InfoAfterSignIn
+        })
+    }
+
     render() {
         const { InfoAfterSignIn, hidePassword, hidePasswordSignUp, hidePasswordSignUpAgain, txtusername, txtpassword, errors /*, isLogin messenger */, dateOfBirth } = this.state;
-        console.log("data", txtusername, txtpassword, this.state.InfoAfterSignIn)
         const { isError, errorMessage, errorMessageSignUp } = this.props;
         var messenger = !isError ? "" : errorMessage;
         var messengerSignUp = errorMessageSignUp ? errorMessageSignUp : null;
@@ -358,7 +359,6 @@ class Header extends Component {
                 messenger: errorMessage
             })
         } */
-        console.log("md5", md5("abc123"))
         return (
             <header className="header">
                 <Loading show={this.state.isLoading} />
@@ -410,7 +410,7 @@ class Header extends Component {
                                                         {InfoAfterSignIn?.name ? "Xin Chào " + InfoAfterSignIn?.name : "Xin Chào " + (get("name-user") ? get("name-user") : "")}
                                                     </a>
                                                     <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
-                                                        <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }} data-bs-toggle="modal" data-bs-target="#modalEditInfoUser">Thông tin tài khoản</a></li>
+                                                        <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }} data-bs-toggle="modal" data-bs-target="#modalEditInfoUser" onClick={this.setDataInfoUser}>Thông tin tài khoản</a></li>
                                                         <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }} data-bs-toggle="modal" data-bs-target="#modalCreateFileForFile">Ký văn bản</a></li>
                                                         <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }} data-bs-toggle="modal" data-bs-target="#modalUpdateSign" onClick={this.setDataImageWhenClosePopup}>Cập nhật hình ảnh chữ ký</a></li>
                                                         <li><hr className="dropdown-divider" /></li>
@@ -639,7 +639,6 @@ class Header extends Component {
                                             selected={dateOfBirth}
                                             onChange={(dateOfBirth) => {
                                                 if (!dateOfBirth) {
-                                                    console.log("Date", dateOfBirth)
                                                     this.setState({
                                                         dateOfBirth: dateOfBirth, errors: {
                                                             ...errors, dateOfBirth: !dateOfBirth
@@ -649,7 +648,6 @@ class Header extends Component {
                                                         }
                                                     })
                                                 } else {
-                                                    console.log("Date", dateOfBirth)
                                                     delete errors.dateOfBirth;
                                                     this.setState({ dateOfBirth: dateOfBirth, errors: { ...errors, dateOfBirth: "" } })
                                                 }
@@ -776,7 +774,7 @@ class Header extends Component {
                 <><UpdateSignImage
                 show={() => this.setState({ isCheckClosePopup: true })} isCheckClosePopup={this.state.isCheckClosePopup}/>
                 <CreateSignForFile {...this.props} />
-                <PopupEditInfoUser InfoAfterSignIn={InfoAfterSignIn} />
+                <PopupEditInfoUser InfoAfterSignIn={InfoAfterSignIn} setDataInfoUser={this.setDataInfoUser}/>
                 </> : null}
 
             </header>
