@@ -60,6 +60,7 @@ class Header extends Component {
             /* }, */
             errors: {},
             isLoading: props.isLoading ? props.isLoading : true ,
+            isCheckClosePopup: false
         };
         const rules = [
             {
@@ -340,6 +341,12 @@ class Header extends Component {
         }
     }
 
+    setDataImageWhenClosePopup = () => {
+        this.setState({
+            isCheckClosePopup: false // true cho image la ""
+        })
+    }
+
     render() {
         const { InfoAfterSignIn, hidePassword, hidePasswordSignUp, hidePasswordSignUpAgain, txtusername, txtpassword, errors /*, isLogin messenger */, dateOfBirth } = this.state;
         console.log("data", txtusername, txtpassword, this.state.InfoAfterSignIn)
@@ -400,12 +407,12 @@ class Header extends Component {
                                                 <li className="nav-item dropdown management-account">
                                                     <a className="dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                         {/* <img src="https://salt.tikicdn.com/ts/upload/67/de/1e/90e54b0a7a59948dd910ba50954c702e.png" class="img-fluid profile-icon" alt="error" style={{ transform: "translateY(-3px)"}}/> */}
-                                                        {InfoAfterSignIn?.name ? "Xin Chào " + InfoAfterSignIn?.name : "Xin Chào " + get("name-user")}
+                                                        {InfoAfterSignIn?.name ? "Xin Chào " + InfoAfterSignIn?.name : "Xin Chào " + (get("name-user") ? get("name-user") : "")}
                                                     </a>
                                                     <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
                                                         <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }} data-bs-toggle="modal" data-bs-target="#modalEditInfoUser">Thông tin tài khoản</a></li>
                                                         <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }} data-bs-toggle="modal" data-bs-target="#modalCreateFileForFile">Ký văn bản</a></li>
-                                                        <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }} data-bs-toggle="modal" data-bs-target="#modalUpdateSign">Cập nhật hình ảnh chữ ký</a></li>
+                                                        <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }} data-bs-toggle="modal" data-bs-target="#modalUpdateSign" onClick={this.setDataImageWhenClosePopup}>Cập nhật hình ảnh chữ ký</a></li>
                                                         <li><hr className="dropdown-divider" /></li>
                                                         <li><a className="dropdown-item" href="#" onClick={this.logOut} style={{ fontSize: 16 }}>Đăng xuất</a></li>
                                                     </ul>
@@ -765,7 +772,12 @@ class Header extends Component {
                     </div>
                 </div>
 
-                { get("isLogin") === true ? <><UpdateSignImage /><CreateSignForFile {...this.props} /><PopupEditInfoUser InfoAfterSignIn={InfoAfterSignIn} /></> : null}
+                { get("isLogin") === true ?
+                <><UpdateSignImage
+                show={() => this.setState({ isCheckClosePopup: true })} isCheckClosePopup={this.state.isCheckClosePopup}/>
+                <CreateSignForFile {...this.props} />
+                <PopupEditInfoUser InfoAfterSignIn={InfoAfterSignIn} />
+                </> : null}
 
             </header>
 

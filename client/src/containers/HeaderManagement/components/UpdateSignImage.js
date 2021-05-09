@@ -29,24 +29,23 @@ class UpdateSignImage extends Component {
         super(props);
         this.state = {
             srcImageSign: this.props?.InfoAfterSignIn ? link_server + this.props?.InfoAfterSignIn.signImage : "",
-            InfoAfterSignIn: this.props?.InfoAfterSignIn ? this.props?.InfoAfterSignIn : {}
+            InfoAfterSignIn: this.props?.InfoAfterSignIn ? this.props?.InfoAfterSignIn : {},
         };
 
     }
 
-  UpdateSignImage = async () => {
+    UpdateSignImage = async () => {
         const infoUser = common.decodeToken(get("accessToken"));
         const { srcImageSign } = this.state;
         const avatar = await this.cropImage.uploadImage();
         console.log("avatar", avatar, avatar === srcImageSign, JSON.stringify(avatar) === JSON.stringify(srcImageSign))
-        if (avatar === srcImageSign)
-        {
+        if (avatar === srcImageSign) {
             Swal.fire(
                 'Thông báo',
                 'Bạn chưa chọn hình ảnh chữ ký mới để cập nhật.',
                 'error'
             )
-        }else {
+        } else {
             const formData = new FormData();
             formData.append("image", avatar);
             const config = {
@@ -63,6 +62,7 @@ class UpdateSignImage extends Component {
                 console.log('RES', res.data.signImage, res)
                 let filePath = res.data.signImage
                 if (filePath) {
+                    this.props.actions.getUserById({ id: infoUser.data._id });
                     // NOTE: Vì tôi viết trên windows nên split theo dấu "\", nếu bạn chạy app trên Mac or linux mà gặp lỗi chỗ này thì xem xét đổi thành "/". nếu đổi sang "/" thì chỉ dùng 1 dấu "/" chứ ko phải hai dấu như "\\".
                     filePath = filePath.split('\\')[1];
                     Swal.fire(
@@ -93,7 +93,6 @@ class UpdateSignImage extends Component {
 
     static getDerivedStateFromProps(nextProps, prevState) {
         if (nextProps.InfoAfterSignIn?.signImage !== prevState.srcImageSign || nextProps.InfoAfterSignIn !== prevState.InfoAfterSignIn) {
-            console.log("1")
             return {
                 srcImageSign: link_server + nextProps.InfoAfterSignIn?.signImage,
                 InfoAfterSignIn: nextProps.InfoAfterSignIn
@@ -102,16 +101,9 @@ class UpdateSignImage extends Component {
         return null;
     }
 
-  /* componentDidMount() {
-      if(infoUser?.data?._id)
-        this.props.actions.getUserById({ id: infoUser?.data?._id});
-    } */
-
-
-
     render() {
         const { srcImageSign, InfoAfterSignIn } = this.state;
-        const {  } = this.props;
+        const { show, isCheckClosePopup } = this.props;
         console.log("srcImageSign", srcImageSign, link_server + 'undefined', srcImageSign === link_server + '/undefined')
         return (
             <div className="popup-edit-info-user">
@@ -121,30 +113,33 @@ class UpdateSignImage extends Component {
                         <div className="modal-content">
                             <div className="modal-header">
                                 <h5 className="modal-title" id="modalUpdateSign">Cập nhật hình ảnh chữ ký</h5>
-                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
+                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                    onClick={show} />
                             </div>
                             <div className="modal-body">
-                                    <div className="row">
-                                    <div className="col-md-12" style={{ padding: "50px", display: "flex", justifyContent: "center"}}>
-                                            {/* <InputFile
+                                <div className="row">
+                                    <div className="col-md-12" style={{ padding: "50px", display: "flex", justifyContent: "center" }}>
+                                        {/* <InputFile
                                                 onChange={event => this.setState({ event })}
                                             /> */}
-                                            <CropImage
-                                                ref={element => (this.cropImage = element)}
-                                                src={srcImageSign === link_server + 'undefined' ? "" : srcImageSign}
-                                                name="image-sign"
-                                                textAdd="THÊM ẢNH"
-                                                title="CHỈNH SỬA KÍCH THƯỚC ẢNH"
-                                                btnChoseFile="Chọn Ảnh"
-                                                btnDone="Đồng Ý"
-                                            />
-                                        </div>
+                                        {<CropImage
+                                            ref={element => (this.cropImage = element)}
+                                            src={srcImageSign === link_server + 'undefined' ? "" : srcImageSign}
+                                            name="image-sign"
+                                            textAdd="THÊM ẢNH"
+                                            title="CHỈNH SỬA KÍCH THƯỚC ẢNH"
+                                            btnChoseFile="Chọn Ảnh"
+                                            btnDone="Đồng Ý"
+                                            isCheckClosePopup={isCheckClosePopup}
+                                        />}
                                     </div>
+                                </div>
                             </div>
                             <div className="modal-footer">
-                                <button id="closeModalUpdateSignImage" type="button" className="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                <button id="closeModalUpdateSignImage" type="button" className="btn btn-secondary" data-bs-dismiss="modal"
+                                    onClick={show}>Hủy</button>
                                 <div className="form-group">
-                                    <button onClick={() => {this.UpdateSignImage()}}
+                                    <button onClick={() => { this.UpdateSignImage() }}
                                         type="submit" className="btn btn-primary btn-block float-right">Cập Nhật</button>
                                 </div>
                             </div>

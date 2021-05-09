@@ -180,6 +180,18 @@ export default class CropImage extends Component {
         this.crop.cropper.zoom(value)
     }
 
+    setDataImage = () => {
+        const { isCheckClosePopup } = this.props;
+        const { image } = this.state;
+        console.log("RUN")
+        if (isCheckClosePopup === true && image && image !== "")
+        {
+            this.setState({
+                image: ''
+            })
+        }
+    }
+
     /**
      * Render component
      */
@@ -192,7 +204,8 @@ export default class CropImage extends Component {
             textAdd,
             innerClass,
             btnChoseFile,
-            name
+            name,
+            isCheckClosePopup
         } = this.props;
 
         const { source, image, show, loading } = this.state;
@@ -203,39 +216,14 @@ export default class CropImage extends Component {
 
         this.input = null;
 
+        if (isCheckClosePopup === true && image && image !== "") {
+            this.setDataImage();
+        }
+
+        console.log("imge", image, src)
+
         return (
         <form action="" method="" encType="multipart/form-data">
-                {/* <button
-                    className="btn btn-primary"
-                    onClick={(evt) => {
-                        evt.preventDefault()
-                        if (!this.state.file) {
-                            alert('Bạn chưa chọn file.')
-                            return;
-                        }
-                        const formData = new FormData();
-                        formData.append("avatar", this.state.file);
-                        const config = {
-                            headers: {
-                                'content-type': 'multipart/form-data'
-                            }
-                        }
-                        post('http://localhost:8082/api/upload/avatar', formData, config).then(res => {
-                            console.log('RES', res.data.fileNameInServer)
-                            let filePath = res.data.fileNameInServer
-                            if (filePath) {
-                                // NOTE: Vì tôi viết trên windows nên split theo dấu "\", nếu bạn chạy app trên Mac or linux mà gặp lỗi chỗ này thì xem xét đổi thành "/". nếu đổi sang "/" thì chỉ dùng 1 dấu "/" chứ ko phải hai dấu như "\\".
-                                filePath = filePath.split('\\')[1]
-                            }
-                            this.setState({
-                                imageUrl: 'http://localhost:8082/api/view-image/' + filePath
-                            })
-                        })
-                    }}
-                    type="button"
-                >
-                    UPLOAD
-    </button> */}
             <label
                 className={`emenu-crop-image ${showLoading ? 'loading' : ''} ${classBlob} ${innerClass || ''}`}
                 htmlFor={`crop-for-${name}`}
