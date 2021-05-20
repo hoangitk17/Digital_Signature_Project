@@ -34,7 +34,7 @@ export default class CropImage extends Component {
      */
     uploadImage = async () => {
       const { blob, file } = this.state;
-      const { src } = this.props;
+      const { src, isCheckClosePopup } = this.props;
       var base64data = "";
 
     if (blob) {
@@ -186,7 +186,8 @@ export default class CropImage extends Component {
         if (isCheckClosePopup === true && image && image !== "")
         {
             this.setState({
-                image: ''
+                image: '',
+                file: ''
             })
         }
     }
@@ -218,6 +219,8 @@ export default class CropImage extends Component {
         if (isCheckClosePopup === true && image && image !== "") {
             this.setDataImage();
         }
+
+        console.log("isCheckClosePopup", isCheckClosePopup)
 
         return (
         <form action="" method="" encType="multipart/form-data">

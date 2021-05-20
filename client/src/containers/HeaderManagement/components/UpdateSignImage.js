@@ -124,7 +124,7 @@ class UpdateSignImage extends Component {
                                             textAdd="THÊM ẢNH"
                                             title="CHỈNH SỬA KÍCH THƯỚC ẢNH"
                                             btnChoseFile="Chọn Ảnh"
-                                            btnDone="Đồng Ý"
+                                            btnDone="Đồng ý"
                                             isCheckClosePopup={isCheckClosePopup}
                                         />}
                                     </div>

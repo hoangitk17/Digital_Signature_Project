@@ -239,7 +239,7 @@ class PopupEditInfoUser extends Component {
     }
 
     updateInfoUser = async() => {
-        const avatar = await this.cropImage.uploadImage();
+        const avatar = await this.cropImage3.uploadImage();
         const {
             password,
             newPassword,
@@ -429,13 +429,13 @@ class PopupEditInfoUser extends Component {
                                                 onChange={event => this.setState({ event })}
                                             /> */}
                                             <CropImage
-                                                ref={element => (this.cropImage = element)}
+                                                ref={element => (this.cropImage3 = element)}
                                                 src={this.state.avatar}
                                                 name="image-avatar"
                                                 textAdd="THÊM ẢNH"
                                                 title="CHỈNH SỬA KÍCH THƯỚC ẢNH"
                                                 btnChoseFile="Chọn Ảnh"
-                                                btnDone="Đồng Ý"
+                                                btnDone="Đồng ý"
                                             />
                                         </div>
                                         <div className="col-md-9">
