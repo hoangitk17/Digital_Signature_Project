@@ -31,7 +31,9 @@ class UserController {
       avatar,
       dateOfBirth,
       status,
-      gender
+      gender,
+      imageIdCardFront,
+      imageIdCardBack
     } = req.body;
     try {
       const oldUser = await User.findOne({ userName });
@@ -59,7 +61,9 @@ class UserController {
         avatar,
         dateOfBirth,
         status,
-        gender
+        gender,
+        imageIdCardFront,
+        imageIdCardBack
       });
       //const token = jwt.sign({ email: result.email, id: result._id }, secret, { expiresIn: "1h" });
       //res.status(201).json({ result, token });

@@ -14,7 +14,10 @@ const userSchema = mongoose.Schema({
   status: { type: Number},
   signImage: { type: String/* , required:  true */ },
   avatar: { type: String/* , required:  true */ },
-  gender: { type: Boolean }
+  gender: { type: Boolean },
+  imageIdCardFront: { type: String },
+  imageIdCardBack: { type: String },
+
 }, {
     timestamps: true
 })
