@@ -119,7 +119,7 @@ class UpdateSignImage extends Component {
                                             /> */}
                                         {<CropImage
                                             ref={element => (this.cropImage = element)}
-                                            src={srcImageSign === link_server + 'undefined' ? "" : srcImageSign}
+                                            src={srcImageSign === link_server + 'undefined' || srcImageSign === link_server ? "" : srcImageSign}
                                             name="image-sign"
                                             textAdd="THÊM ẢNH"
                                             title="CHỈNH SỬA KÍCH THƯỚC ẢNH"

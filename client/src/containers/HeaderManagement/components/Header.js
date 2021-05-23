@@ -22,6 +22,8 @@ import md5 from 'md5';
 import Loading from "../../../common/Loading";
 import common from "../../../utils/common";
 import CropImage from "../../../common/CropImage";
+import axios from "axios";
+import { link_server } from "../constants";
 const iconEye = <FontAwesomeIcon icon={faEye} />;
 const iconEyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
 // import {
@@ -256,6 +258,31 @@ class Header extends Component {
         await document.querySelector('#modalSignUpTemp').click();
     }
 
+    uploadImageCardId = async(avatar) => {
+        let avatarTemp = "";
+        const formData = new FormData();
+        formData.append("image", avatar);
+        const config = {
+            headers: {
+                'content-type': 'multipart/form-data'
+            }
+        }
+        await axios.put(`http://localhost:5000/user/get-link-image-from-file`, formData, config).then(res => {
+            let filePath = res.data.signImage;
+            if (filePath) {
+                avatarTemp = link_server + filePath;
+            }
+            console.log("avatar", avatar, avatarTemp)
+        }).catch(err => {
+            Swal.fire(
+                'Thông báo',
+                'Cập nhật thất bại!',
+                'error'
+            )
+        })
+        return avatarTemp;
+    }
+
     signUp = async() => {
         const {
             password,
@@ -275,22 +302,6 @@ class Header extends Component {
             gender,
             errors
         } = this.state;
-        const data = {
-            password: md5(password),
-            name,
-            email,
-            phoneNumber,
-            userName,
-            cardId,
-            address,
-            privateKey,
-            publicKey,
-            signImage,
-            avatar,
-            dateOfBirth,
-            status,
-            gender
-        }
         const avatar1 = await this.cropImage1.uploadImage();
         const avatar2 = await this.cropImage2.uploadImage();
         if (
@@ -301,6 +312,27 @@ class Header extends Component {
             this.setState({
                 errors: {}
             });
+            let cardIdFront = await this.uploadImageCardId(avatar1);
+            let cardIdBack = await this.uploadImageCardId(avatar2);
+            const data = {
+                password: md5(password),
+                name,
+                email,
+                phoneNumber,
+                userName,
+                cardId,
+                address,
+                privateKey,
+                publicKey,
+                signImage,
+                avatar,
+                dateOfBirth,
+                status,
+                gender,
+                imageIdCardFront: cardIdFront,
+                imageIdCardBack: cardIdBack
+            }
+            console.log("data sign up cmnd", data)
             Swal.fire({
                 title: "Thông báo",
                 text: "Bạn có muốn đăng ký tài khoản không?",
@@ -592,7 +624,7 @@ class Header extends Component {
                                         ) : null}
                                     </div>
                                     <div className="form-group mt-3">
-                                        <label>Địa chỉ</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
+                                        <label>Địa chỉ thường trú</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
                                         <input onChange={(e) => {
                                             if (e.target.value === "") {
                                                 this.setState({

@@ -31,7 +31,9 @@ class UserController {
       avatar,
       dateOfBirth,
       status,
-      gender
+      gender,
+      imageIdCardFront,
+      imageIdCardBack
     } = req.body;
     try {
       const oldUser = await User.findOne({ userName });
@@ -59,7 +61,9 @@ class UserController {
         avatar,
         dateOfBirth,
         status,
-        gender
+        gender,
+        imageIdCardFront,
+        imageIdCardBack
       });
       //const token = jwt.sign({ email: result.email, id: result._id }, secret, { expiresIn: "1h" });
       //res.status(201).json({ result, token });
@@ -226,6 +230,26 @@ async getImageSign(req, res)
     } catch (error) {
       res.status(500).json({ message: "Something went wrong" });
     }
+  }
+
+  // [GET] /user/get-link-image-from-file
+  async getLinkImageSign(req, res, next) {
+      const processedFile = req.file || {}; // MULTER xử lý và gắn đối tượng FILE vào req
+      try {
+            let orgName = processedFile.originalname || ''; // Tên gốc trong máy tính của người upload
+            orgName = orgName.trim().replace(/ /g, "-")
+            const fullPathInServ = processedFile.path; // Đường dẫn đầy đủ của file vừa đc upload lên server
+            // Đổi tên của file vừa upload lên, vì multer đang đặt default ko có đuôi file
+            const newFullPath = `${fullPathInServ}-${orgName}`;
+            fs.renameSync(fullPathInServ, newFullPath);
+            res.send({
+                status: true,
+                message: 'file uploaded',
+                signImage: newFullPath
+            })
+      } catch (error) {
+          res.status(500).json({ message: "Something went wrong" });
+      }
   }
 }
 

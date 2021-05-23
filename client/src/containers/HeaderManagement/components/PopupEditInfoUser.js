@@ -20,6 +20,8 @@ import "../styles.scss";
 import md5 from "md5";
 import common from "../../../utils/common";
 import { get } from "../../../services/localStorage";
+import axios from "axios";
+import { link_server } from "../constants";
 const infoUser = common.decodeToken(get("accessToken"));
 const iconEye = <FontAwesomeIcon icon={faEye} />;
 const iconEyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
@@ -240,6 +242,30 @@ class PopupEditInfoUser extends Component {
 
     updateInfoUser = async() => {
         const avatar = await this.cropImage3.uploadImage();
+        let avatarTemp = "";
+        if(avatar !== this.state.avatar)
+        {
+            const formData = new FormData();
+            formData.append("image", avatar);
+            const config = {
+                headers: {
+                    'content-type': 'multipart/form-data'
+                }
+            }
+            await axios.put(`http://localhost:5000/user/get-link-image-from-file`, formData, config).then(res => {
+                let filePath = res.data.signImage;
+                if (filePath) {
+                    avatarTemp = link_server + filePath;
+                }
+                console.log("avatarTemp", avatarTemp)
+            }).catch(err => {
+                Swal.fire(
+                    'Thông báo',
+                    'Cập nhật thất bại!',
+                    'error'
+                )
+            })
+        }
         const {
             password,
             newPassword,
@@ -277,7 +303,7 @@ class PopupEditInfoUser extends Component {
                             userName,
                             cardId,
                             address,
-                            avatar,
+                            avatar: avatarTemp !== "" ? avatarTemp : avatar,
                             dateOfBirth,
                             gender
                         }
@@ -297,19 +323,6 @@ class PopupEditInfoUser extends Component {
                                     id: infoUser?.data?._id,
                                     data, closeModal: () => {
                                         this.setState({
-                                            // name: "",
-                                            // email: "",
-                                            // phoneNumber: "",
-                                            // userName: "",
-                                            // cardId: "",
-                                            // dateOfBirth: new Date(4500),
-                                            // address: "",
-                                            // privateKey: "",
-                                            // publicKey: "",
-                                            // status: 1, //0 la khoa tai khoan, 1 la tai khoan dang hoat dong
-                                            // signImage: "",
-                                            // avatar: "",
-                                            // gender: true, //true la nam, false la nu
                                             password: "",
                                             newPassword: "",
                                             oldNewPassword: ""
@@ -357,7 +370,7 @@ class PopupEditInfoUser extends Component {
                     userName,
                     cardId,
                     address,
-                    avatar,
+                    avatar: avatarTemp !== "" ? avatarTemp : avatar,
                     dateOfBirth,
                     gender
                 }
