@@ -55,10 +55,9 @@ class CreateSignForFile extends Component {
     const accessToken = get("accessToken");
     const infoUser = await common.decodeToken(accessToken).data;
     const aesKeyPem = get("aesKeyPem");
-    var buffer = forge.util.createBuffer(JSON.parse(infoUser.privateKey), 'raw')
+    var buffer = forge.util.createBuffer(JSON.parse(infoUser?.privateKey), 'raw')
     privateKey = nodeForge.decryptAES(buffer, aesKeyPem);
     publicKey = infoUser.publicKey;
-    console.log(publicKey, privateKey);
 
     // var rsa = new RSA();
     // rsa.generateKeyPairAsync().then(keyPair => {
@@ -101,7 +100,6 @@ class CreateSignForFile extends Component {
 
       var reader = this;              // Was invoked by the reader object
       var plaintext = reader.result;
-      console.log(plaintext)
       //    Original plaintext
       // Create a signature with ISSUER's private RSA key
       var signature = crypt.signature(privateKey, ab2str(plaintext));
@@ -120,7 +118,6 @@ class CreateSignForFile extends Component {
         ],
         { type: "application/pdf" }
       );
-      console.log(blob);
       const saveData = (function () {
         var a = document.createElement("a");
         document.body.appendChild(a);
@@ -170,22 +167,17 @@ class CreateSignForFile extends Component {
       var successful = false;
       let newPublicKey = null;
       try {
-        console.log(data);
         let isByteOdd = data.byteLength % 2 !== 0;
         if (isByteOdd) {
           data = _this.concatTypedArrays(new Uint8Array(1), new Uint8Array(data)).buffer
         }
         let dataLength = data.byteLength;
-        console.log(dataLength)
-        console.log(data);
-        console.log(new Uint8Array(data, 1, 1))
         // First, separate out the relevant pieces from the file.
         var signatureLength = new Uint16Array(data, dataLength - 2)[0];   // First 16 bit integer
         var signatureArrBuffer = new Uint8Array(data, dataLength - 2 - signatureLength, signatureLength);
         var publicKeyLength = new Uint16Array(data, dataLength - 2 - signatureLength - 2, 2)[0];   // First 16 bit integer
         var publicKeyArrBuffer = new Uint8Array(data, dataLength - 2 - signatureLength - 2 - publicKeyLength, publicKeyLength);
         var plaintext = new Uint8Array(data, isByteOdd ? 1 : 0, isByteOdd ? dataLength - 2 - signatureLength - 2 - publicKeyLength - 1 : dataLength - 2 - signatureLength - 2 - publicKeyLength);
-        console.log(plaintext)
         var signature = JSON.parse(ab2str(signatureArrBuffer));
         var message = ab2str(plaintext);
         newPublicKey = ab2str(publicKeyArrBuffer);
@@ -195,7 +187,6 @@ class CreateSignForFile extends Component {
           message,
         );
       } catch (e) {
-        console.log(e)
         await Swal.fire(
           'Thông báo',
           'Tệp văn bản chưa được kí!',
@@ -250,7 +241,7 @@ class CreateSignForFile extends Component {
       instance.annotationPopup.update(newArr);
       // instance.disableElements(['toolsHeader']);
       var input = document.getElementById("input-sign-file");
-      input.addEventListener('change', () => {
+      input?.addEventListener('change', () => {
 
         // Get the file from the input
         const file = input.files[0];
@@ -303,7 +294,6 @@ class CreateSignForFile extends Component {
   render() {
     const { } = this.state;
     const { userInfoSigned } = this.props;
-    console.log("data", this.state.documentFile)
     return (
       <div className="create-sign-for-file">
         {/* Modal Create Sign For File */}
@@ -325,7 +315,6 @@ class CreateSignForFile extends Component {
                       <div className="form-group files">
                         <input
                           onChange={(e) => {
-                            console.log("e", e.target.value);
                             if (e?.target?.value !== "")
                             {
                               this.setState({

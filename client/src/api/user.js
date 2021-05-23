@@ -11,7 +11,6 @@ export const getUserById = payload => {
 
 export const signIn = payload => {
     const { data } = payload;
-    console.log("data login api", data)
     return api.post(`/auth/signin`, data);
 };
 
@@ -26,7 +25,6 @@ export const getPublicKeyServer = payload => {
 
 export const updateInfoUser = payload => {
     const { id, data } = payload;
-    console.log("data api", id, data, payload)
     return api.put(`/user/image-sign/${id}`, data);
 };
 

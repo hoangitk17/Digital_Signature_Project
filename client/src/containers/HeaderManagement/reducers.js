@@ -13,7 +13,8 @@ const initialState = freeze({
     InfoAfterSignIn: {},
     InfoAfterSignUp: {},
     userInfoSigned: {},
-    isLogin: false
+    isLogin: false,
+    infoUserUpdate: {}
 })
 
 export default handleActions(
@@ -28,7 +29,6 @@ export default handleActions(
             })
         },
         [actions.getUserListSuccess]: (state, action) => {
-            console.log("users reducer", action.payload.data, action.payload)
             return freeze({
                 ...state,
                 userList: action.payload,
@@ -49,7 +49,6 @@ export default handleActions(
             })
         },
         [actions.getUserByIdSuccess]: (state, action) => {
-            console.log("user by id reducer", action.payload.data, action.payload)
             return freeze({
                 ...state,
                 InfoAfterSignIn: action.payload,
@@ -70,7 +69,6 @@ export default handleActions(
             })
         },
         [actions.signInSuccess]: (state, action) => {
-            console.log("info", action.payload.result, action.payload)
             save("name-user", action?.payload?.result?.name)
             return freeze({
                 ...state,
@@ -80,7 +78,6 @@ export default handleActions(
             })
         },
         [actions.signInFail]: (state, action) => {
-            console.log("Fail")
             save("isLogin", false);
             return freeze({
                 ...state,
@@ -97,7 +94,6 @@ export default handleActions(
             })
         },
         [actions.signUpSuccess]: (state, action) => {
-            console.log("info", action.payload.result, action.payload)
             return freeze({
                 ...state,
                 infoAfterSignUp: action.payload.result,
@@ -105,7 +101,6 @@ export default handleActions(
             })
         },
         [actions.signUpFail]: (state, action) => {
-            console.log("reducer", action.payload)
             return freeze({
                 ...state,
                 errorMessageSignUp: action.payload,
@@ -119,20 +114,23 @@ export default handleActions(
             })
         },
         [actions.updateInfoUserSuccess]: (state, action) => {
-            console.log("info update user", action.payload.result, action.payload)
+            if(action.payload && action.payload.name )
+            {
+                save("name-user", action.payload.name)
+            }
             return freeze({
                 ...state,
                 isLoading: false,
+                infoUserUpdate: action.payload
             })
         },
         [actions.updateInfoUserFail]: (state, action) => {
-            console.log("info update user err", action.payload)
             return freeze({
                 ...state,
                 isLoading: false,
             })
         },
-            
+
         [actions.getUserInfoByPublicKey]: (state, action) => {
           return freeze({
               ...state,
@@ -140,7 +138,6 @@ export default handleActions(
           })
       },
       [actions.getUserInfoByPublicKeySuccess]: (state, action) => {
-        console.log("info by public key", action.payload.result, action.payload)
           return freeze({
               ...state,
               isLoading: false,
@@ -148,12 +145,19 @@ export default handleActions(
           })
       },
       [actions.getUserInfoByPublicKeyFail]: (state, action) => {
-  
+
           return freeze({
               ...state,
               isLoading: false,
           })
       },
+      [actions.updateMessageErrorInit]: (state, action) => {
+          return freeze({
+              ...state,
+              isLoading: false,
+              errorMessage: ""
+          })
+      }
 
     },
     initialState

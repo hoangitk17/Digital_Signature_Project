@@ -19,7 +19,7 @@ const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || "refresh-token-fo
 const keyPair = generateRSAKey();
 
 class AuthController {
-  
+
   async getPublicKeyRSA(req, res, next) {
     try {
       return res.status(200).json({ publicKey: keyPair.publicKeyPem});
@@ -47,7 +47,6 @@ class AuthController {
         let encryptedPrivateKey = await encrytAES(privateKey, forge.util.decode64(aesKey));
         sentUser = { _id, privateKey: JSON.stringify(encryptedPrivateKey), publicKey}
       } else {
-        console.log("400")
         res.status(400).json({ message: "Not found key in data" })
       }
       const accessToken = await jwtHelper.generateToken(sentUser, accessTokenSecret, accessTokenLife);
@@ -71,7 +70,7 @@ class AuthController {
     // Nếu như tồn tại refreshToken truyền lên và nó cũng nằm trong tokenList của chúng ta
     if (refreshTokenFromClient && (tokenList[refreshTokenFromClient])) {
       try {
-        // Verify kiểm tra tính hợp lệ của cái refreshToken và lấy dữ liệu giải mã decoded 
+        // Verify kiểm tra tính hợp lệ của cái refreshToken và lấy dữ liệu giải mã decoded
         const decoded = await jwtHelper.verifyToken(refreshTokenFromClient, refreshTokenSecret);
 
         // Thông tin user lúc này các bạn có thể lấy thông qua biến decoded.data

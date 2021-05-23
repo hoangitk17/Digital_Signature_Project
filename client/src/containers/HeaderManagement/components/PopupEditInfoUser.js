@@ -210,14 +210,36 @@ class PopupEditInfoUser extends Component {
                 avatar: nextProps.InfoAfterSignIn?.avatar,
                 gender: nextProps.InfoAfterSignIn?.gender, //true la nam, false la nu
                 newPassword: "",
-                oldPassword: nextProps.InfoAfterSignIn?.password
+                oldPassword: nextProps.InfoAfterSignIn?.password,
             };
         }
         return null;
     }
 
+    setDataWhenClosePopup = () => {
+        this.setState({
+            name: this.props.InfoAfterSignIn.InfoAfterSignIn?.name,
+            email: this.props.InfoAfterSignIn.InfoAfterSignIn?.email,
+            phoneNumber: this.props.InfoAfterSignIn.InfoAfterSignIn?.phoneNumber,
+            userName: this.props.InfoAfterSignIn.InfoAfterSignIn?.userName,
+            password: /* this.props.InfoAfterSignIn.InfoAfterSignIn?.password */"",
+            cardId: this.props.InfoAfterSignIn.InfoAfterSignIn?.cardId,
+            dateOfBirth: this.props.InfoAfterSignIn.InfoAfterSignIn?.dateOfBirth ? new Date(this.props.InfoAfterSignIn.InfoAfterSignIn?.dateOfBirth) : new Date(4500),
+            address: this.props.InfoAfterSignIn.InfoAfterSignIn?.address,
+            privateKey: this.props.InfoAfterSignIn.InfoAfterSignIn?.privateKey,
+            publicKey: this.props.InfoAfterSignIn.InfoAfterSignIn?.publicKey,
+            status: 1, //0 la khoa tai khoan, 1 la tai khoan dang hoat dong
+            signImage: this.props.InfoAfterSignIn.InfoAfterSignIn?.signImage,
+            avatar: this.props.InfoAfterSignIn.InfoAfterSignIn?.avatar,
+            gender: this.props.InfoAfterSignIn.InfoAfterSignIn?.gender, //true la nam, false la nu
+            newPassword: "",
+            oldPassword: this.props.InfoAfterSignIn.InfoAfterSignIn?.password,
+            errors: {}
+        })
+    }
+
     updateInfoUser = async() => {
-        const avatar = await this.cropImage.uploadImage();
+        const avatar = await this.cropImage3.uploadImage();
         const {
             password,
             newPassword,
@@ -233,7 +255,6 @@ class PopupEditInfoUser extends Component {
             oldPassword,
             errors
         } = this.state;
-        console.log("so sanh password cu", password, oldPassword)
         if (
             Object.entries(this.validator.validate(this.state)).length === 0 &&
             this.validator.validate(this.state).constructor === Object
@@ -260,7 +281,6 @@ class PopupEditInfoUser extends Component {
                             dateOfBirth,
                             gender
                         }
-                        console.log("Data Update User 1", data)
                         this.setState({
                             errors: {}
                         });
@@ -315,7 +335,6 @@ class PopupEditInfoUser extends Component {
                             } */
                         } else {
                             if (oldNewPassword !== newPassword) {
-                                console.log('old', password, newPassword)
                                 this.setState({
                                     errors: {
                                         ...this.validator.validate(this.state), oldNewPassword: "Nhập lại mật khẩu mới không đúng"
@@ -342,7 +361,6 @@ class PopupEditInfoUser extends Component {
                     dateOfBirth,
                     gender
                 }
-                console.log("Data Update User 2", data)
                 //TH: Không cập nhật mật khẩu
                 this.setState({
                     errors: {}
@@ -393,8 +411,6 @@ class PopupEditInfoUser extends Component {
         const { infoSignUp, hidePassword, hidePasswordNew, hidePasswordSignUp, hidePasswordSignUpAgain, txtusername, txtpassword, errors, isLogin/* messenger */, dateOfBirth } = this.state;
         const { isError, errorMessage, InfoAfterSignIn, errorMessageSignUp } = this.props;
         var messengerSignUp = errorMessageSignUp ? errorMessageSignUp : null;
-        console.log("event", this.state.event, InfoAfterSignIn, this.state.userName, this.state.dateOfBirth)
-        console.log("Password", this.state.password)
         return (
             <div className="popup-edit-info-user">
                 {/* Modal Edit Info User */}
@@ -403,7 +419,7 @@ class PopupEditInfoUser extends Component {
                         <div className="modal-content">
                             <div className="modal-header">
                                 <h5 className="modal-title" id="modalEditInfoUser">Thông tin tài khoản</h5>
-                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
+                                <button onClick={this.setDataWhenClosePopup} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
                             </div>
                             <div className="modal-body">
                                 <form>
@@ -413,13 +429,13 @@ class PopupEditInfoUser extends Component {
                                                 onChange={event => this.setState({ event })}
                                             /> */}
                                             <CropImage
-                                                ref={element => (this.cropImage = element)}
+                                                ref={element => (this.cropImage3 = element)}
                                                 src={this.state.avatar}
                                                 name="image-avatar"
                                                 textAdd="THÊM ẢNH"
                                                 title="CHỈNH SỬA KÍCH THƯỚC ẢNH"
                                                 btnChoseFile="Chọn Ảnh"
-                                                btnDone="Đồng Ý"
+                                                btnDone="Đồng ý"
                                             />
                                         </div>
                                         <div className="col-md-9">
@@ -565,7 +581,6 @@ class PopupEditInfoUser extends Component {
                                                                 selected={dateOfBirth}
                                                                 onChange={(dateOfBirth) => {
                                                                     if (!dateOfBirth) {
-                                                                        console.log("Date", dateOfBirth)
                                                                         this.setState({
                                                                             dateOfBirth: dateOfBirth, errors: {
                                                                                 ...errors, dateOfBirth: !dateOfBirth
@@ -575,7 +590,6 @@ class PopupEditInfoUser extends Component {
                                                                             }
                                                                         })
                                                                     } else {
-                                                                        console.log("Date", dateOfBirth)
                                                                         delete errors.dateOfBirth;
                                                                         this.setState({ dateOfBirth: dateOfBirth, errors: { ...errors, dateOfBirth: "" } })
                                                                     }
@@ -697,7 +711,7 @@ class PopupEditInfoUser extends Component {
                                                                     delete errors.oldNewPassword;
                                                                     this.setState({ oldNewPassword: e.target.value, errors: { ...errors, oldNewPassword: "" } })
                                                                 }
-                                                            }} className="form-control mt-2" placeholder="Nhập lại mật khẩu mới..." type={hidePasswordSignUpAgain ? "password" : "text"} value={this.state.oldNewPassword} />
+                                                            }} className="form-control mt-2" placeholder="Nhập lại mật khẩu mới..." type={hidePasswordNew ? "password" : "text"} value={this.state.oldNewPassword} />
                                                             <span
                                                                 className="icon-showpass-edit eyeAction"
                                                                 onClick={this.setHidePasswordNew}
@@ -751,7 +765,7 @@ class PopupEditInfoUser extends Component {
                                 </form>
                             </div>
                             <div className="modal-footer">
-                                <button id="closeModalUpdateInfoUser" type="button" className="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                <button onClick={this.setDataWhenClosePopup} id="closeModalUpdateInfoUser" type="button" className="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
                                 <div className="form-group">
                                     <button onClick={this.updateInfoUser}
                                         type="submit" className="btn btn-primary btn-block float-right"> Chỉnh Sửa</button>

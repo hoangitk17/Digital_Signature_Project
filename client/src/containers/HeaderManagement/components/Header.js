@@ -21,6 +21,7 @@ import { get, remove } from '../../../services/localStorage';
 import md5 from 'md5';
 import Loading from "../../../common/Loading";
 import common from "../../../utils/common";
+import CropImage from "../../../common/CropImage";
 const iconEye = <FontAwesomeIcon icon={faEye} />;
 const iconEyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
 // import {
@@ -59,7 +60,9 @@ class Header extends Component {
             oldPassword: "",
             /* }, */
             errors: {},
+            errorImageCardId: "",
             isLoading: props.isLoading ? props.isLoading : true ,
+            isCheckClosePopup: false
         };
         const rules = [
             {
@@ -148,7 +151,6 @@ class Header extends Component {
                         if (m < 0 || (m === 0 && today.getDate() < dateOfBirth.getDate())) {
                             age--;
                         }
-                        console.log("age", age)
                         if (age < 18) {
                             return false;
                         }
@@ -158,7 +160,7 @@ class Header extends Component {
                 },
                 validWhen: true,
                 message: "Tuổi phải từ 18 trở lên"
-            }
+            },
         ];
         this.validator = new Validator(rules);
     }
@@ -186,12 +188,12 @@ class Header extends Component {
             txtusername: "",
             txtpassword: "",
         });
+        this.props.actions.updateMessageErrorInit();
         document.querySelector('#close-modal-signin').click();
     }
 
     onSubmit = () => {
         var { txtpassword, txtusername, savelogin } = this.state;
-        console.log("run login", txtpassword, txtusername, this.props)
         const data = { userName: txtusername, password: md5(txtpassword), savelogin };
         this.props.actions.signIn({
             data, closeModal: this.onCloseModalSignIn
@@ -230,8 +232,8 @@ class Header extends Component {
         return null;
     }
 
-    onCloseModalSignUp = () => {
-        this.setState({
+    onCloseModalSignUp = async() => {
+        await this.setState({
             name: "",
             email: "",
             phoneNumber: "",
@@ -242,16 +244,19 @@ class Header extends Component {
             address: "",
             privateKey: "",
             publicKey: "",
-            status: 1, //0 la khoa tai khoan, 1 la tai khoan dang hoat dong
+            status: 1, //1 la dang cho xet duyet tai khoan, 2 la tai khoan dang hoat dong, 3 la khoa tai khoan
             signImage: "",
             avatar: "",
             gender: true, //true la nam, false la nu
             oldPassword: "",
+            errors: {},
+            isCheckClosePopup: true,
+            errorImageCardId: ""
         });
-        document.querySelector('#modalSignUpTemp').click();
+        await document.querySelector('#modalSignUpTemp').click();
     }
 
-    signUp = () => {
+    signUp = async() => {
         const {
             password,
             oldPassword,
@@ -286,11 +291,12 @@ class Header extends Component {
             status,
             gender
         }
-        console.log("Data sign Up", data, this.state.errors, this.validator.validate(this.state))
+        const avatar1 = await this.cropImage1.uploadImage();
+        const avatar2 = await this.cropImage2.uploadImage();
         if (
             Object.entries(this.validator.validate(this.state)).length === 0 &&
             this.validator.validate(this.state).constructor === Object &&
-            password === oldPassword
+            password === oldPassword && avatar1 && avatar2 && avatar1 !== '' && avatar2 !== ''
         ) {
             this.setState({
                 errors: {}
@@ -310,8 +316,17 @@ class Header extends Component {
                 }
             })
         } else {
+            console.log("avatar", avatar1, avatar2);
+            if(avatar1 === '' || avatar2 === '')
+            {
+                this.setState({
+                    errorImageCardId: "Hình ảnh căn cước công dân không được để trống"
+                });
+            } else {
+                console.log("RUN")
+                this.setState({ errorImageCardId: "" });
+            }
             if (password !== oldPassword) {
-                console.log('old', password, oldPassword)
                 this.setState({
                     errors: {
                         ...this.validator.validate(this.state), oldPassword: "Nhập lại mật khẩu không đúng"
@@ -338,9 +353,25 @@ class Header extends Component {
         }
     }
 
+    setDataImageWhenClosePopup = () => {
+        this.setState({
+            isCheckClosePopup: false // true cho image la ""
+        })
+    }
+
+    setDataInfoUser = () => {
+        this.setState({
+            InfoAfterSignIn: this.props.InfoAfterSignIn
+        })
+    }
+
     render() {
-        const { InfoAfterSignIn, hidePassword, hidePasswordSignUp, hidePasswordSignUpAgain, txtusername, txtpassword, errors /*, isLogin messenger */, dateOfBirth } = this.state;
-        console.log("data", txtusername, txtpassword, this.state.InfoAfterSignIn)
+        const { InfoAfterSignIn,
+            hidePassword,
+            hidePasswordSignUp,
+            hidePasswordSignUpAgain, txtusername, txtpassword, errors /*, isLogin messenger */, dateOfBirth,
+            isCheckClosePopup,
+            errorImageCardId } = this.state;
         const { isError, errorMessage, errorMessageSignUp } = this.props;
         var messenger = !isError ? "" : errorMessage;
         var messengerSignUp = errorMessageSignUp ? errorMessageSignUp : null;
@@ -349,7 +380,7 @@ class Header extends Component {
                 messenger: errorMessage
             })
         } */
-        console.log("md5", md5("abc123"))
+        console.log("err", errors, errorImageCardId)
         return (
             <header className="header">
                 <Loading show={this.state.isLoading} />
@@ -387,7 +418,7 @@ class Header extends Component {
                                                         Đăng ký / Đăng nhập
                                                     </a>
                                                     <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
-                                                        <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }} data-bs-toggle="modal" data-bs-target="#modalSignUp" id="modalSignUpTemp">Đăng ký tài khoản</a></li>
+                                                        <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }} data-bs-toggle="modal" data-bs-target="#modalSignUp" id="modalSignUpTemp" onClick={this.setDataImageWhenClosePopup}>Đăng ký tài khoản</a></li>
                                                         <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }} data-bs-toggle="modal" data-bs-target="#modalLogin">Đăng nhập</a></li>
                                                         <li><hr className="dropdown-divider" /></li>
                                                         <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }}>Đăng nhập bằng GOOGLE</a></li>
@@ -398,12 +429,12 @@ class Header extends Component {
                                                 <li className="nav-item dropdown management-account">
                                                     <a className="dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                         {/* <img src="https://salt.tikicdn.com/ts/upload/67/de/1e/90e54b0a7a59948dd910ba50954c702e.png" class="img-fluid profile-icon" alt="error" style={{ transform: "translateY(-3px)"}}/> */}
-                                                        {InfoAfterSignIn?.name ? "Xin Chào " + InfoAfterSignIn?.name : "Xin Chào " + get("name-user")}
+                                                        {InfoAfterSignIn?.name ? "Xin Chào " + InfoAfterSignIn?.name : "Xin Chào " + (get("name-user") ? get("name-user") : "")}
                                                     </a>
                                                     <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
-                                                        <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }} data-bs-toggle="modal" data-bs-target="#modalEditInfoUser">Thông tin tài khoản</a></li>
+                                                        <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }} data-bs-toggle="modal" data-bs-target="#modalEditInfoUser" onClick={this.setDataInfoUser}>Thông tin tài khoản</a></li>
                                                         <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }} data-bs-toggle="modal" data-bs-target="#modalCreateFileForFile">Ký văn bản</a></li>
-                                                        <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }} data-bs-toggle="modal" data-bs-target="#modalUpdateSign">Cập nhật hình ảnh chữ ký</a></li>
+                                                        <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }} data-bs-toggle="modal" data-bs-target="#modalUpdateSign" onClick={this.setDataImageWhenClosePopup}>Cập nhật hình ảnh chữ ký</a></li>
                                                         <li><hr className="dropdown-divider" /></li>
                                                         <li><a className="dropdown-item" href="#" onClick={this.logOut} style={{ fontSize: 16 }}>Đăng xuất</a></li>
                                                     </ul>
@@ -481,7 +512,7 @@ class Header extends Component {
                                 {/* <a href className="float-right btn btn-outline-primary" style={{ marginLeft: 260 }}>Đăng Nhập</a> */}
                                 <button onClick={this.onCloseModalSignUp} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
                             </div>
-                            <div className="modal-body">
+                            <div className="modal-body" style={{ paddingBottom: 0 }}>
                                 <form>
                                     <div className="form-group">
                                         <label>Họ Và Tên</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
@@ -536,7 +567,7 @@ class Header extends Component {
                                         ) : null}
                                     </div>
                                     <div className="form-group mt-3">
-                                        <label>Số Căn Cước Công Dân</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
+                                        <label>Số Căn Cước Công Dân/Chứng Minh Nhân Dân</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
                                         <input onChange={(e) => {
                                             if (e.target.value === "") {
                                                 this.setState({
@@ -630,7 +661,6 @@ class Header extends Component {
                                             selected={dateOfBirth}
                                             onChange={(dateOfBirth) => {
                                                 if (!dateOfBirth) {
-                                                    console.log("Date", dateOfBirth)
                                                     this.setState({
                                                         dateOfBirth: dateOfBirth, errors: {
                                                             ...errors, dateOfBirth: !dateOfBirth
@@ -640,7 +670,6 @@ class Header extends Component {
                                                         }
                                                     })
                                                 } else {
-                                                    console.log("Date", dateOfBirth)
                                                     delete errors.dateOfBirth;
                                                     this.setState({ dateOfBirth: dateOfBirth, errors: { ...errors, dateOfBirth: "" } })
                                                 }
@@ -744,6 +773,42 @@ class Header extends Component {
                                             </div>
                                         ) : null}
                                     </div>
+                                    <div className="form-group mt-3" style={{ position: "relative" }}>
+                                        <label>Hình ảnh Căn Cước Công Dân/Chứng Minh Nhân Dân</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
+                                        <div className="row">
+                                            <div className="col-md-6" style={{ marginTop: "10px", display: "flex", justifyContent: "center" }}>
+                                                <CropImage
+                                                    ref={element => (this.cropImage1 = element)}
+                                                    src={""}
+                                                    name="image-card-id-front"
+                                                    textAdd="MẶT TRƯỚC"
+                                                    title="CHỈNH SỬA KÍCH THƯỚC ẢNH"
+                                                    btnChoseFile="Chọn Ảnh"
+                                                    btnDone="Đồng ý"
+                                                    isCheckClosePopup={isCheckClosePopup}
+                                                />
+                                            </div>
+                                            <div className="col-md-6" style={{ marginTop: "10px", display: "flex", justifyContent: "center" }}>
+                                                <CropImage
+                                                    ref={element => (this.cropImage2 = element)}
+                                                    src={""}
+                                                    name="image-card-id-back"
+                                                    textAdd="MẶT SAU"
+                                                    title="CHỈNH SỬA KÍCH THƯỚC ẢNH"
+                                                    btnChoseFile="Chọn Ảnh"
+                                                    btnDone="Đồng ý"
+                                                    isCheckClosePopup={isCheckClosePopup}
+                                                />
+                                            </div>
+                                        </div>
+                                        {errorImageCardId ? (
+                                            <div
+                                                className="message-err-signup mt-1"
+                                            >
+                                                <b>{errorImageCardId}</b>
+                                            </div>
+                                        ) : null}
+                                    </div>
                                 </form>
                                 <div className="message-err mt-3">
                                     {
@@ -763,7 +828,12 @@ class Header extends Component {
                     </div>
                 </div>
 
-                { get("isLogin") === true ? <><UpdateSignImage /><CreateSignForFile {...this.props} /><PopupEditInfoUser InfoAfterSignIn={InfoAfterSignIn} /></> : null}
+                { get("isLogin") === true ?
+                <><UpdateSignImage
+                show={() => this.setState({ isCheckClosePopup: true })} isCheckClosePopup={this.state.isCheckClosePopup}/>
+                <CreateSignForFile {...this.props} />
+                <PopupEditInfoUser InfoAfterSignIn={InfoAfterSignIn} setDataInfoUser={this.setDataInfoUser}/>
+                </> : null}
 
             </header>
 

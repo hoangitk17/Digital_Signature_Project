@@ -29,4 +29,6 @@ export const getUserInfoByPublicKey = createAction(CONST.GETUSERINFOBYPUBLICKEY)
 export const getUserInfoByPublicKeySuccess = createAction(CONST.GETUSERINFOBYPUBLICKEY_SUCCESS);
 export const getUserInfoByPublicKeyFail = createAction(CONST.GETUSERINFOBYPUBLICKEY_FAIL);
 
+export const updateMessageErrorInit = createAction(CONST.UPDATEMESSAGEERRORINIT);
+
 
