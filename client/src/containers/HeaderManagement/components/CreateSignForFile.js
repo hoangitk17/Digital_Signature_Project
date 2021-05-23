@@ -75,46 +75,44 @@ class CreateSignForFile extends Component {
 
 
 
-  signTheFile2 = async (file) => {
-    // Click handler. Reads the selected file, then signs it to
-    // the random key pair's private key. Creates a Blob with the result,
-    // and places a link to that Blob in the download-results section.
-    var result = null;
+  signTheFile = async (file) => {
     var sourceFile = file;
     var reader = new FileReader();
     reader.onload = await processTheFile;
     await reader.readAsArrayBuffer(sourceFile);
     // Asynchronous handler:
     async function processTheFile() {
-      // Load handler for file reader. Needs to reference keyPair from
-      // enclosing scope.
+      // Hàm chuyển từ mảng array buffer sang chuỗi
       function str2ab(str) {
         var encoder = new TextEncoder('utf-8');
         return encoder.encode(str);
       }
-
+      // Hàm chuyển từ chuỗi sang array buffer
       function ab2str(buf) {
         var decoder = new TextDecoder('utf-8');
         return decoder.decode(buf);
       }
 
-      var reader = this;              // Was invoked by the reader object
+      var reader = this;
       var plaintext = reader.result;
-      //    Original plaintext
-      // Create a signature with ISSUER's private RSA key
+      // Tạo chữ kí với public key
       var signature = crypt.signature(privateKey, ab2str(plaintext));
+      // Chuyển chữ kí từ chuỗi về mảng array buffer(byte)
       var arrayBufferSign = str2ab(JSON.stringify(signature));
+       // Tính ra số byte của mảng chữ ký này
       var length = new Uint16Array([arrayBufferSign.byteLength]);
+      // Chuyển public key từ dạng chuỗi về mảng array buffer(byte)
       var arrayBufferPub = str2ab(publicKey);
+      // Tính ra số byte của public key
       var lengthPublicKey = new Uint16Array([arrayBufferPub.byteLength]);
+      // Gắn chữ kí vào file plaintext
       var blob = new Blob(
         [
-          plaintext,   // Remainder is the original plaintext
-          // Always a 2 byte unsigned integer
-          arrayBufferPub,  // "length" bytes long
+          plaintext,   // The original plaintext
+          arrayBufferPub,
           lengthPublicKey, // Always a 2 byte unsigned integer
-          arrayBufferSign,  // "length" bytes long
-          length,
+          arrayBufferSign,
+          length, // Always a 2 byte unsigned integer
         ],
         { type: "application/pdf" }
       );
@@ -131,19 +129,11 @@ class CreateSignForFile extends Component {
         };
       }());
       saveData(blob, "signed_file");
-
-
     } // end of processTheFile
   }
 
   verifyTheFile = () => {
     var _this = this;
-    // Click handler. Reads the selected file, then verify the digital
-    // signature using the random key pair's public key. Shows an alert
-    // saying whether the signature is valid or not. If the signature is
-    // valid, it also creates a Blob with the original file
-    // and places a link to that Blob in the download-results section.
-
     var sourceFile = document.getElementById("input-sign-file").files[0];
     if (!sourceFile) {
       return;
@@ -151,19 +141,13 @@ class CreateSignForFile extends Component {
     var reader = new FileReader();
     reader.onload = processTheFile;
     reader.readAsArrayBuffer(sourceFile);
-
-
     async function processTheFile() {
-      // Load handler for file reader. Needs to reference keyPair from
-      // enclosing scope.
       var reader = this;              // Invoked by the reader object
       var data = reader.result;
-
       function ab2str(buf) {
         var decoder = new TextDecoder('utf-8');
         return decoder.decode(buf);
       }
-
       var successful = false;
       let newPublicKey = null;
       try {
@@ -172,15 +156,25 @@ class CreateSignForFile extends Component {
           data = _this.concatTypedArrays(new Uint8Array(1), new Uint8Array(data)).buffer
         }
         let dataLength = data.byteLength;
-        // First, separate out the relevant pieces from the file.
+        console.log(dataLength)
+        console.log(data);
+        console.log(new Uint8Array(data, 1, 1))
+        // Đọc số byte của chữ kí
         var signatureLength = new Uint16Array(data, dataLength - 2)[0];   // First 16 bit integer
+        // Lấy ra mảng byte của chữ kí
         var signatureArrBuffer = new Uint8Array(data, dataLength - 2 - signatureLength, signatureLength);
+        // Đọc số byte của public key
         var publicKeyLength = new Uint16Array(data, dataLength - 2 - signatureLength - 2, 2)[0];   // First 16 bit integer
+        // Lấy ra mảng byte public key
         var publicKeyArrBuffer = new Uint8Array(data, dataLength - 2 - signatureLength - 2 - publicKeyLength, publicKeyLength);
+        // Lấy ra mảng byte plaintext
         var plaintext = new Uint8Array(data, isByteOdd ? 1 : 0, isByteOdd ? dataLength - 2 - signatureLength - 2 - publicKeyLength - 1 : dataLength - 2 - signatureLength - 2 - publicKeyLength);
+        console.log(plaintext)
+        // chuyển chữ kí, dữ liệu ban đầu và public key về dạng chuỗi
         var signature = JSON.parse(ab2str(signatureArrBuffer));
         var message = ab2str(plaintext);
         newPublicKey = ab2str(publicKeyArrBuffer);
+        // Kiểm tra chữ kí dựa vào public key và plaintext
         successful = crypt.verify(
           newPublicKey,
           signature,
@@ -282,7 +276,7 @@ class CreateSignForFile extends Component {
             const data = await doc.getFileData(options);
             const arr = new Uint8Array(data);
             const file = new Blob([arr], { type: 'application/pdf' });
-            this.signTheFile2(file)
+            this.signTheFile(file)
           }
         });
       });
