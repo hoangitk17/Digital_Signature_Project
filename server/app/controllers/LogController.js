@@ -28,6 +28,30 @@ class LogController {
       res.status(500).json({ message: "Something went wrong" });
     }
   };
+
+   // [GET] /log/list
+   async getLogs(req, res, next) {
+    try {
+      var logs = [
+        {
+         userName: "Nguyễn Văn A",
+         action: "Nguyễn văn A tạo tài khoản trên hệ thống",
+         create_at: "20-05-2021"
+       },
+       {
+         userName: "Nguyễn Văn B",
+         action: "Nguyễn Văn B kí văn bản trên hệ thống",
+         create_at: "20-05-2021"
+       }
+     ]
+
+     res.json(logs);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Something went wrong" });
+    }
+  }
+
 }
 
 module.exports = new LogController();

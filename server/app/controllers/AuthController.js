@@ -62,6 +62,41 @@ class AuthController {
     }
   };
 
+  async signInAdmin(req, res, next) {
+    const { username, password } = req.body;
+    console.log(username, password);
+    try {
+      const user = await User.findOne({ userName: username });
+
+      if (!user) return res.status(400).json({ message: "Tài khoản này không tồn tại!" });
+
+      const isPasswordCorrect = password === user.password;
+
+      if (!isPasswordCorrect) return res.status(400).json({ message: "Mật khẩu không chính xác!" });
+
+      const userObj = user ? await mongooseToObject(user) : {};
+      let sentUser = null;
+      let { _id, name, email, phoneNumber} = userObj;
+      console.log(avatar);
+      sentUser = {
+        _id,
+        name,
+        email,
+        phoneNumber,
+      }
+      const accessToken = await jwtHelper.generateToken(sentUser, accessTokenSecret, accessTokenLife);
+      const refreshToken = await jwtHelper.generateToken(sentUser, refreshTokenSecret, refreshTokenLife);
+
+      // Lưu lại 2 mã access & Refresh token, với key chính là cái refreshToken để đảm bảo unique và không sợ hacker sửa đổi dữ liệu truyền lên
+      // lưu ý trong dự án thực tế, nên lưu chỗ khác, có thể lưu vào DB
+      tokenList[refreshToken] = { accessToken, refreshToken };
+
+      return res.status(200).json({ accessToken, refreshToken });
+    } catch (err) {
+      res.status(500).json({ message: "Something went wrong" });
+    }
+  };
+
   refreshToken = async (req, res) => {
     // User gửi mã refresh token kèm theo trong body
     const refreshTokenFromClient = req.body.refreshToken;

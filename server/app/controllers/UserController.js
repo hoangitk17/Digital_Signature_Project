@@ -74,15 +74,51 @@ class UserController {
     try {
       /* await User.find({}, (err, users) => res.status(200).json({ users })); */
       User.find({}, function (err, users) {
-        // var userMap = {};
-
-        // users.forEach(function (user) {
-        //     userMap[user._id] = user;
+        // var newUsers = users.map(function (user) {
+        //   return {
+        //     name: user.name,
+        //     email: user.email,
+        //     phoneNumber: user.phoneNumber,
+        //     userName: user.userName,
+        //     password: user.password,
+        //     cardId: user.cardId,
+        //     dateOfBirth: user.dateOfBirth,
+        //     address: user.address,
+        //     status: user.statusId,
+        //     gender: user.gender,
+        //   }
         // });
+        var newUsers = [
+           {
+            name: "Nguyễn Văn A",
+            email: "nguyenvana@gmail.com",
+            phoneNumber: "0328427348",
+            userName: "nguyenvana1928",
+            password: "ddjfkfdjkaldfafadffsfsd",
+            cardId: "182472432",
+            dateOfBirth: "1999-10-09T01:00:04.000Z",
+            address: "Hóc Môn, TP Hồ Chí Minh",
+            status: 1,
+            gender: true,
+          },
+          {
+            name: "Nguyễn Văn B",
+            email: "nguyenvanb@gmail.com",
+            phoneNumber: "014324348",
+            userName: "nguyenvanb1928",
+            password: "ddjfkfdjkaldfafadffsfsd",
+            cardId: "1343242432",
+            dateOfBirth: "1999-10-09T01:00:04.000Z",
+            address: "Hóc Môn, TP Hồ Chí Minh",
+            status: 2,
+            gender: false,
+          }
+        ]
 
-        res.json(users);
+        res.json(newUsers);
       });
     } catch (error) {
+      console.log(error);
       res.status(500).json({ message: "Something went wrong" });
     }
   }
