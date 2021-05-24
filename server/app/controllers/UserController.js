@@ -80,46 +80,55 @@ class UserController {
     try {
       /* await User.find({}, (err, users) => res.status(200).json({ users })); */
       User.find({}, function (err, users) {
-        // var newUsers = users.map(function (user) {
-        //   return {
-        //     name: user.name,
-        //     email: user.email,
-        //     phoneNumber: user.phoneNumber,
-        //     userName: user.userName,
-        //     password: user.password,
-        //     cardId: user.cardId,
-        //     dateOfBirth: user.dateOfBirth,
-        //     address: user.address,
-        //     status: user.statusId,
-        //     gender: user.gender,
-        //   }
-        // });
-        var newUsers = [
-           {
-            name: "Nguyễn Văn A",
-            email: "nguyenvana@gmail.com",
-            phoneNumber: "0328427348",
-            userName: "nguyenvana1928",
-            password: "ddjfkfdjkaldfafadffsfsd",
-            cardId: "182472432",
-            dateOfBirth: "1999-10-09T01:00:04.000Z",
-            address: "Hóc Môn, TP Hồ Chí Minh",
-            status: 1,
-            gender: true,
-          },
-          {
-            name: "Nguyễn Văn B",
-            email: "nguyenvanb@gmail.com",
-            phoneNumber: "014324348",
-            userName: "nguyenvanb1928",
-            password: "ddjfkfdjkaldfafadffsfsd",
-            cardId: "1343242432",
-            dateOfBirth: "1999-10-09T01:00:04.000Z",
-            address: "Hóc Môn, TP Hồ Chí Minh",
-            status: 2,
-            gender: false,
+        var newUsers = users.map(function (user) {
+          return {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            phoneNumber: user.phoneNumber,
+            userName: user.userName,
+            cardId: user.cardId,
+            dateOfBirth: user.dateOfBirth,
+            address: user.address,
+            statusId: user.statusId,
+            gender: user.gender,
+            imageIdCardFront: "https://congdongyoutube.com/wp-content/uploads/2020/09/image-1.png",
+            imageIdCardBack: "http://vyctravel.com/libs/upload/ckfinder/images/Visa/h%E1%BB%99%20chi%E1%BA%BFu/Untitled-7(1).jpg",
+            avatar: "https://1.bp.blogspot.com/-O6xJJOTcgMI/XxF9toYJJbI/AAAAAAAAqTU/kDR_SArOGG0srXdhRXjtk3I12wZpjwOTwCLcBGAsYHQ/s1600/anh-dai-dien-gai-dep%2B%25281%2529.jpg"
           }
-        ]
+        });
+        // var newUsers = [
+        //   {
+        //     id: 1,
+        //     name: "Nguyễn Văn A",
+        //     email: "nguyenvana@gmail.com",
+        //     phoneNumber: "0328427348",
+        //     userName: "nguyenvana1928",
+        //     password: "ddjfkfdjkaldfafadffsfsd",
+        //     cardId: "182472432",
+        //     dateOfBirth: "1999-10-09T01:00:04.000Z",
+        //     address: "Hóc Môn, TP Hồ Chí Minh",
+        //     statusId: 1,
+        //     gender: true,
+            
+        //   },
+        //   {
+        //     id: 2,
+        //     name: "Nguyễn Văn B",
+        //     email: "nguyenvanb@gmail.com",
+        //     phoneNumber: "014324348",
+        //     userName: "nguyenvanb1928",
+        //     password: "ddjfkfdjkaldfafadffsfsd",
+        //     cardId: "1343242432",
+        //     dateOfBirth: "1999-10-09T01:00:04.000Z",
+        //     address: "Hóc Môn, TP Hồ Chí Minh",
+        //     statusId: 2,
+        //     gender: false,
+        //     imageIdCardFront: "https://congdongyoutube.com/wp-content/uploads/2020/09/image-1.png",
+        //     imageIdCardBack: "http://vyctravel.com/libs/upload/ckfinder/images/Visa/h%E1%BB%99%20chi%E1%BA%BFu/Untitled-7(1).jpg",
+        //     avatar: "https://1.bp.blogspot.com/-O6xJJOTcgMI/XxF9toYJJbI/AAAAAAAAqTU/kDR_SArOGG0srXdhRXjtk3I12wZpjwOTwCLcBGAsYHQ/s1600/anh-dai-dien-gai-dep%2B%25281%2529.jpg"
+        //   }
+        // ]
 
         res.json(newUsers);
       });
@@ -146,22 +155,54 @@ class UserController {
   }
 
   //[GET] /user/:name
-async getImageSign(req, res)
-  {
+  async getImageSign(req, res) {
     const fileName = req.params.name;
     if (!fileName) {
-        return res.send({
-            status: false,
-            message: 'no filename specified',
-        })
+      return res.send({
+        status: false,
+        message: 'no filename specified',
+      })
     }
     res.sendFile(path.resolve(`./images/${fileName}`));
   }
 
   //[PUT] /user/image-sign/:id
   async updateImageSign(req, res, next) {
-      const { id } = req.params;
-      const { signImage,
+    const { id } = req.params;
+    const { signImage,
+      password,
+      name,
+      email,
+      phoneNumber,
+      userName,
+      cardId,
+      address,
+      avatar,
+      dateOfBirth,
+      gender } = req.body;
+
+    let updatedPost = null;
+
+    const processedFile = req.file || {}; // MULTER xử lý và gắn đối tượng FILE vào req
+    try {
+      if (processedFile && JSON.stringify(processedFile) !== JSON.stringify({})) {
+        let orgName = processedFile.originalname || ''; // Tên gốc trong máy tính của người upload
+        orgName = orgName.trim().replace(/ /g, "-")
+        const fullPathInServ = processedFile.path; // Đường dẫn đầy đủ của file vừa đc upload lên server
+        // Đổi tên của file vừa upload lên, vì multer đang đặt default ko có đuôi file
+        const newFullPath = `${fullPathInServ}-${orgName}`;
+        fs.renameSync(fullPathInServ, newFullPath);
+        res.send({
+          status: true,
+          message: 'file uploaded',
+          signImage: newFullPath
+        })
+
+
+        updatedPost = { signImage: newFullPath, _id: id };
+        await User.findByIdAndUpdate({ _id: id }, { $set: updatedPost }, { upsert: true, new: true });
+      } else {
+        updatedPost = {
           password,
           name,
           email,
@@ -171,45 +212,12 @@ async getImageSign(req, res)
           address,
           avatar,
           dateOfBirth,
-          gender } = req.body;
+          gender, _id: id
+        };
 
-    let updatedPost = null;
+        await User.findByIdAndUpdate({ _id: id }, { $set: updatedPost }, { upsert: true, new: true });
 
-    const processedFile = req.file || {}; // MULTER xử lý và gắn đối tượng FILE vào req
-    try {
-      if(processedFile && JSON.stringify(processedFile) !== JSON.stringify({}))
-      {
-          let orgName = processedFile.originalname || ''; // Tên gốc trong máy tính của người upload
-          orgName = orgName.trim().replace(/ /g, "-")
-          const fullPathInServ = processedFile.path; // Đường dẫn đầy đủ của file vừa đc upload lên server
-          // Đổi tên của file vừa upload lên, vì multer đang đặt default ko có đuôi file
-          const newFullPath = `${fullPathInServ}-${orgName}`;
-          fs.renameSync(fullPathInServ, newFullPath);
-          res.send({
-              status: true,
-              message: 'file uploaded',
-              signImage: newFullPath
-          })
-
-
-          updatedPost = { signImage: newFullPath, _id: id };
-          await User.findByIdAndUpdate({ _id: id }, { $set: updatedPost }, { upsert: true, new: true });
-      }else {
-          updatedPost = {
-              password,
-              name,
-              email,
-              phoneNumber,
-              userName,
-              cardId,
-              address,
-              avatar,
-              dateOfBirth,
-              gender, _id: id };
-
-          await User.findByIdAndUpdate({ _id: id }, { $set: updatedPost }, { upsert: true, new: true });
-
-          res.json(updatedPost);
+        res.json(updatedPost);
       }
 
     } catch (error) {
@@ -236,22 +244,34 @@ async getImageSign(req, res)
 
   // [GET] /user/get-link-image-from-file
   async getLinkImageSign(req, res, next) {
-      const processedFile = req.file || {}; // MULTER xử lý và gắn đối tượng FILE vào req
-      try {
-            let orgName = processedFile.originalname || ''; // Tên gốc trong máy tính của người upload
-            orgName = orgName.trim().replace(/ /g, "-")
-            const fullPathInServ = processedFile.path; // Đường dẫn đầy đủ của file vừa đc upload lên server
-            // Đổi tên của file vừa upload lên, vì multer đang đặt default ko có đuôi file
-            const newFullPath = `${fullPathInServ}-${orgName}`;
-            fs.renameSync(fullPathInServ, newFullPath);
-            res.send({
-                status: true,
-                message: 'file uploaded',
-                signImage: newFullPath
-            })
-      } catch (error) {
-          res.status(500).json({ message: "Something went wrong" });
-      }
+    const processedFile = req.file || {}; // MULTER xử lý và gắn đối tượng FILE vào req
+    try {
+      let orgName = processedFile.originalname || ''; // Tên gốc trong máy tính của người upload
+      orgName = orgName.trim().replace(/ /g, "-")
+      const fullPathInServ = processedFile.path; // Đường dẫn đầy đủ của file vừa đc upload lên server
+      // Đổi tên của file vừa upload lên, vì multer đang đặt default ko có đuôi file
+      const newFullPath = `${fullPathInServ}-${orgName}`;
+      fs.renameSync(fullPathInServ, newFullPath);
+      res.send({
+        status: true,
+        message: 'file uploaded',
+        signImage: newFullPath
+      })
+    } catch (error) {
+      res.status(500).json({ message: "Something went wrong" });
+    }
+  }
+
+  //[PUT] /user/status
+  async updateStatusId(req, res, next) {
+    const { user_id, status_id } = req.body;
+    try {
+      const updatedPost = { statusId: status_id, _id: user_id };
+      await User.findByIdAndUpdate({ _id: user_id }, { $set: updatedPost }, { upsert: true, new: true });
+      res.json("Cập nhật trạng thái thành công");
+    } catch (error) {
+      res.status(500).json({ message: "Something went wrong" });
+    }
   }
 }
 

@@ -14,5 +14,5 @@ router.put('/get-link-image-from-file', imageUploader.single('image'), userContr
 router.post('/signup', userController.signUp);
 router.get('/exists/:slug', userController.exists);
 router.post('/getUserInfoByPublicKey', userController.getUserInfoByPublicKey);
-
+router.put('/status', userController.updateStatusId);
 module.exports = router;
