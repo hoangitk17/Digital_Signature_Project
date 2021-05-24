@@ -77,7 +77,6 @@ class AuthController {
       const userObj = user ? await mongooseToObject(user) : {};
       let sentUser = null;
       let { _id, name, email, phoneNumber} = userObj;
-      console.log(avatar);
       sentUser = {
         _id,
         name,
@@ -93,6 +92,7 @@ class AuthController {
 
       return res.status(200).json({ accessToken, refreshToken });
     } catch (err) {
+      console.log(err);
       res.status(500).json({ message: "Something went wrong" });
     }
   };
