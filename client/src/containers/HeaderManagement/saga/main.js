@@ -28,18 +28,37 @@ function* handleSignIn(action) {
         dataLogin = { ...dataLogin, key: nodeForge.encryptRSA(aesKeyPem, publicKeyPemServer)}
       }
         res = yield call(apiUser.signIn, {data: dataLogin});
-        yield save("accessToken", res.data.accessToken);
-        yield save("refreshToken", res.data.refreshToken);
-        yield save("isLogin", true);
         var infoUser = common.decodeToken(res.data.accessToken);
-        yield put(actions.getUserById({ id: infoUser?.data?._id}));
-        yield put(actions.signInSuccess(res.data));
-        yield Swal.fire(
-            'Thông báo',
-            'Đăng nhập thành công!',
-            'success'
-        )
-        yield action.payload.closeModal();
+        if(infoUser?.data?.statusId === 1)
+        {
+            yield put(actions.signInFail("Tài khoản của bạn chưa được xét duyệt! Vui lòng liên hệ người quản trị để được hỗ trợ!"));
+
+            yield Swal.fire(
+                'Thông báo',
+                'Đăng nhập thất bại!',
+                'error'
+            )
+        }else if(infoUser?.data?.statusId === 3){
+            yield put(actions.signInFail("Tài khoản của bạn đã bị khóa! Vui lòng liên hệ người quản trị để được hỗ trợ!"));
+
+            yield Swal.fire(
+                'Thông báo',
+                'Đăng nhập thất bại!',
+                'error'
+            )
+        }else {
+            yield save("accessToken", res.data.accessToken);
+            yield save("refreshToken", res.data.refreshToken);
+            yield save("isLogin", true);
+            yield put(actions.getUserById({ id: infoUser?.data?._id }));
+            yield put(actions.signInSuccess(res.data));
+            yield Swal.fire(
+                'Thông báo',
+                'Đăng nhập thành công!',
+                'success'
+            )
+            yield action.payload.closeModal();
+        }
     } catch (error) {
         yield put(actions.signInFail(error?.data?.message || "Tài khoản hoặc mật khẩu không đúng!"));
 
@@ -60,7 +79,7 @@ function* handleSignUp(action) {
         yield put(actions.signUpSuccess(res.data));
         yield Swal.fire(
             'Thông báo',
-            'Đăng ký tài khoản thành công!',
+            'Đăng ký tài khoản thành công! Tài khoản của bạn sẽ được xét duyệt trong vòng 24h.',
             'success'
         )
         yield action.payload.closeModal();

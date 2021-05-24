@@ -41,11 +41,11 @@ class AuthController {
 
       const userObj = user ? await mongooseToObject(user) : {};
       let sentUser = null;
-      let { _id, privateKey, publicKey } = userObj;
+      let { _id, privateKey, publicKey, statusId } = userObj;
       if (key) {
         let aesKey = await decryptRSA(key, keyPair.privateKey);
         let encryptedPrivateKey = await encrytAES(privateKey, forge.util.decode64(aesKey));
-        sentUser = { _id, privateKey: JSON.stringify(encryptedPrivateKey), publicKey}
+        sentUser = { _id, privateKey: JSON.stringify(encryptedPrivateKey), publicKey, statusId}
       } else {
         res.status(400).json({ message: "Not found key in data" })
       }

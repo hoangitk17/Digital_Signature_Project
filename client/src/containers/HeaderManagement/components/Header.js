@@ -327,7 +327,8 @@ class Header extends Component {
                 signImage,
                 avatar,
                 dateOfBirth,
-                status,
+                statusId: status,
+                roleId: 1,
                 gender,
                 imageIdCardFront: cardIdFront,
                 imageIdCardBack: cardIdBack

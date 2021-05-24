@@ -30,7 +30,8 @@ class UserController {
       signImage,
       avatar,
       dateOfBirth,
-      status,
+      statusId,
+      roleId,
       gender,
       imageIdCardFront,
       imageIdCardBack
@@ -60,7 +61,8 @@ class UserController {
         signImage,
         avatar,
         dateOfBirth,
-        status,
+        statusId,
+        roleId,
         gender,
         imageIdCardFront,
         imageIdCardBack
