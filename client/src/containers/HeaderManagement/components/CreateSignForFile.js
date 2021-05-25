@@ -230,6 +230,7 @@ class CreateSignForFile extends Component {
       ],
     }, this.viewerDiv.current).then(instance => {
       const { docViewer, annotManager, CoreControls } = instance;
+      instance.enableElements(['readerPageTransitionButton']);
       const signatureTool = docViewer.getTool('AnnotationCreateSignature');
 
       let newArr = instance.annotationPopup.getItems().filter(item => item.dataElement === "annotationDeleteButton") || [];

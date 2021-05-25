@@ -408,6 +408,11 @@ class Header extends Component {
         const { isError, errorMessage, errorMessageSignUp } = this.props;
         var messenger = !isError ? "" : errorMessage;
         var messengerSignUp = errorMessageSignUp ? errorMessageSignUp : null;
+        const invalidChars = [
+            "-",
+            "+",
+            "e",
+        ];
         /* if (isError) {
             this.setState({
                 messenger: errorMessage
@@ -601,7 +606,9 @@ class Header extends Component {
                                     </div>
                                     <div className="form-group mt-3">
                                         <label>Số Căn Cước Công Dân/Chứng Minh Nhân Dân</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
-                                        <input onChange={(e) => {
+                                        <input
+                                         onKeyPress={e => invalidChars.includes(e.key) ? e.preventDefault() : null}
+                                         onChange={(e) => {
                                             if (e.target.value === "") {
                                                 this.setState({
                                                     cardId: e.target.value, errors: {
@@ -651,7 +658,9 @@ class Header extends Component {
                                     </div>
                                     <div className="form-group mt-3">
                                         <label>Số Điện Thoại</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
-                                        <input onChange={(e) => {
+                                        <input
+                                         onKeyPress={e => invalidChars.includes(e.key) ? e.preventDefault() : null}
+                                         onChange={(e) => {
                                             if (e.target.value === "") {
                                                 this.setState({
                                                     phoneNumber: e.target.value, errors: {

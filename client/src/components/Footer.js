@@ -68,7 +68,7 @@ class Footer extends Component {
                                         <ul>
                                             <li>+0389853806(Mr. Hùng) +0963203425(Mr. Hoàng)</li>
                                             <li>hungitk17@gmail.com hoangitk17@gmail.com</li>
-                                            <li>273 An Dương Vương, Q5, Tp HCM</li>
+                                            <li>273 An Dương Vương, Q5, Tp. HCM</li>
                                         </ul>
                                         <div className="contact_map" style={{ width: '100%', height: 150, marginTop: 25 }}>
                                             <div className="gmap_canvas">

@@ -424,6 +424,11 @@ class PopupEditInfoUser extends Component {
         const { infoSignUp, hidePassword, hidePasswordNew, hidePasswordSignUp, hidePasswordSignUpAgain, txtusername, txtpassword, errors, isLogin/* messenger */, dateOfBirth } = this.state;
         const { isError, errorMessage, InfoAfterSignIn, errorMessageSignUp } = this.props;
         var messengerSignUp = errorMessageSignUp ? errorMessageSignUp : null;
+        const invalidChars = [
+            "-",
+            "+",
+            "e",
+        ];
         return (
             <div className="popup-edit-info-user">
                 {/* Modal Edit Info User */}
@@ -508,7 +513,9 @@ class PopupEditInfoUser extends Component {
                                                             <label>CCCD</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
                                                         </div>
                                                         <div className="margin-5 col-md-8">
-                                                            <input onChange={(e) => {
+                                                            <input
+                                                             onKeyPress={e => invalidChars.includes(e.key) ? e.preventDefault() : null}
+                                                             onChange={(e) => {
                                                                 if (e.target.value === "") {
                                                                     this.setState({
                                                                         cardId: e.target.value, errors: {
@@ -535,7 +542,9 @@ class PopupEditInfoUser extends Component {
                                                             <label>Số Điện Thoại</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
                                                         </div>
                                                         <div className="margin-5 col-md-8">
-                                                            <input onChange={(e) => {
+                                                            <input
+                                                             onKeyPress={e => invalidChars.includes(e.key) ? e.preventDefault() : null}
+                                                             onChange={(e) => {
                                                                 if (e.target.value === "") {
                                                                     this.setState({
                                                                         phoneNumber: e.target.value, errors: {
