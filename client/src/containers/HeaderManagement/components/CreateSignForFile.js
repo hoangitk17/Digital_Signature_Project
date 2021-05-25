@@ -183,7 +183,7 @@ class CreateSignForFile extends Component {
       } catch (e) {
         await Swal.fire(
           'Thông báo',
-          'Tệp văn bản chưa được kí!',
+          'Tệp văn bản này chưa được kí!',
           'info'
         )
         await _this.props.actions.getUserInfoByPublicKey({})
@@ -231,6 +231,7 @@ class CreateSignForFile extends Component {
     }, this.viewerDiv.current).then(instance => {
       const { docViewer, annotManager, CoreControls } = instance;
       const signatureTool = docViewer.getTool('AnnotationCreateSignature');
+
       let newArr = instance.annotationPopup.getItems().filter(item => item.dataElement === "annotationDeleteButton") || [];
       instance.annotationPopup.update(newArr);
       // instance.disableElements(['toolsHeader']);
@@ -262,7 +263,7 @@ class CreateSignForFile extends Component {
       instance.setHeaderItems(header => {
         header.push({
           type: 'actionButton',
-          title: "download",
+          title: "Tải xuống",
           img: imgDownload,
           onClick: async () => {
             const doc = docViewer.getDocument();
@@ -331,8 +332,10 @@ class CreateSignForFile extends Component {
                               <div id="avatar" style={{ margin: "8px auto", backgroundImage: `url(${userInfoSigned.avatar}),url(https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/1024px-No_image_available.svg.png)` }}></div>
                             </div>
                             <div className="card-body">
-                              <h6 className="card-title" style={{ fontWeight: "bold" }}>Họ Và Tên</h6>
+                              <h6 className="card-title" style={{ fontWeight: "bold" }}>Tài khoản</h6>
                               <p className="card-text">{userInfoSigned.userName || ""}</p>
+                              <h6 className="card-title" style={{ fontWeight: "bold" }}>Họ và tên</h6>
+                              <p className="card-text">{userInfoSigned.name || ""}</p>
                               <h6 className="card-title" style={{ fontWeight: "bold" }}>Email</h6>
                               <p className="card-text">{userInfoSigned.email || ""}</p>
                               <h6 className="card-title" style={{ fontWeight: "bold" }}>Số điện thoại</h6>

@@ -137,7 +137,7 @@ function* handleGetUserInfoByPublicKey(action) {
     yield put(actions.getUserInfoByPublicKeySuccess(res.data));
     yield Swal.fire(
       'Thông báo',
-      'Tệp văn bản này đã được kí!',
+      'Tệp văn bản này đã được ký!',
       'info'
     )
   } catch (error) {
