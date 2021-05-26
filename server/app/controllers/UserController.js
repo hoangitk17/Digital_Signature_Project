@@ -78,7 +78,8 @@ class UserController {
   // [GET] /user/list-user
   async getListUser(req, res, next) {
     try {
-      /* await User.find({}, (err, users) => res.status(200).json({ users })); */
+      let { name, gender, status } = req.query;
+      status = parseInt(status);
       User.find({}, function (err, users) {
         var newUsers = users.map(function (user) {
           return {
@@ -92,11 +93,24 @@ class UserController {
             address: user.address,
             statusId: user.statusId,
             gender: user.gender,
-            imageIdCardFront: "https://congdongyoutube.com/wp-content/uploads/2020/09/image-1.png",
+            // imageIdCardFront: user.imageIdCardFront,
+            // imageIdCardBack: user.imageIdCardBack,
+                imageIdCardFront: "https://congdongyoutube.com/wp-content/uploads/2020/09/image-1.png",
             imageIdCardBack: "http://vyctravel.com/libs/upload/ckfinder/images/Visa/h%E1%BB%99%20chi%E1%BA%BFu/Untitled-7(1).jpg",
-            avatar: "https://1.bp.blogspot.com/-O6xJJOTcgMI/XxF9toYJJbI/AAAAAAAAqTU/kDR_SArOGG0srXdhRXjtk3I12wZpjwOTwCLcBGAsYHQ/s1600/anh-dai-dien-gai-dep%2B%25281%2529.jpg"
+            avatar: user.avatar
           }
         });
+        if (name) {
+          newUsers = newUsers.filter(user => user.name.toLowerCase().includes(name.toLowerCase()));
+        }
+
+        if (gender) {
+          gender = gender === "true" ? true : false;
+          newUsers = newUsers.filter(user => user.gender === gender);
+        }
+        if (status) {
+          newUsers = newUsers.filter(user => user.statusId === status);
+        }
         // var newUsers = [
         //   {
         //     id: 1,
