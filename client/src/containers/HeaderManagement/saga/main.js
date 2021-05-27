@@ -56,8 +56,9 @@ function* handleSignIn(action) {
                 'Thông báo',
                 'Đăng nhập thành công!',
                 'success'
-            )
+            );
             yield action.payload.closeModal();
+            yield action.payload.onSuccess();
         }
     } catch (error) {
         yield put(actions.signInFail(error?.data?.message || "Tài khoản hoặc mật khẩu không đúng!"));

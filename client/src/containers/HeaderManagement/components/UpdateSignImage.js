@@ -21,6 +21,7 @@ import common from "../../../utils/common";
 import { get } from "../../../services/localStorage";
 import axios from "axios";
 import { link_server } from "../constants";
+import { createLog } from "../../../api/log";
 const iconEye = <FontAwesomeIcon icon={faEye} />;
 const iconEyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
 
@@ -56,9 +57,22 @@ class UpdateSignImage extends Component {
             closeModal: () => {
                 document.querySelector('#closeModalUpdateSignImage').click();
             } }); */
-            await axios.put(`http://localhost:5000/user/image-sign/${infoUser.data._id}`, formData, config).then(res => {
+            await axios.put(`http://localhost:5000/user/image-sign/${infoUser.data._id}`, formData, config).then(async res => {
                 let filePath = res.data.signImage
                 if (filePath) {
+                    const dataLog = {
+                        userId: `${infoUser?.data?._id}`,
+                        action: "Cập nhật hình ảnh chữ ký",
+                        time: `${new Date()}`
+                    }
+                    const resLog = await createLog({ data: dataLog });
+                    if (!resLog?.data?.data) {
+                        Swal.fire(
+                            'Thông báo',
+                            'Log cập nhật hình ảnh chữ ký thất bại!',
+                            'error'
+                        )
+                    }
                     this.props.actions.getUserById({ id: infoUser.data._id });
                     // NOTE: Vì tôi viết trên windows nên split theo dấu "\", nếu bạn chạy app trên Mac or linux mà gặp lỗi chỗ này thì xem xét đổi thành "/". nếu đổi sang "/" thì chỉ dùng 1 dấu "/" chứ ko phải hai dấu như "\\".
                     filePath = filePath.split('\\')[1];

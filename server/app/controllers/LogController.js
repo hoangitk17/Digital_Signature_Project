@@ -1,26 +1,32 @@
 const Log = require('../models/Log');
 const User = require('../models/User');
 class LogController {
-  create = async (req, res, next) => {
+
+  // [POST] /log/create
+  async create(req, res, next){
     const { userId,
       time,
       action, } = req.body;
 
     try {
-      const oldUser = await User.findOne({ userId });
+      const oldUser = await User.findOne({ _id: userId });
 
       if (!oldUser) return res.status(404).json({ message: "User doesn't exist" });
 
-      const newLog = new Log({
+      /* const newLog = new Log({
         userId,
         time,
         action,
-      })
+      }) */
 
       try {
-        await newLog.save();
-
-        res.status(201).json(newLog);
+        const newLog = await Log.create({
+            userId,
+            time,
+            action,
+        });
+        //await newLog.save();
+        res.status(201).json({ data: newLog });
       } catch (error) {
         res.status(409).json({ message: error.message });
       }

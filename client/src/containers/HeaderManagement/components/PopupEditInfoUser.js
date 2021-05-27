@@ -22,6 +22,7 @@ import common from "../../../utils/common";
 import { get } from "../../../services/localStorage";
 import axios from "axios";
 import { link_server } from "../constants";
+import { createLog } from "../../../api/log";
 const infoUser = common.decodeToken(get("accessToken"));
 const iconEye = <FontAwesomeIcon icon={faEye} />;
 const iconEyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
@@ -87,6 +88,10 @@ class PopupEditInfoUser extends Component {
                 method: (phoneNumber) => {
                     if (phoneNumber.toString().length === 10 && phoneNumber.toString().indexOf("0") === 0) {
                         return true
+                    } else if (phoneNumber.toString().length < 10 && phoneNumber.toString().indexOf("0") !== 0) {
+                        this.setState({
+                            phoneNumber: "0" + phoneNumber
+                        })
                     }
                     return false
                 },
@@ -257,11 +262,10 @@ class PopupEditInfoUser extends Component {
                 if (filePath) {
                     avatarTemp = link_server + filePath;
                 }
-                console.log("avatarTemp", avatarTemp)
             }).catch(err => {
                 Swal.fire(
                     'Thông báo',
-                    'Cập nhật thất bại!',
+                    'Upload hình ảnh thất bại!',
                     'error'
                 )
             })
@@ -317,9 +321,23 @@ class PopupEditInfoUser extends Component {
                             showCancelButton: true,
                             confirmButtonText: "Đồng ý",
                             cancelButtonText: "Hủy",
-                        }).then((result) => {
+                        }).then(async(result) => {
                             if (result.isConfirmed) {
-                                this.props.actions.updateInfoUser({
+                                const dataLog = {
+                                    userId: `${infoUser?.data?._id}`,
+                                    action: "Cập nhật thông tin tài khoản và thay đổi mật khẩu",
+                                    time: `${new Date()}`
+                                }
+                                const resLog = await createLog({ data: dataLog });
+                                if(!resLog?.data?.data)
+                                {
+                                    Swal.fire(
+                                        'Thông báo',
+                                        'Log cập nhật thông tin tài khoản thất bại!',
+                                        'error'
+                                    )
+                                }
+                                await this.props.actions.updateInfoUser({
                                     id: infoUser?.data?._id,
                                     data, closeModal: () => {
                                         this.setState({
@@ -385,9 +403,22 @@ class PopupEditInfoUser extends Component {
                     showCancelButton: true,
                     confirmButtonText: "Đồng ý",
                     cancelButtonText: "Hủy",
-                }).then((result) => {
+                }).then(async(result) => {
                     if (result.isConfirmed) {
-                        this.props.actions.updateInfoUser({
+                        const dataLog = {
+                            userId: `${infoUser?.data?._id}`,
+                            action: "Cập nhật thông tin tài khoản",
+                            time: `${new Date()}`
+                        }
+                        const resLog = await createLog({ data: dataLog });
+                        if (!resLog?.data?.data) {
+                            Swal.fire(
+                                'Thông báo',
+                                'Log cập nhật thông tin tài khoản thất bại!',
+                                'error'
+                            )
+                        }
+                        await this.props.actions.updateInfoUser({
                             id: infoUser?.data?._id,
                             data, closeModal: () => {
                                 this.setState({
