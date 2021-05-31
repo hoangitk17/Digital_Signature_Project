@@ -20,7 +20,6 @@ import CropImage from "../../../common/CropImage";
 import common from "../../../utils/common";
 import { get } from "../../../services/localStorage";
 import axios from "axios";
-import { link_server } from "../constants";
 import { createLog } from "../../../api/log";
 const iconEye = <FontAwesomeIcon icon={faEye} />;
 const iconEyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
@@ -29,7 +28,7 @@ class UpdateSignImage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            srcImageSign: this.props?.InfoAfterSignIn ? link_server + this.props?.InfoAfterSignIn.signImage : "",
+            srcImageSign: this.props?.InfoAfterSignIn ? this.props?.InfoAfterSignIn.signImage : "",
             InfoAfterSignIn: this.props?.InfoAfterSignIn ? this.props?.InfoAfterSignIn : {},
         };
 
@@ -89,7 +88,7 @@ class UpdateSignImage extends Component {
                     })
                 }
                 this.setState({
-                    srcImageSign: link_server + filePath
+                    srcImageSign: filePath
                 })
             }).catch(err => {
                 Swal.fire(
@@ -104,7 +103,7 @@ class UpdateSignImage extends Component {
     static getDerivedStateFromProps(nextProps, prevState) {
         if (nextProps.InfoAfterSignIn?.signImage !== prevState.srcImageSign || nextProps.InfoAfterSignIn !== prevState.InfoAfterSignIn) {
             return {
-                srcImageSign: link_server + nextProps.InfoAfterSignIn?.signImage,
+                srcImageSign: nextProps.InfoAfterSignIn?.signImage,
                 InfoAfterSignIn: nextProps.InfoAfterSignIn
             };
         }
@@ -133,7 +132,7 @@ class UpdateSignImage extends Component {
                                             /> */}
                                         {<CropImage
                                             ref={element => (this.cropImage = element)}
-                                            src={srcImageSign === link_server + 'undefined' || srcImageSign === link_server ? "" : srcImageSign}
+                                            src={!srcImageSign ? "" : srcImageSign}
                                             name="image-sign"
                                             textAdd="THÊM ẢNH"
                                             title="CHỈNH SỬA KÍCH THƯỚC ẢNH"

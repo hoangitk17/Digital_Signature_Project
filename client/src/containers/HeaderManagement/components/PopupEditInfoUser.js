@@ -21,7 +21,6 @@ import md5 from "md5";
 import common from "../../../utils/common";
 import { get } from "../../../services/localStorage";
 import axios from "axios";
-import { link_server } from "../constants";
 import { createLog } from "../../../api/log";
 const infoUser = common.decodeToken(get("accessToken"));
 const iconEye = <FontAwesomeIcon icon={faEye} />;
@@ -260,7 +259,7 @@ class PopupEditInfoUser extends Component {
             await axios.put(`http://localhost:5000/user/get-link-image-from-file`, formData, config).then(res => {
                 let filePath = res.data.signImage;
                 if (filePath) {
-                    avatarTemp = link_server + filePath;
+                    avatarTemp = filePath;
                 }
             }).catch(err => {
                 Swal.fire(

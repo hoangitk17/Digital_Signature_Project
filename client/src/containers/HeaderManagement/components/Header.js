@@ -23,7 +23,6 @@ import Loading from "../../../common/Loading";
 import common from "../../../utils/common";
 import CropImage from "../../../common/CropImage";
 import axios from "axios";
-import { link_server } from "../constants";
 import { createLog } from "../../../api/log";
 const iconEye = <FontAwesomeIcon icon={faEye} />;
 const iconEyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
@@ -293,7 +292,7 @@ class Header extends Component {
         await axios.put(`http://localhost:5000/user/get-link-image-from-file`, formData, config).then(res => {
             let filePath = res.data.signImage;
             if (filePath) {
-                avatarTemp = link_server + filePath;
+                avatarTemp = filePath;
             }
         }).catch(err => {
             Swal.fire(
