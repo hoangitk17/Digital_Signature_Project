@@ -23,6 +23,7 @@ import { imgVerify } from "../../../images/base64/Verify"
 import common from "../../../utils/common";
 import nodeForge from "../../../utils/nodeforge";
 import forge from 'node-forge';
+import { createLog } from "../../../api/log";
 const iconEye = <FontAwesomeIcon icon={faEye} />;
 const iconEyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
 var crypt = new Crypt({
@@ -116,7 +117,7 @@ class CreateSignForFile extends Component {
         ],
         { type: "application/pdf" }
       );
-      const saveData = (function () {
+      const saveData = ( function () {
         var a = document.createElement("a");
         document.body.appendChild(a);
         a.style = "display: none";
@@ -156,9 +157,6 @@ class CreateSignForFile extends Component {
           data = _this.concatTypedArrays(new Uint8Array(1), new Uint8Array(data)).buffer
         }
         let dataLength = data.byteLength;
-        console.log(dataLength)
-        console.log(data);
-        console.log(new Uint8Array(data, 1, 1))
         // Đọc số byte của chữ kí
         var signatureLength = new Uint16Array(data, dataLength - 2)[0];   // First 16 bit integer
         // Lấy ra mảng byte của chữ kí
@@ -169,7 +167,6 @@ class CreateSignForFile extends Component {
         var publicKeyArrBuffer = new Uint8Array(data, dataLength - 2 - signatureLength - 2 - publicKeyLength, publicKeyLength);
         // Lấy ra mảng byte plaintext
         var plaintext = new Uint8Array(data, isByteOdd ? 1 : 0, isByteOdd ? dataLength - 2 - signatureLength - 2 - publicKeyLength - 1 : dataLength - 2 - signatureLength - 2 - publicKeyLength);
-        console.log(plaintext)
         // chuyển chữ kí, dữ liệu ban đầu và public key về dạng chuỗi
         var signature = JSON.parse(ab2str(signatureArrBuffer));
         var message = ab2str(plaintext);
@@ -230,6 +227,7 @@ class CreateSignForFile extends Component {
       ],
     }, this.viewerDiv.current).then(instance => {
       const { docViewer, annotManager, CoreControls } = instance;
+      instance.enableElements(['readerPageTransitionButton']);
       const signatureTool = docViewer.getTool('AnnotationCreateSignature');
 
       let newArr = instance.annotationPopup.getItems().filter(item => item.dataElement === "annotationDeleteButton") || [];
@@ -277,7 +275,21 @@ class CreateSignForFile extends Component {
             const data = await doc.getFileData(options);
             const arr = new Uint8Array(data);
             const file = new Blob([arr], { type: 'application/pdf' });
-            this.signTheFile(file)
+            this.signTheFile(file);
+            /* const infoUser = common.decodeToken(get("accessToken"));
+            const dataLog = {
+                userId: `${infoUser?.data?._id}`,
+                action: "Ký văn bản",
+                time: `${new Date()}`
+            }
+            const resLog = createLog({ data: dataLog });
+            if (!resLog?.data?.data) {
+                Swal.fire(
+                    'Thông báo',
+                    'Log ký văn bản thất bại!',
+                    'error'
+                )
+            } */
           }
         });
       });
@@ -287,7 +299,7 @@ class CreateSignForFile extends Component {
 
 
   render() {
-    const { } = this.state;
+    const { documentFile } = this.state;
     const { userInfoSigned } = this.props;
     return (
       <div className="create-sign-for-file">
@@ -309,17 +321,18 @@ class CreateSignForFile extends Component {
                     <form method="post" action="#" id="#">
                       <div className="form-group files">
                         <input
+                        title={this.state?.documentFile?.name}
                           onChange={(e) => {
-                            if (e?.target?.value !== "")
+                            if (e?.target?.files?.length > 0)
                             {
                               this.setState({
-                                documentFile: e.target.value
+                                documentFile: e?.target?.files?.length > 0 && e?.target?.files[0]
                               })
                             }
                           }}
                           id="input-sign-file"
                           type="file" className="form-control" multiple="" style={{ marginTop: 4 }}
-                          value={this.state?.documentFile ? this.state?.documentFile : null}
+                          value={/* this.state?.documentFile?.name ? this.state?.documentFile?.name : */ ""}
                         />
                       </div>
                     </form>

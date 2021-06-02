@@ -56,8 +56,9 @@ function* handleSignIn(action) {
                 'Thông báo',
                 'Đăng nhập thành công!',
                 'success'
-            )
+            );
             yield action.payload.closeModal();
+            yield action.payload.onSuccess();
         }
     } catch (error) {
         yield put(actions.signInFail(error?.data?.message || "Tài khoản hoặc mật khẩu không đúng!"));
@@ -100,6 +101,7 @@ function* handleSignUp(action) {
 function* handleGetUserById(action) {
     try {
         const res = yield call(apiUser.getUserById, action.payload);
+        console.log("info user saga", res.data.data)
         yield put(actions.getUserByIdSuccess(res.data));
     } catch (error) {
         yield put(actions.getUserByIdFail(error));

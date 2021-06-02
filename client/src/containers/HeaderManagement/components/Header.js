@@ -23,7 +23,7 @@ import Loading from "../../../common/Loading";
 import common from "../../../utils/common";
 import CropImage from "../../../common/CropImage";
 import axios from "axios";
-import { link_server } from "../constants";
+import { createLog } from "../../../api/log";
 const iconEye = <FontAwesomeIcon icon={faEye} />;
 const iconEyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
 // import {
@@ -96,6 +96,11 @@ class Header extends Component {
                 method: (phoneNumber) => {
                     if (phoneNumber.toString().length === 10 && phoneNumber.toString().indexOf("0") === 0) {
                         return true
+                    } else if(phoneNumber.toString().length < 10 && phoneNumber.toString().indexOf("0") !== 0)
+                    {
+                        this.setState({
+                            phoneNumber: "0" + phoneNumber
+                        })
                     }
                     return false
                 },
@@ -194,11 +199,28 @@ class Header extends Component {
         document.querySelector('#close-modal-signin').click();
     }
 
+    OnSaveLogSignIn = async () => {
+        const infoUser = common.decodeToken(get("accessToken"));
+        const dataLog = {
+            userId: `${infoUser?.data?._id}`,
+            action: "Đăng nhập ứng dụng",
+            time: `${new Date()}`
+        }
+        const resLog = await createLog({ data: dataLog });
+        if (!resLog?.data?.data) {
+            Swal.fire(
+                'Thông báo',
+                'Log đăng nhập ứng dụng thất bại!',
+                'error'
+            )
+        }
+    }
+
     onSubmit = () => {
         var { txtpassword, txtusername, savelogin } = this.state;
         const data = { userName: txtusername, password: md5(txtpassword), savelogin };
         this.props.actions.signIn({
-            data, closeModal: this.onCloseModalSignIn
+            data, onSuccess: this.OnSaveLogSignIn, closeModal: this.onCloseModalSignIn
         });
     }
 
@@ -270,9 +292,8 @@ class Header extends Component {
         await axios.put(`http://localhost:5000/user/get-link-image-from-file`, formData, config).then(res => {
             let filePath = res.data.signImage;
             if (filePath) {
-                avatarTemp = link_server + filePath;
+                avatarTemp = filePath;
             }
-            console.log("avatar", avatar, avatarTemp)
         }).catch(err => {
             Swal.fire(
                 'Thông báo',
@@ -312,28 +333,6 @@ class Header extends Component {
             this.setState({
                 errors: {}
             });
-            let cardIdFront = await this.uploadImageCardId(avatar1);
-            let cardIdBack = await this.uploadImageCardId(avatar2);
-            const data = {
-                password: md5(password),
-                name,
-                email,
-                phoneNumber,
-                userName,
-                cardId,
-                address,
-                privateKey,
-                publicKey,
-                signImage,
-                avatar,
-                dateOfBirth,
-                statusId: status,
-                roleId: 1,
-                gender,
-                imageIdCardFront: cardIdFront,
-                imageIdCardBack: cardIdBack
-            }
-            console.log("data sign up cmnd", data)
             Swal.fire({
                 title: "Thông báo",
                 text: "Bạn có muốn đăng ký tài khoản không?",
@@ -341,22 +340,41 @@ class Header extends Component {
                 showCancelButton: true,
                 confirmButtonText: "Đồng ý",
                 cancelButtonText: "Hủy",
-            }).then((result) => {
+            }).then(async(result) => {
                 if (result.isConfirmed) {
+                    let cardIdFront = await this.uploadImageCardId(avatar1);
+                    let cardIdBack = await this.uploadImageCardId(avatar2);
+                    const data = {
+                        password: md5(password),
+                        name,
+                        email,
+                        phoneNumber,
+                        userName,
+                        cardId,
+                        address,
+                        privateKey,
+                        publicKey,
+                        signImage,
+                        avatar,
+                        dateOfBirth,
+                        statusId: status,
+                        roleId: 1,
+                        gender,
+                        imageIdCardFront: cardIdFront,
+                        imageIdCardBack: cardIdBack
+                    }
                     this.props.actions.signUp({
                         data, closeModal: this.onCloseModalSignUp
                     });
                 }
             })
         } else {
-            console.log("avatar", avatar1, avatar2);
             if(avatar1 === '' || avatar2 === '')
             {
                 this.setState({
                     errorImageCardId: "Hình ảnh căn cước công dân không được để trống"
                 });
             } else {
-                console.log("RUN")
                 this.setState({ errorImageCardId: "" });
             }
             if (password !== oldPassword) {
@@ -408,12 +426,16 @@ class Header extends Component {
         const { isError, errorMessage, errorMessageSignUp } = this.props;
         var messenger = !isError ? "" : errorMessage;
         var messengerSignUp = errorMessageSignUp ? errorMessageSignUp : null;
+        const invalidChars = [
+            "-",
+            "+",
+            "e",
+        ];
         /* if (isError) {
             this.setState({
                 messenger: errorMessage
             })
         } */
-        console.log("err", errors, errorImageCardId)
         return (
             <header className="header">
                 <Loading show={this.state.isLoading} />
@@ -601,7 +623,9 @@ class Header extends Component {
                                     </div>
                                     <div className="form-group mt-3">
                                         <label>Số Căn Cước Công Dân/Chứng Minh Nhân Dân</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
-                                        <input onChange={(e) => {
+                                        <input
+                                         onKeyPress={e => invalidChars.includes(e.key) ? e.preventDefault() : null}
+                                         onChange={(e) => {
                                             if (e.target.value === "") {
                                                 this.setState({
                                                     cardId: e.target.value, errors: {
@@ -651,7 +675,9 @@ class Header extends Component {
                                     </div>
                                     <div className="form-group mt-3">
                                         <label>Số Điện Thoại</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
-                                        <input onChange={(e) => {
+                                        <input
+                                         onKeyPress={e => invalidChars.includes(e.key) ? e.preventDefault() : null}
+                                         onChange={(e) => {
                                             if (e.target.value === "") {
                                                 this.setState({
                                                     phoneNumber: e.target.value, errors: {

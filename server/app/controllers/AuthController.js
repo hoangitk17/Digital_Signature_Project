@@ -64,7 +64,6 @@ class AuthController {
 
   async signInAdmin(req, res, next) {
     const { username, password } = req.body;
-    console.log(username, password);
     try {
       const user = await User.findOne({ userName: username });
 

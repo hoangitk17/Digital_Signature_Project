@@ -24,7 +24,7 @@ export default class About extends React.Component {
                                 <div className="about-content mb-50">
                                     <div className="section-title mb-50">
                                         <h1 className="mb-25">Đại lý chữ ký số của chúng tôi</h1>
-                                        <p>Đáp ứng thông tư 06/2015/TT-BTTTT của bộ Thông tin và Truyền thông, yêu cầu các nhà cung cấp dịch vụ chứng thực chữ ký số nâng cấp hệ thống bảo mật lên tối thiểu mức leve 3 nhằm đáp ứng nhu cầu kết nối để sử dụng các dịch vụ công.</p>
+                                        <p>Đáp ứng thông tư 06/2015/TT-BTTTT của bộ Thông tin và Truyền thông, yêu cầu các nhà cung cấp dịch vụ chứng thực chữ ký số nâng cấp hệ thống bảo mật lên tối thiểu mức level 3 nhằm đáp ứng nhu cầu kết nối để sử dụng các dịch vụ công.</p>
                                     </div>
                                     <div className="accordion pb-15" id="accordionExample">
                                         <div className="single-faq">
@@ -44,7 +44,7 @@ export default class About extends React.Component {
                                             <div id="collapseTwo" className="collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
                                                 <div className="faq-content">
                                                     Gửi Thông Tin Cá Nhân Của Bạn Bao Gồm: Thẻ Căn Cước Công Dân Hoặc Hộ Chiếu Qua Zalo Hoặc Email Cho Chúng Tôi. Chúng Tôi Sẽ Phản Hồi Thông Tin Hướng Dẫn Giúp Bạn Tạo Được Chữ Ký Điện Tử Dễ Dàng Hơn.
-                                                    Sau Đó Bạn Hãy Tạo Tài Khoản Trên WebSite Digital Signature Theo Hướng Dẫn Mà Chúng Tôi Cung Cấp Và Tạo Một Chữ Ký Điện Tử Theo Ý Bạn.
+                                                    Hoặc Bạn Có Thể Tạo Tài Khoản Ngay Trên WebSite Digital Signature Này Và Sau Đó Đợi Tài Khoản Của Bạn Được Xét Duyệt, Bạn Đã Có Thể Sử Dụng Tài Khoản Của Mình Để Tạo Chữ Ký Điện Tử.
                 </div>
                                             </div>
                                         </div>

@@ -220,8 +220,6 @@ export default class CropImage extends Component {
             this.setDataImage();
         }
 
-        console.log("isCheckClosePopup", isCheckClosePopup)
-
         return (
         <form action="" method="" encType="multipart/form-data">
             <label

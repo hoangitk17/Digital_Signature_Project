@@ -20,7 +20,7 @@ import CropImage from "../../../common/CropImage";
 import common from "../../../utils/common";
 import { get } from "../../../services/localStorage";
 import axios from "axios";
-import { link_server } from "../constants";
+import { createLog } from "../../../api/log";
 const iconEye = <FontAwesomeIcon icon={faEye} />;
 const iconEyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
 
@@ -28,7 +28,7 @@ class UpdateSignImage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            srcImageSign: this.props?.InfoAfterSignIn ? link_server + this.props?.InfoAfterSignIn.signImage : "",
+            srcImageSign: this.props?.InfoAfterSignIn ? this.props?.InfoAfterSignIn.signImage : "",
             InfoAfterSignIn: this.props?.InfoAfterSignIn ? this.props?.InfoAfterSignIn : {},
         };
 
@@ -56,9 +56,22 @@ class UpdateSignImage extends Component {
             closeModal: () => {
                 document.querySelector('#closeModalUpdateSignImage').click();
             } }); */
-            await axios.put(`http://localhost:5000/user/image-sign/${infoUser.data._id}`, formData, config).then(res => {
+            await axios.put(`http://localhost:5000/user/image-sign/${infoUser.data._id}`, formData, config).then(async res => {
                 let filePath = res.data.signImage
                 if (filePath) {
+                    const dataLog = {
+                        userId: `${infoUser?.data?._id}`,
+                        action: "Cập nhật hình ảnh chữ ký",
+                        time: `${new Date()}`
+                    }
+                    const resLog = await createLog({ data: dataLog });
+                    if (!resLog?.data?.data) {
+                        Swal.fire(
+                            'Thông báo',
+                            'Log cập nhật hình ảnh chữ ký thất bại!',
+                            'error'
+                        )
+                    }
                     this.props.actions.getUserById({ id: infoUser.data._id });
                     // NOTE: Vì tôi viết trên windows nên split theo dấu "\", nếu bạn chạy app trên Mac or linux mà gặp lỗi chỗ này thì xem xét đổi thành "/". nếu đổi sang "/" thì chỉ dùng 1 dấu "/" chứ ko phải hai dấu như "\\".
                     filePath = filePath.split('\\')[1];
@@ -75,7 +88,7 @@ class UpdateSignImage extends Component {
                     })
                 }
                 this.setState({
-                    srcImageSign: link_server + filePath
+                    srcImageSign: filePath
                 })
             }).catch(err => {
                 Swal.fire(
@@ -90,7 +103,7 @@ class UpdateSignImage extends Component {
     static getDerivedStateFromProps(nextProps, prevState) {
         if (nextProps.InfoAfterSignIn?.signImage !== prevState.srcImageSign || nextProps.InfoAfterSignIn !== prevState.InfoAfterSignIn) {
             return {
-                srcImageSign: link_server + nextProps.InfoAfterSignIn?.signImage,
+                srcImageSign: nextProps.InfoAfterSignIn?.signImage,
                 InfoAfterSignIn: nextProps.InfoAfterSignIn
             };
         }
@@ -119,7 +132,7 @@ class UpdateSignImage extends Component {
                                             /> */}
                                         {<CropImage
                                             ref={element => (this.cropImage = element)}
-                                            src={srcImageSign === link_server + 'undefined' || srcImageSign === link_server ? "" : srcImageSign}
+                                            src={!srcImageSign ? "" : srcImageSign}
                                             name="image-sign"
                                             textAdd="THÊM ẢNH"
                                             title="CHỈNH SỬA KÍCH THƯỚC ẢNH"

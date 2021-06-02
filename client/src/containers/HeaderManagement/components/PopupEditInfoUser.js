@@ -21,7 +21,7 @@ import md5 from "md5";
 import common from "../../../utils/common";
 import { get } from "../../../services/localStorage";
 import axios from "axios";
-import { link_server } from "../constants";
+import { createLog } from "../../../api/log";
 const infoUser = common.decodeToken(get("accessToken"));
 const iconEye = <FontAwesomeIcon icon={faEye} />;
 const iconEyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
@@ -87,6 +87,10 @@ class PopupEditInfoUser extends Component {
                 method: (phoneNumber) => {
                     if (phoneNumber.toString().length === 10 && phoneNumber.toString().indexOf("0") === 0) {
                         return true
+                    } else if (phoneNumber.toString().length < 10 && phoneNumber.toString().indexOf("0") !== 0) {
+                        this.setState({
+                            phoneNumber: "0" + phoneNumber
+                        })
                     }
                     return false
                 },
@@ -255,13 +259,12 @@ class PopupEditInfoUser extends Component {
             await axios.put(`http://localhost:5000/user/get-link-image-from-file`, formData, config).then(res => {
                 let filePath = res.data.signImage;
                 if (filePath) {
-                    avatarTemp = link_server + filePath;
+                    avatarTemp = filePath;
                 }
-                console.log("avatarTemp", avatarTemp)
             }).catch(err => {
                 Swal.fire(
                     'Thông báo',
-                    'Cập nhật thất bại!',
+                    'Upload hình ảnh thất bại!',
                     'error'
                 )
             })
@@ -317,9 +320,23 @@ class PopupEditInfoUser extends Component {
                             showCancelButton: true,
                             confirmButtonText: "Đồng ý",
                             cancelButtonText: "Hủy",
-                        }).then((result) => {
+                        }).then(async(result) => {
                             if (result.isConfirmed) {
-                                this.props.actions.updateInfoUser({
+                                const dataLog = {
+                                    userId: `${infoUser?.data?._id}`,
+                                    action: "Cập nhật thông tin tài khoản và thay đổi mật khẩu",
+                                    time: `${new Date()}`
+                                }
+                                const resLog = await createLog({ data: dataLog });
+                                if(!resLog?.data?.data)
+                                {
+                                    Swal.fire(
+                                        'Thông báo',
+                                        'Log cập nhật thông tin tài khoản thất bại!',
+                                        'error'
+                                    )
+                                }
+                                await this.props.actions.updateInfoUser({
                                     id: infoUser?.data?._id,
                                     data, closeModal: () => {
                                         this.setState({
@@ -385,9 +402,22 @@ class PopupEditInfoUser extends Component {
                     showCancelButton: true,
                     confirmButtonText: "Đồng ý",
                     cancelButtonText: "Hủy",
-                }).then((result) => {
+                }).then(async(result) => {
                     if (result.isConfirmed) {
-                        this.props.actions.updateInfoUser({
+                        const dataLog = {
+                            userId: `${infoUser?.data?._id}`,
+                            action: "Cập nhật thông tin tài khoản",
+                            time: `${new Date()}`
+                        }
+                        const resLog = await createLog({ data: dataLog });
+                        if (!resLog?.data?.data) {
+                            Swal.fire(
+                                'Thông báo',
+                                'Log cập nhật thông tin tài khoản thất bại!',
+                                'error'
+                            )
+                        }
+                        await this.props.actions.updateInfoUser({
                             id: infoUser?.data?._id,
                             data, closeModal: () => {
                                 this.setState({
@@ -424,6 +454,11 @@ class PopupEditInfoUser extends Component {
         const { infoSignUp, hidePassword, hidePasswordNew, hidePasswordSignUp, hidePasswordSignUpAgain, txtusername, txtpassword, errors, isLogin/* messenger */, dateOfBirth } = this.state;
         const { isError, errorMessage, InfoAfterSignIn, errorMessageSignUp } = this.props;
         var messengerSignUp = errorMessageSignUp ? errorMessageSignUp : null;
+        const invalidChars = [
+            "-",
+            "+",
+            "e",
+        ];
         return (
             <div className="popup-edit-info-user">
                 {/* Modal Edit Info User */}
@@ -508,7 +543,9 @@ class PopupEditInfoUser extends Component {
                                                             <label>CCCD</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
                                                         </div>
                                                         <div className="margin-5 col-md-8">
-                                                            <input onChange={(e) => {
+                                                            <input
+                                                             onKeyPress={e => invalidChars.includes(e.key) ? e.preventDefault() : null}
+                                                             onChange={(e) => {
                                                                 if (e.target.value === "") {
                                                                     this.setState({
                                                                         cardId: e.target.value, errors: {
@@ -535,7 +572,9 @@ class PopupEditInfoUser extends Component {
                                                             <label>Số Điện Thoại</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
                                                         </div>
                                                         <div className="margin-5 col-md-8">
-                                                            <input onChange={(e) => {
+                                                            <input
+                                                             onKeyPress={e => invalidChars.includes(e.key) ? e.preventDefault() : null}
+                                                             onChange={(e) => {
                                                                 if (e.target.value === "") {
                                                                     this.setState({
                                                                         phoneNumber: e.target.value, errors: {
