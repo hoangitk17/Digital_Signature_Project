@@ -88,12 +88,14 @@ class LogController {
     /* try {
       var logs = [
         {
-         userName: "Nguyễn Văn A",
+         name: "Nguyễn Văn A",
+         userName: "nguyenvana",
          action: "Nguyễn văn A tạo tài khoản trên hệ thống",
          create_at: "20-05-2021"
        },
-       {
-         userName: "Nguyễn Văn B",
+        {
+         name: "Nguyễn Văn B",
+         userName: "nguyenvanb",
          action: "Nguyễn Văn B kí văn bản trên hệ thống",
          create_at: "20-05-2021"
        }

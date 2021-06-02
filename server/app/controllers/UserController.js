@@ -76,60 +76,72 @@ class UserController {
         }
     }
 
-    // [GET] /user/list-user
-    async getListUser(req, res, next) {
-        try {
-            /* await User.find({}, (err, users) => res.status(200).json({ users })); */
-            User.find({}, function (err, users) {
-                var newUsers = users.map(function (user) {
-                    return {
-                        id: user._id,
-                        name: user.name,
-                        email: user.email,
-                        phoneNumber: user.phoneNumber,
-                        userName: user.userName,
-                        cardId: user.cardId,
-                        dateOfBirth: user.dateOfBirth,
-                        address: user.address,
-                        statusId: user.statusId,
-                        gender: user.gender,
-                        imageIdCardFront: linkServer + user?.imageIdCardFront,
-                        imageIdCardBack: linkServer + user?.imageIdCardBack, //"http://vyctravel.com/libs/upload/ckfinder/images/Visa/h%E1%BB%99%20chi%E1%BA%BFu/Untitled-7(1).jpg"
-                        avatar: linkServer + user?.avatar
-                    }
-                });
-                // var newUsers = [
-                //   {
-                //     id: 1,
-                //     name: "Nguyễn Văn A",
-                //     email: "nguyenvana@gmail.com",
-                //     phoneNumber: "0328427348",
-                //     userName: "nguyenvana1928",
-                //     password: "ddjfkfdjkaldfafadffsfsd",
-                //     cardId: "182472432",
-                //     dateOfBirth: "1999-10-09T01:00:04.000Z",
-                //     address: "Hóc Môn, TP Hồ Chí Minh",
-                //     statusId: 1,
-                //     gender: true,
+  // [GET] /user/list-user
+  async getListUser(req, res, next) {
+    try {
+      let { name, gender, status } = req.query;
+      status = parseInt(status);
+      User.find({}, function (err, users) {
+        var newUsers = users.map(function (user) {
+          return {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            phoneNumber: user.phoneNumber,
+            userName: user.userName,
+            cardId: user.cardId,
+            dateOfBirth: user.dateOfBirth,
+            address: user.address,
+            statusId: user.statusId,
+            gender: user.gender,
+            imageIdCardFront: linkServer + user?.imageIdCardFront,
+            imageIdCardBack: linkServer + user?.imageIdCardBack, //"http://vyctravel.com/libs/upload/ckfinder/images/Visa/h%E1%BB%99%20chi%E1%BA%BFu/Untitled-7(1).jpg"
+            avatar: linkServer + user?.avatar
+          }
+        });
+        if (name) {
+          newUsers = newUsers.filter(user => user.name.toLowerCase().includes(name.toLowerCase()));
+        }
 
-                //   },
-                //   {
-                //     id: 2,
-                //     name: "Nguyễn Văn B",
-                //     email: "nguyenvanb@gmail.com",
-                //     phoneNumber: "014324348",
-                //     userName: "nguyenvanb1928",
-                //     password: "ddjfkfdjkaldfafadffsfsd",
-                //     cardId: "1343242432",
-                //     dateOfBirth: "1999-10-09T01:00:04.000Z",
-                //     address: "Hóc Môn, TP Hồ Chí Minh",
-                //     statusId: 2,
-                //     gender: false,
-                //     imageIdCardFront: "https://congdongyoutube.com/wp-content/uploads/2020/09/image-1.png",
-                //     imageIdCardBack: "http://vyctravel.com/libs/upload/ckfinder/images/Visa/h%E1%BB%99%20chi%E1%BA%BFu/Untitled-7(1).jpg",
-                //     avatar: "https://1.bp.blogspot.com/-O6xJJOTcgMI/XxF9toYJJbI/AAAAAAAAqTU/kDR_SArOGG0srXdhRXjtk3I12wZpjwOTwCLcBGAsYHQ/s1600/anh-dai-dien-gai-dep%2B%25281%2529.jpg"
-                //   }
-                // ]
+        if (gender) {
+          gender = gender === "true" ? true : false;
+          newUsers = newUsers.filter(user => user.gender === gender);
+        }
+        if (status) {
+          newUsers = newUsers.filter(user => user.statusId === status);
+        }
+        // var newUsers = [
+        //   {
+        //     id: 1,
+        //     name: "Nguyễn Văn A",
+        //     email: "nguyenvana@gmail.com",
+        //     phoneNumber: "0328427348",
+        //     userName: "nguyenvana1928",
+        //     password: "ddjfkfdjkaldfafadffsfsd",
+        //     cardId: "182472432",
+        //     dateOfBirth: "1999-10-09T01:00:04.000Z",
+        //     address: "Hóc Môn, TP Hồ Chí Minh",
+        //     statusId: 1,
+        //     gender: true,
+
+        //   },
+        //   {
+        //     id: 2,
+        //     name: "Nguyễn Văn B",
+        //     email: "nguyenvanb@gmail.com",
+        //     phoneNumber: "014324348",
+        //     userName: "nguyenvanb1928",
+        //     password: "ddjfkfdjkaldfafadffsfsd",
+        //     cardId: "1343242432",
+        //     dateOfBirth: "1999-10-09T01:00:04.000Z",
+        //     address: "Hóc Môn, TP Hồ Chí Minh",
+        //     statusId: 2,
+        //     gender: false,
+        //     imageIdCardFront: "https://congdongyoutube.com/wp-content/uploads/2020/09/image-1.png",
+        //     imageIdCardBack: "http://vyctravel.com/libs/upload/ckfinder/images/Visa/h%E1%BB%99%20chi%E1%BA%BFu/Untitled-7(1).jpg",
+        //     avatar: "https://1.bp.blogspot.com/-O6xJJOTcgMI/XxF9toYJJbI/AAAAAAAAqTU/kDR_SArOGG0srXdhRXjtk3I12wZpjwOTwCLcBGAsYHQ/s1600/anh-dai-dien-gai-dep%2B%25281%2529.jpg"
+        //   }
+        // ]
 
                 res.json(newUsers);
             });
