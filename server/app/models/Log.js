@@ -3,7 +3,9 @@ const mongoose = require('mongoose');
 const logSchema = mongoose.Schema({
   userId: {type: String},
   action: {type: String},
-  time: {type: String}
+  time: {type: String},
+  userName: { type: String },
+  name: { type: String }
 }, {
     timestamps: true
 })
