@@ -31,12 +31,14 @@ var crypt = new Crypt({
 });
 var privateKey = null;
 var publicKey = null;
+const sinatureTools = ['toolbarGroup-Insert', 'signatureToolGroupButton', 'toolsOverlay','SignDownload', 'contextMenuPopup', 'annotationPopup'];
 class CreateSignForFile extends Component {
   constructor(props) {
     super(props);
     this.state = {
       documentFile: null,
-      oldDocumentFile: null
+      oldDocumentFile: null,
+      instance: null,
     };
     this.viewerDiv = React.createRef();
   }
@@ -77,6 +79,7 @@ class CreateSignForFile extends Component {
 
 
   signTheFile = async (file) => {
+    const _this = this;
     var sourceFile = file;
     var reader = new FileReader();
     reader.onload = await processTheFile;
@@ -100,7 +103,7 @@ class CreateSignForFile extends Component {
       var signature = crypt.signature(privateKey, ab2str(plaintext));
       // Chuyển chữ kí từ chuỗi về mảng array buffer(byte)
       var arrayBufferSign = str2ab(JSON.stringify(signature));
-       // Tính ra số byte của mảng chữ ký này
+      // Tính ra số byte của mảng chữ ký này
       var length = new Uint16Array([arrayBufferSign.byteLength]);
       // Chuyển public key từ dạng chuỗi về mảng array buffer(byte)
       var arrayBufferPub = str2ab(publicKey);
@@ -117,7 +120,7 @@ class CreateSignForFile extends Component {
         ],
         { type: "application/pdf" }
       );
-      const saveData = ( function () {
+      const saveData = (function () {
         var a = document.createElement("a");
         document.body.appendChild(a);
         a.style = "display: none";
@@ -130,6 +133,7 @@ class CreateSignForFile extends Component {
         };
       }());
       saveData(blob, "signed_file");
+      _this.state.instance.disableElements(sinatureTools)
     } // end of processTheFile
   }
 
@@ -199,8 +203,10 @@ class CreateSignForFile extends Component {
         //   'Tệp văn bản chưa được kí!',
         //   'error'
         // )
+        _this.state.instance.enableElements(sinatureTools)
       } else {
         await _this.props.actions.getUserInfoByPublicKey({ data: { publicKey: newPublicKey } })
+        _this.state.instance.disableElements(sinatureTools)
       }
     } // end of processTheFile
   } // end of decryptTheFile
@@ -212,7 +218,7 @@ class CreateSignForFile extends Component {
     Webviewer({
       path: 'lib', initialDoc: '',
       disabledElements: [
-        'ribbons',
+        // 'ribbons',
         'toggleNotesButton',
         'searchButton',
         // 'menuButton',
@@ -223,11 +229,33 @@ class CreateSignForFile extends Component {
         'undo',
         'redo',
         'eraserToolButton',
-        'downloadButton'
+        'downloadButton',
+        'selectToolButton',
+        'underlineToolGroupButton',
+        'strikeoutToolGroupButton',
+        'squigglyToolGroupButton',
+        'stickyToolGroupButton',
+        'freeTextToolGroupButton',
+        'shapeToolGroupButton',
+        'freeHandToolGroupButton',
+        'highlightToolGroupButton',
+        'toolbarGroup-Shapes',
+        'toolbarGroup-Edit',
+        'textPopup',
+        'copyTextButton',
+        'textHighlightToolButton',
+        'textUnderlineToolButton',
+        'textSquigglyToolButton',
+        'textStrikeoutToolButton',
+        'viewControlsButton',
+        'leftPanelButton'
       ],
-    }, this.viewerDiv.current).then(instance => {
+    }, this.viewerDiv.current).then(async instance => {
+      await _this.setState({
+        instance,
+      })
       const { docViewer, annotManager, CoreControls } = instance;
-      instance.enableElements(['readerPageTransitionButton']);
+      //instance.enableElements(['readerPageTransitionButton']);
       const signatureTool = docViewer.getTool('AnnotationCreateSignature');
 
       let newArr = instance.annotationPopup.getItems().filter(item => item.dataElement === "annotationDeleteButton") || [];
@@ -261,6 +289,8 @@ class CreateSignForFile extends Component {
       instance.setHeaderItems(header => {
         header.push({
           type: 'actionButton',
+          toolName: 'CustomTool',
+          dataElement: 'SignDownload',
           title: "Tải xuống",
           img: imgDownload,
           onClick: async () => {
@@ -321,18 +351,17 @@ class CreateSignForFile extends Component {
                     <form method="post" action="#" id="#">
                       <div className="form-group files">
                         <input
-                        title={this.state?.documentFile?.name}
+                          title={this.state?.documentFile}
                           onChange={(e) => {
-                            if (e?.target?.files?.length > 0)
-                            {
+                            if (e?.target?.value?.length > 0) {
                               this.setState({
-                                documentFile: e?.target?.files?.length > 0 && e?.target?.files[0]
+                                documentFile: e.target.value
                               })
                             }
                           }}
                           id="input-sign-file"
                           type="file" className="form-control" multiple="" style={{ marginTop: 4 }}
-                          value={/* this.state?.documentFile?.name ? this.state?.documentFile?.name : */ ""}
+                          value={this.state?.documentFile ? this.state.documentFile : ""}
                         />
                       </div>
                     </form>
