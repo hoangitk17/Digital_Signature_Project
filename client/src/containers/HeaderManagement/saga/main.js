@@ -86,6 +86,8 @@ function* handleSignUp(action) {
         yield action.payload.closeModal();
     } catch (error) {
 
+        console.log("Err sign up", error, error?.data)
+
         yield put(actions.signUpFail(error?.data?.message || ""));
 
         yield Swal.fire(
