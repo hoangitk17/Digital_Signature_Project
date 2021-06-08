@@ -101,9 +101,10 @@ export default handleActions(
             })
         },
         [actions.signUpFail]: (state, action) => {
+            console.log("reducer", action?.payload?.message, action?.payload)
             return freeze({
                 ...state,
-                errorMessageSignUp: action.payload,
+                errorMessageSignUp: "Tài khoản này đã tồn tại!",
                 isLoading: false
             })
         },

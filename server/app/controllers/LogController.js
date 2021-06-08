@@ -12,12 +12,12 @@ class LogController {
             time,
             action, } = req.body;
 
-        try {
-            const oldUser = await User.findOne({ _id: userId });
+        /* try { */
+            /* const oldUser = await User.findOne({ _id: userId });
 
             if (!oldUser) return res.status(404).json({ message: "User doesn't exist" });
 
-            /* const newLog = new Log({
+            const newLog = new Log({
               userId,
               time,
               action,
@@ -32,11 +32,11 @@ class LogController {
                 //await newLog.save();
                 res.status(201).json({ data: newLog });
             } catch (error) {
-                res.status(409).json({ message: error.message });
+                res.status(409).json({ message: error?.message || "Something went wrong" });
             }
-        } catch (err) {
+        /* } catch (err) {
             res.status(500).json({ message: "Something went wrong" });
-        }
+        } */
     };
 
     // [GET] /log/list

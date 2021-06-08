@@ -55,7 +55,7 @@ class Header extends Component {
             address: "",
             privateKey: "",
             publicKey: "",
-            status: 1, //0 la khoa tai khoan, 1 la tai khoan dang hoat dong
+            status: 1, //1 la khoa tai khoan, 2 la tai khoan dang hoat dong, 3 khoa tai khoan, 4 la tai khoan dang bi sai thong tin
             signImage: "",
             avatar: "",
             gender: true, //true la nam, false la nu
@@ -357,12 +357,13 @@ class Header extends Component {
                         signImage,
                         avatar,
                         dateOfBirth,
-                        statusId: status,
+                        statusId: 1,
                         roleId: 1,
                         gender,
                         imageIdCardFront: cardIdFront,
                         imageIdCardBack: cardIdBack
                     }
+                    console.log("data sign up", data)
                     this.props.actions.signUp({
                         data, closeModal: this.onCloseModalSignUp
                     });
@@ -416,6 +417,23 @@ class Header extends Component {
         })
     }
 
+    showAlertPrevent = (check) => {
+        if(check === true)
+        {
+            Swal.fire(
+                'Thông báo',
+                'Thông tin cá nhân của bạn chưa chính xác. Bạn hãy cập nhật lại thông tin cá nhân chính xác để có thể sử dụng chức năng cập nhật hình ảnh chữ ký!',
+                'warning'
+            )
+        }else {
+            Swal.fire(
+                'Thông báo',
+                'Thông tin cá nhân của bạn chưa chính xác. Bạn hãy cập nhật lại thông tin cá nhân chính xác để có thể sử dụng chức năng ký văn bản!',
+                'warning'
+            )
+        }
+    }
+
     render() {
         const { InfoAfterSignIn,
             hidePassword,
@@ -426,6 +444,7 @@ class Header extends Component {
         const { isError, errorMessage, errorMessageSignUp } = this.props;
         var messenger = !isError ? "" : errorMessage;
         var messengerSignUp = errorMessageSignUp ? errorMessageSignUp : null;
+        console.log("messengerSignUp", messengerSignUp)
         const invalidChars = [
             "-",
             "+",
@@ -488,8 +507,8 @@ class Header extends Component {
                                                     </a>
                                                     <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
                                                         <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }} data-bs-toggle="modal" data-bs-target="#modalEditInfoUser" onClick={this.setDataInfoUser}>Thông tin tài khoản</a></li>
-                                                        <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }} data-bs-toggle="modal" data-bs-target="#modalCreateFileForFile">Ký văn bản</a></li>
-                                                        <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }} data-bs-toggle="modal" data-bs-target="#modalUpdateSign" onClick={this.setDataImageWhenClosePopup}>Cập nhật hình ảnh chữ ký</a></li>
+                                                        {InfoAfterSignIn?.statusId === 4 ? <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }} onClick={this.showAlertPrevent}>Ký văn bản</a></li> : <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }} data-bs-toggle="modal" data-bs-target="#modalCreateFileForFile">Ký văn bản</a></li>}
+                                                        {InfoAfterSignIn?.statusId === 4 ? <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }} onClick={() => this.showAlertPrevent(true)}>Cập nhật hình ảnh chữ ký</a></li> : <li><a className="dropdown-item" href="#" style={{ fontSize: 16 }} data-bs-toggle="modal" data-bs-target="#modalUpdateSign" onClick={this.setDataImageWhenClosePopup}>Cập nhật hình ảnh chữ ký</a></li>}
                                                         <li><hr className="dropdown-divider" /></li>
                                                         <li><a className="dropdown-item" href="#" onClick={this.logOut} style={{ fontSize: 16 }}>Đăng xuất</a></li>
                                                     </ul>
@@ -768,7 +787,11 @@ class Header extends Component {
                                             >
                                                 <b>{errors.userName}</b>
                                             </div>
-                                        ) : null}
+                                        ) : (<div className="message-err-signup mt-1">
+                                            {
+                                                messengerSignUp && messengerSignUp !== "" ? messengerSignUp : null
+                                            }
+                                        </div>)}
                                     </div>
                                     <div className="form-group mt-3" style={{ position: "relative" }}>
                                         <label>Mật Khẩu</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
@@ -869,11 +892,6 @@ class Header extends Component {
                                         ) : null}
                                     </div>
                                 </form>
-                                <div className="message-err mt-3">
-                                    {
-                                        messengerSignUp && messengerSignUp !== "" ? <><hr /><b>{messengerSignUp}</b></> : ""
-                                    }
-                                </div>
                             </div>
                             <div className="modal-footer">
                                 <button onClick={this.onCloseModalSignUp} type="button" className="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
