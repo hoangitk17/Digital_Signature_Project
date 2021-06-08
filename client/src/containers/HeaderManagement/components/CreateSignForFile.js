@@ -9,7 +9,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEye,
-  faEyeSlash
+  faEyeSlash,
 } from "@fortawesome/free-solid-svg-icons";
 import $ from 'jquery';
 import Validator from "../../../utils/validator";
@@ -19,7 +19,8 @@ import { get } from '../../../services/localStorage';
 import Webviewer from '@pdftron/webviewer';
 import { Crypt, RSA } from 'hybrid-crypto-js';
 import { imgDownload } from '../../../images/base64/Download';
-import { imgVerify } from "../../../images/base64/Verify"
+import { imgVerify } from "../../../images/base64/Verify";
+import { imgCheck } from "../../../images/base64/Check"
 import common from "../../../utils/common";
 import nodeForge from "../../../utils/nodeforge";
 import forge from 'node-forge';
@@ -31,7 +32,7 @@ var crypt = new Crypt({
 });
 var privateKey = null;
 var publicKey = null;
-const sinatureTools = ['toolbarGroup-Insert', 'signatureToolGroupButton', 'toolsOverlay','SignDownload', 'contextMenuPopup', 'annotationPopup'];
+const sinatureTools = ['toolbarGroup-Insert', 'signatureToolGroupButton', 'toolsOverlay', 'contextMenuPopup', 'annotationPopup'];
 class CreateSignForFile extends Component {
   constructor(props) {
     super(props);
@@ -39,6 +40,7 @@ class CreateSignForFile extends Component {
       documentFile: null,
       oldDocumentFile: null,
       instance: null,
+      signingTime: null,
     };
     this.viewerDiv = React.createRef();
   }
@@ -62,11 +64,6 @@ class CreateSignForFile extends Component {
     privateKey = nodeForge.decryptAES(buffer, aesKeyPem);
     publicKey = infoUser.publicKey;
 
-    // var rsa = new RSA();
-    // rsa.generateKeyPairAsync().then(keyPair => {
-    //   privateKey = keyPair.privateKey;
-    //   publicKey = keyPair.publicKey;
-    // });
   }
 
   concatTypedArrays = (a, b) => { // a, b TypedArray of same type
@@ -139,6 +136,7 @@ class CreateSignForFile extends Component {
 
   verifyTheFile = () => {
     var _this = this;
+    let isError = false;
     var sourceFile = document.getElementById("input-sign-file").files[0];
     if (!sourceFile) {
       return;
@@ -182,31 +180,35 @@ class CreateSignForFile extends Component {
           message,
         );
       } catch (e) {
-        await Swal.fire(
-          'Thông báo',
-          'Tệp văn bản này chưa được kí!',
-          'info'
-        )
+        isError = true;
         await _this.props.actions.getUserInfoByPublicKey({})
       }
       var blob = null;
+      let isEdited = false;
       if (successful) {
         blob = new Blob([plaintext], { type: "application/octet-stream" });
       } else {
         blob = null;
+        isEdited = true;
       }
 
       if (blob === null) {
         await _this.props.actions.getUserInfoByPublicKey({})
-        // await Swal.fire(
-        //   'Thông báo',
-        //   'Tệp văn bản chưa được kí!',
-        //   'error'
-        // )
+        if (isEdited && isError === false) {
+          await Swal.fire(
+            'Thông báo',
+            'Tệp văn bản đã bị chỉnh sửa',
+            'error'
+          )
+        }
         _this.state.instance.enableElements(sinatureTools)
       } else {
         await _this.props.actions.getUserInfoByPublicKey({ data: { publicKey: newPublicKey } })
-        _this.state.instance.disableElements(sinatureTools)
+        _this.state.instance.disableElements([...sinatureTools, 'ConfirmSign'])
+        const { annotManager } = _this.state.instance;
+        annotManager.setReadOnly(true);
+        let signingTime = new Date(sourceFile.lastModified);
+        _this.setState({ signingTime });
       }
     } // end of processTheFile
   } // end of decryptTheFile
@@ -269,20 +271,37 @@ class CreateSignForFile extends Component {
         if (file) {
           instance.loadDocument(file, { filename: file.name });
           _this.verifyTheFile();
+          instance.disableElements(['SignDownload']);
+          instance.enableElements(['ConfirmSign','AuthenticateSign']);
+          annotManager.setReadOnly(false);
         }
       });
 
       docViewer.on('documentLoaded', () => {
-        signatureTool.importSignatures([_this.props.InfoAfterSignIn?.signImage]);
+        _this.getBase64Image(_this.props.InfoAfterSignIn?.signImage, (base64) => {
+          signatureTool.importSignatures([base64]);
+        })
       });
 
       instance.setHeaderItems(header => {
         header.push({
           type: 'actionButton',
           title: "Chứng thực",
+          toolName: 'AuthenticateSign',
+          dataElement: 'AuthenticateSign',
           img: imgVerify,
           onClick: async () => {
             this.verifyTheFile();
+          }
+        });
+        header.push({
+          type: 'actionButton',
+          toolName: 'ConfirmSign',
+          dataElement: 'ConfirmSign',
+          title: "Xác nhận và kí văn bản",
+          img: imgCheck,
+          onClick: async () => {
+            this.confirmSignature();
           }
         });
       });
@@ -323,13 +342,59 @@ class CreateSignForFile extends Component {
           }
         });
       });
+      instance.disableElements(['SignDownload']);
+     
     })
 
   };
 
+  confirmSignature = () => {
+    if (this.state.documentFile) {
+      let disableElements = ['toolbarGroup-Insert', 'signatureToolGroupButton', 'toolsOverlay', 'contextMenuPopup', 'annotationPopup', 'undoButton', 'redoButton', 'annotationDeleteButton', 'ConfirmSign','AuthenticateSign'];
+      Swal.fire(
+        'Thông báo',
+        'Kí văn bản thành công',
+        'success'
+      )
+      // Không cho dịch chuyển văn bản sau khi kí
+      const { annotManager } = this.state.instance;
+      annotManager.setReadOnly(true);
+
+      this.state.instance.disableElements(disableElements)
+      this.state.instance.enableElements(['SignDownload'])
+    } else {
+
+    }
+  }
+
+  getBase64Image = (imgUrl, callback) => {
+
+    var img = new Image();
+
+    // onload fires when the image is fully loadded, and has width and height
+
+    img.onload = function () {
+
+      var canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      var ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0);
+      var dataURL = canvas.toDataURL("image/png")
+      // dataURL = dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+
+      callback(dataURL); // the base64 string
+
+    };
+
+    // set attributes and src 
+    img.setAttribute('crossOrigin', 'anonymous'); //
+    img.src = imgUrl;
+
+  }
 
   render() {
-    const { documentFile } = this.state;
+    const { documentFile, signingTime } = this.state;
     const { userInfoSigned } = this.props;
     return (
       <div className="create-sign-for-file">
@@ -382,6 +447,8 @@ class CreateSignForFile extends Component {
                               <p className="card-text">{userInfoSigned.email || ""}</p>
                               <h6 className="card-title" style={{ fontWeight: "bold" }}>Số điện thoại</h6>
                               <p className="card-text">{userInfoSigned.phoneNumber || ""}</p>
+                              <h6 className="card-title" style={{ fontWeight: "bold" }}>Thời gian ký</h6>
+                              <p className="card-text">{signingTime ? signingTime.toLocaleString('vi-VN') : ""}</p>
                             </div>
                           </div></>
                       ) : null

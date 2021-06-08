@@ -145,6 +145,7 @@ function* handleGetUserInfoByPublicKey(action) {
       'info'
     )
   } catch (error) {
+    console.log(error);
     yield put(actions.getUserInfoByPublicKeyFail(error));
       yield Swal.fire(
           'Thông báo',
