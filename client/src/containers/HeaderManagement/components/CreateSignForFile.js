@@ -40,6 +40,7 @@ class CreateSignForFile extends Component {
       documentFile: null,
       oldDocumentFile: null,
       instance: null,
+      signingTime: null,
     };
     this.viewerDiv = React.createRef();
   }
@@ -203,9 +204,11 @@ class CreateSignForFile extends Component {
         _this.state.instance.enableElements(sinatureTools)
       } else {
         await _this.props.actions.getUserInfoByPublicKey({ data: { publicKey: newPublicKey } })
-        _this.state.instance.disableElements(sinatureTools)
+        _this.state.instance.disableElements([...sinatureTools, 'ConfirmSign'])
         const { annotManager } = _this.state.instance;
         annotManager.setReadOnly(true);
+        let signingTime = new Date(sourceFile.lastModified);
+        _this.setState({ signingTime });
       }
     } // end of processTheFile
   } // end of decryptTheFile
@@ -351,7 +354,7 @@ class CreateSignForFile extends Component {
       Swal.fire(
         'Thông báo',
         'Kí văn bản thành công',
-        'info'
+        'success'
       )
       // Không cho dịch chuyển văn bản sau khi kí
       const { annotManager } = this.state.instance;
@@ -391,7 +394,7 @@ class CreateSignForFile extends Component {
   }
 
   render() {
-    const { documentFile } = this.state;
+    const { documentFile, signingTime } = this.state;
     const { userInfoSigned } = this.props;
     return (
       <div className="create-sign-for-file">
@@ -444,6 +447,8 @@ class CreateSignForFile extends Component {
                               <p className="card-text">{userInfoSigned.email || ""}</p>
                               <h6 className="card-title" style={{ fontWeight: "bold" }}>Số điện thoại</h6>
                               <p className="card-text">{userInfoSigned.phoneNumber || ""}</p>
+                              <h6 className="card-title" style={{ fontWeight: "bold" }}>Thời gian ký</h6>
+                              <p className="card-text">{signingTime ? signingTime.toLocaleString('vi-VN') : ""}</p>
                             </div>
                           </div></>
                       ) : null
