@@ -22,7 +22,6 @@ import common from "../../../utils/common";
 import { get } from "../../../services/localStorage";
 import axios from "axios";
 import { createLog } from "../../../api/log";
-const infoUser = common.decodeToken(get("accessToken"));
 const iconEye = <FontAwesomeIcon icon={faEye} />;
 const iconEyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
 
@@ -244,7 +243,9 @@ class PopupEditInfoUser extends Component {
         })
     }
 
-    updateInfoUser = async() => {
+  updateInfoUser = async () => {
+      
+        const infoUser = common.decodeToken(get("accessToken"));
         var avatar = await this.cropImage3.uploadImage();
         let avatarTemp = "";
         if(avatar !== this.state.avatar)

@@ -275,7 +275,8 @@ class Header extends Component {
             oldPassword: "",
             errors: {},
             isCheckClosePopup: true,
-            errorImageCardId: ""
+          errorImageCardId: "",
+          errorMessageSignUp: ""
         });
         await document.querySelector('#modalSignUpTemp').click();
     }

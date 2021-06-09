@@ -39,8 +39,9 @@ class UserController {
         } = req.body;
         try {
             const oldUser = await User.findOne({ userName });
-
+          
             if (oldUser) return res.status(400).json({ message: "Tài khoản này đã tồn tại" });
+          console.log("pass");
             let keyPair = null;
             let usableKey = false;
             do {
@@ -197,6 +198,7 @@ class UserController {
     //[PUT] /user/image-sign/:id
     async updateImageSign(req, res, next) {
         const { id } = req.params;
+      console.log(id);
         var { signImage,
             password,
             name,
@@ -219,18 +221,13 @@ class UserController {
         try {
             if (processedFile && JSON.stringify(processedFile) !== JSON.stringify({})) {
                 let orgName = processedFile.originalname || ''; // Tên gốc trong máy tính của người upload
-                console.log("1", orgName)
                 orgName = orgName.trim().replace(/ /g, "-")
-                console.log("2", orgName)
                 const fullPathInServ = processedFile.path; // Đường dẫn đầy đủ của file vừa đc upload lên server
-                console.log("3", fullPathInServ)
                 let prefixImage = fullPathInServ?.slice(0, 7);
                 let idImage = fullPathInServ?.slice(7);
                 // Đổi tên của file vừa upload lên, vì multer đang đặt default ko có đuôi file
                 const newFullPath = `${prefixImage}hung-${idImage}-${orgName}`;
-                console.log("4", newFullPath)
                 fs.renameSync(fullPathInServ, newFullPath);
-                console.log("5", fullPathInServ, newFullPath)
                 res.send({
                     status: true,
                     message: 'file uploaded',
@@ -243,7 +240,7 @@ class UserController {
 
 
                 updatedPost = { signImage: newFullPath, _id: id };
-                await User.findByIdAndUpdate({ _id: id }, { $set: updatedPost }, { upsert: true, new: true });
+                await User.findByIdAndUpdate({ _id: id }, { $set: updatedPost });
             } else {
                 updatedPost = {
                     password,
@@ -258,7 +255,7 @@ class UserController {
                     gender, _id: id
                 };
 
-                await User.findByIdAndUpdate({ _id: id }, { $set: updatedPost }, { upsert: true, new: true });
+                await User.findByIdAndUpdate({ _id: id }, { $set: updatedPost });
 
                 res.json(updatedPost);
             }
