@@ -305,7 +305,7 @@ class Header extends Component {
     }
 
     signUp = async() => {
-        const {
+        let {
             password,
             oldPassword,
             name,
@@ -344,6 +344,15 @@ class Header extends Component {
                 if (result.isConfirmed) {
                     let cardIdFront = await this.uploadImageCardId(avatar1);
                     let cardIdBack = await this.uploadImageCardId(avatar2);
+                    if (cardIdFront.slice(0, 27) === "http://localhost:5000/user/") {
+                        cardIdFront = cardIdFront.slice(27);
+                    }
+                    if (cardIdBack.slice(0, 27) === "http://localhost:5000/user/") {
+                        cardIdBack = cardIdBack.slice(27);
+                    }
+                    if (avatar.slice(0, 27) === "http://localhost:5000/user/") {
+                        avatar = avatar.slice(27);
+                    }
                     const data = {
                         password: md5(password),
                         name,
