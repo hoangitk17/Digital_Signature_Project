@@ -302,13 +302,17 @@ class CreateSignForFile extends Component {
           img: imgCheck,
           onClick: async () => {
             this.confirmSignature();
-            const infoUser = common.decodeToken(get("accessToken"));
-            const dataLog = {
-              userId: `${infoUser?.data?._id}`,
-              action: "Ký văn bản",
-              time: `${new Date()}`
+            try {
+              const infoUser = common.decodeToken(get("accessToken"));
+              const dataLog = {
+                userId: `${infoUser?.data?._id}`,
+                action: "Ký văn bản",
+                time: `${new Date()}`
+              }
+              createLog({ data: dataLog });
+            } catch (e) {
+
             }
-            createLog({ data: dataLog });
           }
         });
       });
