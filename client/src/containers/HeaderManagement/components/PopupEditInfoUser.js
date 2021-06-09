@@ -245,7 +245,7 @@ class PopupEditInfoUser extends Component {
     }
 
     updateInfoUser = async() => {
-        const avatar = await this.cropImage3.uploadImage();
+        var avatar = await this.cropImage3.uploadImage();
         let avatarTemp = "";
         if(avatar !== this.state.avatar)
         {
@@ -269,6 +269,14 @@ class PopupEditInfoUser extends Component {
                 )
             })
         }
+        if (avatar.slice(0, 27) === "http://localhost:5000/user/")
+        {
+            avatar = avatar.slice(27);
+        }
+        if (avatarTemp.slice(0, 27) === "http://localhost:5000/user/") {
+            avatarTemp = avatarTemp.slice(27);
+        }
+        console.log("link image avatar", avatar, avatarTemp, avatar.slice(0, 27), avatar.slice(27))
         const {
             password,
             newPassword,
@@ -445,7 +453,10 @@ class PopupEditInfoUser extends Component {
                     }
                 })
             }
-
+        }else {
+            this.setState({
+                errors: { ...this.validator.validate(this.state) }
+            });
         }
     }
 

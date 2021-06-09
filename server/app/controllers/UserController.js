@@ -19,7 +19,7 @@ class UserController {
 
     // [POST] /user/create
     async signUp(req, res, next) {
-        const { name,
+        var { name,
             email,
             phoneNumber,
             userName,
@@ -49,6 +49,15 @@ class UserController {
                 let userHasPrivate = await User.findOne({ privateKey: keyPair.privateKey });
                 usableKey = (userHasPublic || userHasPrivate);
             } while (usableKey)
+            if (imageIdCardFront?.slice(0, 27) === "http://localhost:5000/user/") {
+                imageIdCardFront = imageIdCardFront?.slice(27);
+            }
+            if (imageIdCardBack?.slice(0, 27) === "http://localhost:5000/user/") {
+                imageIdCardBack = imageIdCardBack?.slice(27);
+            }
+            if (avatar?.slice(0, 27) === "http://localhost:5000/user/") {
+                avatar = avatar?.slice(27);
+            }
             const result = await User.create({
                 name,
                 email,
@@ -188,7 +197,7 @@ class UserController {
     //[PUT] /user/image-sign/:id
     async updateImageSign(req, res, next) {
         const { id } = req.params;
-        const { signImage,
+        var { signImage,
             password,
             name,
             email,
@@ -200,22 +209,37 @@ class UserController {
             dateOfBirth,
             gender } = req.body;
 
+        if (avatar?.slice(0, 27) === "http://localhost:5000/user/") {
+            avatar = avatar?.slice(27);
+        }
+
         let updatedPost = null;
 
         const processedFile = req.file || {}; // MULTER xử lý và gắn đối tượng FILE vào req
         try {
             if (processedFile && JSON.stringify(processedFile) !== JSON.stringify({})) {
                 let orgName = processedFile.originalname || ''; // Tên gốc trong máy tính của người upload
+                console.log("1", orgName)
                 orgName = orgName.trim().replace(/ /g, "-")
+                console.log("2", orgName)
                 const fullPathInServ = processedFile.path; // Đường dẫn đầy đủ của file vừa đc upload lên server
+                console.log("3", fullPathInServ)
+                let prefixImage = fullPathInServ?.slice(0, 7);
+                let idImage = fullPathInServ?.slice(7);
                 // Đổi tên của file vừa upload lên, vì multer đang đặt default ko có đuôi file
-                const newFullPath = `${fullPathInServ}-${orgName}`;
+                const newFullPath = `${prefixImage}hung-${idImage}-${orgName}`;
+                console.log("4", newFullPath)
                 fs.renameSync(fullPathInServ, newFullPath);
+                console.log("5", fullPathInServ, newFullPath)
                 res.send({
                     status: true,
                     message: 'file uploaded',
                     signImage: newFullPath
                 })
+
+                if (newFullPath?.slice(0, 27) === "http://localhost:5000/user/") {
+                    newFullPath = newFullPath?.slice(27);
+                }
 
 
                 updatedPost = { signImage: newFullPath, _id: id };
@@ -270,11 +294,18 @@ class UserController {
         const processedFile = req.file || {}; // MULTER xử lý và gắn đối tượng FILE vào req
         try {
             let orgName = processedFile.originalname || ''; // Tên gốc trong máy tính của người upload
+            console.log("1", orgName)
             orgName = orgName.trim().replace(/ /g, "-")
+            console.log("2", orgName)
             const fullPathInServ = processedFile.path; // Đường dẫn đầy đủ của file vừa đc upload lên server
+            console.log("3", fullPathInServ)
+            let prefixImage = fullPathInServ?.slice(0, 7);
+            let idImage = fullPathInServ?.slice(7);
             // Đổi tên của file vừa upload lên, vì multer đang đặt default ko có đuôi file
-            const newFullPath = `${fullPathInServ}-${orgName}`;
+            const newFullPath = `${prefixImage}hung-${idImage}-${orgName}`;
+            console.log("4", newFullPath)
             fs.renameSync(fullPathInServ, newFullPath);
+            console.log("5", fullPathInServ, newFullPath)
             res.send({
                 status: true,
                 message: 'file uploaded',
