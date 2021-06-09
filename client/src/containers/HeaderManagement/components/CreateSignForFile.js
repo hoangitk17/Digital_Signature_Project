@@ -96,7 +96,7 @@ class CreateSignForFile extends Component {
 
       var reader = this;
       var plaintext = reader.result;
-      // Tạo chữ kí với public key
+      // Tạo chữ kí với private key
       var signature = crypt.signature(privateKey, ab2str(plaintext));
       // Chuyển chữ kí từ chuỗi về mảng array buffer(byte)
       var arrayBufferSign = str2ab(JSON.stringify(signature));
@@ -272,11 +272,11 @@ class CreateSignForFile extends Component {
           instance.loadDocument(file, { filename: file.name });
           _this.verifyTheFile();
           instance.disableElements(['SignDownload']);
-          instance.enableElements(['ConfirmSign','AuthenticateSign']);
+          instance.enableElements(['ConfirmSign', 'AuthenticateSign']);
           annotManager.setReadOnly(false);
         }
       });
-
+      // import hình ảnh chữ ký
       docViewer.on('documentLoaded', () => {
         _this.getBase64Image(_this.props.InfoAfterSignIn?.signImage, (base64) => {
           signatureTool.importSignatures([base64]);
@@ -302,6 +302,13 @@ class CreateSignForFile extends Component {
           img: imgCheck,
           onClick: async () => {
             this.confirmSignature();
+            const infoUser = common.decodeToken(get("accessToken"));
+            const dataLog = {
+              userId: `${infoUser?.data?._id}`,
+              action: "Ký văn bản",
+              time: `${new Date()}`
+            }
+            createLog({ data: dataLog });
           }
         });
       });
@@ -343,14 +350,14 @@ class CreateSignForFile extends Component {
         });
       });
       instance.disableElements(['SignDownload']);
-     
+
     })
 
   };
 
   confirmSignature = () => {
     if (this.state.documentFile) {
-      let disableElements = ['toolbarGroup-Insert', 'signatureToolGroupButton', 'toolsOverlay', 'contextMenuPopup', 'annotationPopup', 'undoButton', 'redoButton', 'annotationDeleteButton', 'ConfirmSign','AuthenticateSign'];
+      let disableElements = ['toolbarGroup-Insert', 'signatureToolGroupButton', 'toolsOverlay', 'contextMenuPopup', 'annotationPopup', 'undoButton', 'redoButton', 'annotationDeleteButton', 'ConfirmSign', 'AuthenticateSign'];
       Swal.fire(
         'Thông báo',
         'Kí văn bản thành công',
