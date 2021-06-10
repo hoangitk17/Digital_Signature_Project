@@ -55,6 +55,8 @@ class PopupEditInfoUser extends Component {
             gender: true, //true la nam, false la nu
             newPassword: "",
             oldNewPassword: "",
+            companyName: props.InfoAfterSignIn?.companyName,
+            companyId: props.InfoAfterSignIn?.companyId,
             /* }, */
             errors: {},
         };
@@ -220,6 +222,8 @@ class PopupEditInfoUser extends Component {
                 imageIdCardFront: nextProps.InfoAfterSignIn?.imageIdCardFront,
                 imageIdCardBack: nextProps.InfoAfterSignIn?.imageIdCardBack,
                 oldPassword: nextProps.InfoAfterSignIn?.password,
+                companyName: nextProps.InfoAfterSignIn?.companyName,
+                companyId: nextProps.InfoAfterSignIn?.companyId,
             };
         }
         return null;
@@ -245,6 +249,8 @@ class PopupEditInfoUser extends Component {
             oldPassword: this.props.InfoAfterSignIn.InfoAfterSignIn?.password,
             imageIdCardFront: this.props.InfoAfterSignIn?.imageIdCardFront,
             imageIdCardBack: this.props.InfoAfterSignIn?.imageIdCardBack,
+            companyName: this.props.InfoAfterSignIn?.companyName,
+            companyId: this.props.InfoAfterSignIn?.companyId,
             errors: {}
         })
     }
@@ -356,6 +362,8 @@ class PopupEditInfoUser extends Component {
             gender,
             oldNewPassword,
             oldPassword,
+            companyId,
+            companyName,
             errors
         } = this.state;
         if (
@@ -384,7 +392,9 @@ class PopupEditInfoUser extends Component {
                             imageIdCardFront: imageFrontTemp !== "" ? imageFrontTemp : imageFront,
                             imageIdCardBack: imageBackTemp !== "" ? imageBackTemp : imageBack,
                             dateOfBirth,
-                            gender
+                            gender,
+                            companyId,
+                            companyName
                         }
                         this.setState({
                             errors: {}
@@ -467,7 +477,9 @@ class PopupEditInfoUser extends Component {
                     imageIdCardFront: imageFrontTemp !== "" ? imageFrontTemp : imageFront,
                     imageIdCardBack: imageBackTemp !== "" ? imageBackTemp : imageBack,
                     dateOfBirth,
-                    gender
+                    gender,
+                    companyName,
+                    companyId
                 }
                 //TH: Không cập nhật mật khẩu
                 this.setState({
@@ -633,6 +645,25 @@ class PopupEditInfoUser extends Component {
                                                                 <b>{errors.name}</b>
                                                             </div>
                                                         ) : null}
+                                                        <div className="margin-5 col-md-4 line-height-55">
+                                                            <label>Tên DN</label>
+                                                        </div>
+                                                        <div className="margin-5 col-md-8">
+                                                            <input disabled={disabled} onChange={(e) => { this.setState({companyName: e.target.value})
+                                                            }}
+                                                                className="form-control mt-2" placeholder="Nhập tên doanh nghiệp..." type="text" value={this.state.companyName}
+                                                            />
+                                                        </div>
+                                                        <div className="margin-5 col-md-4 line-height-55">
+                                                            <label>Mã số thuế</label>
+                                                        </div>
+                                                        <div className="margin-5 col-md-8">
+                                                            <input disabled={disabled} onChange={(e) => {
+                                                                this.setState({ companyId: e.target.value })
+                                                            }}
+                                                                className="form-control mt-2" placeholder="Nhập mã số thuế..." type="text" value={this.state.companyId}
+                                                            />
+                                                        </div>
                                                         <div className="margin-5 col-md-4 line-height-55">
                                                             <label>CCCD</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
                                                         </div>

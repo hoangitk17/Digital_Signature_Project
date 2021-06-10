@@ -35,13 +35,14 @@ class UserController {
             roleId,
             gender,
             imageIdCardFront,
-            imageIdCardBack
+            imageIdCardBack,
+            companyName,
+            companyId
         } = req.body;
         try {
             const oldUser = await User.findOne({ userName });
 
             if (oldUser) return res.status(400).json({ message: "Tài khoản này đã tồn tại" });
-          console.log("pass");
             let keyPair = null;
             let usableKey = false;
             do {
@@ -76,7 +77,9 @@ class UserController {
                 roleId,
                 gender,
                 imageIdCardFront,
-                imageIdCardBack
+                imageIdCardBack,
+                companyName,
+                companyId
             });
             //const token = jwt.sign({ email: result.email, id: result._id }, secret, { expiresIn: "1h" });
             //res.status(201).json({ result, token });
@@ -108,6 +111,8 @@ class UserController {
             imageIdCardBack: linkServer + user?.imageIdCardBack, //"http://vyctravel.com/libs/upload/ckfinder/images/Visa/h%E1%BB%99%20chi%E1%BA%BFu/Untitled-7(1).jpg"
             avatar: linkServer + user?.avatar,
             signImage: linkServer + user?.signImage,
+            companyName: user?.companyName ? user?.companyName : "",
+            companyId: user?.companyId ? user?.companyId : ""
           }
         });
         if (name) {
@@ -121,43 +126,10 @@ class UserController {
         if (status) {
           newUsers = newUsers.filter(user => user.statusId === status);
         }
-        // var newUsers = [
-        //   {
-        //     id: 1,
-        //     name: "Nguyễn Văn A",
-        //     email: "nguyenvana@gmail.com",
-        //     phoneNumber: "0328427348",
-        //     userName: "nguyenvana1928",
-        //     password: "ddjfkfdjkaldfafadffsfsd",
-        //     cardId: "182472432",
-        //     dateOfBirth: "1999-10-09T01:00:04.000Z",
-        //     address: "Hóc Môn, TP Hồ Chí Minh",
-        //     statusId: 1,
-        //     gender: true,
-
-        //   },
-        //   {
-        //     id: 2,
-        //     name: "Nguyễn Văn B",
-        //     email: "nguyenvanb@gmail.com",
-        //     phoneNumber: "014324348",
-        //     userName: "nguyenvanb1928",
-        //     password: "ddjfkfdjkaldfafadffsfsd",
-        //     cardId: "1343242432",
-        //     dateOfBirth: "1999-10-09T01:00:04.000Z",
-        //     address: "Hóc Môn, TP Hồ Chí Minh",
-        //     statusId: 2,
-        //     gender: false,
-        //     imageIdCardFront: "https://congdongyoutube.com/wp-content/uploads/2020/09/image-1.png",
-        //     imageIdCardBack: "http://vyctravel.com/libs/upload/ckfinder/images/Visa/h%E1%BB%99%20chi%E1%BA%BFu/Untitled-7(1).jpg",
-        //     avatar: "https://1.bp.blogspot.com/-O6xJJOTcgMI/XxF9toYJJbI/AAAAAAAAqTU/kDR_SArOGG0srXdhRXjtk3I12wZpjwOTwCLcBGAsYHQ/s1600/anh-dai-dien-gai-dep%2B%25281%2529.jpg"
-        //   }
-        // ]
 
                 res.json(newUsers);
             });
         } catch (error) {
-            console.log(error);
             res.status(500).json({ message: "Something went wrong" });
         }
     }
@@ -199,7 +171,6 @@ class UserController {
     //[PUT] /user/image-sign/:id
     async updateImageSign(req, res, next) {
         const { id } = req.params;
-      console.log(id);
         var { signImage,
             password,
             name,
@@ -212,7 +183,9 @@ class UserController {
             dateOfBirth,
             gender,
             imageIdCardFront,
-            imageIdCardBack } = req.body;
+            imageIdCardBack,
+            companyId,
+            companyName } = req.body;
 
         if (avatar?.slice(0, 27) === "http://localhost:5000/user/") {
             avatar = avatar?.slice(27);
@@ -267,6 +240,8 @@ class UserController {
                     gender,
                     imageIdCardFront,
                     imageIdCardBack,
+                    companyId,
+                    companyName,
                     _id: id
                 };
 
@@ -306,18 +281,13 @@ class UserController {
         const processedFile = req.file || {}; // MULTER xử lý và gắn đối tượng FILE vào req
         try {
             let orgName = processedFile.originalname || ''; // Tên gốc trong máy tính của người upload
-            console.log("1", orgName)
             orgName = orgName.trim().replace(/ /g, "-")
-            console.log("2", orgName)
             const fullPathInServ = processedFile.path; // Đường dẫn đầy đủ của file vừa đc upload lên server
-            console.log("3", fullPathInServ)
             let prefixImage = fullPathInServ?.slice(0, 7);
             let idImage = fullPathInServ?.slice(7);
             // Đổi tên của file vừa upload lên, vì multer đang đặt default ko có đuôi file
             const newFullPath = `${prefixImage}hung-${idImage}-${orgName}`;
-            console.log("4", newFullPath)
             fs.renameSync(fullPathInServ, newFullPath);
-            console.log("5", fullPathInServ, newFullPath)
             res.send({
                 status: true,
                 message: 'file uploaded',

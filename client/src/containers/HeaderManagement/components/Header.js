@@ -66,7 +66,9 @@ class Header extends Component {
             errorImageAvatar: "",
             errorImageSign: "",
             isLoading: props.isLoading ? props.isLoading : true ,
-            isCheckClosePopup: false
+            isCheckClosePopup: false,
+            companyName: "",
+            companyId: "",
         };
         const rules = [
             {
@@ -326,7 +328,9 @@ class Header extends Component {
             dateOfBirth,
             status,
             gender,
-            errors
+            errors,
+            companyName,
+            companyId
         } = this.state;
         const avatar1 = await this.cropImage1.uploadImage();
         const avatar2 = await this.cropImage2.uploadImage();
@@ -383,7 +387,9 @@ class Header extends Component {
                         roleId: 1,
                         gender,
                         imageIdCardFront: cardIdFront,
-                        imageIdCardBack: cardIdBack
+                        imageIdCardBack: cardIdBack,
+                        companyName,
+                        companyId
                     }
                     console.log("data sign up", data)
                     this.props.actions.signUp({
@@ -605,7 +611,7 @@ class Header extends Component {
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button onClick={this.onCloseModalSignIn} type="button" className="btn btn-secondary" data-bs-dismiss="modal" id="close-modal-signin">Hủy</button>
+                                <button onClick={this.onCloseModalSignIn} type="button" className="btn btn-secondary" data-bs-dismiss="modal" id="close-modal-signin">Đóng</button>
                                 <div className="form-group">
                                     <button onClick={this.onSubmit} type="submit" className="btn btn-primary btn-block float-right"> Đăng Nhập</button>
                                 </div>
@@ -651,6 +657,20 @@ class Header extends Component {
                                                 <b>{errors.name}</b>
                                             </div>
                                         ) : null}
+                                    </div>
+                                    <div className="form-group mt-3">
+                                        <label>Tên doanh nghiệp (nếu có)</label>
+                                        <input onChange={(e) => { this.setState({companyName : e.target.value})
+                                        }}
+                                            className="form-control mt-2" placeholder="Nhập tên doanh nghiệp..." type="text" value={this.state.companyName}
+                                        />
+                                    </div>
+                                    <div className="form-group mt-3">
+                                        <label>Mã số thuế (nếu có)</label>
+                                        <input
+                                            onChange={(e) => {
+                                                this.setState({ companyId: e.target.value })
+                                            }} className="form-control mt-2" placeholder="Nhập mã số thuế..." type="text" value={this.state.companyId} />
                                     </div>
                                     <div className="form-group mt-3">
                                         <label>Email</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
@@ -979,7 +999,7 @@ class Header extends Component {
                                 </form>
                             </div>
                             <div className="modal-footer">
-                                <button onClick={this.onCloseModalSignUp} type="button" className="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                <button onClick={this.onCloseModalSignUp} type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                                 <div className="form-group">
                                     <button onClick={this.signUp}
                                         type="submit" className="btn btn-primary btn-block float-right"> Đăng Ký</button>

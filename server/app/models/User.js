@@ -17,7 +17,9 @@ const userSchema = mongoose.Schema({
   avatar: { type: String/* , required:  true */ },
   gender: { type: Boolean },
   imageIdCardFront: { type: String },
-  imageIdCardBack: { type: String },
+    imageIdCardBack: { type: String },
+  companyName: { type: String },
+    companyId: { type: String },
 
 }, {
     timestamps: true

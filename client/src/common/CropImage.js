@@ -296,7 +296,7 @@ export default class CropImage extends Component {
                                 <button type="button" className="btn btn-secondary e-m-right-10" onClick={() => {
                                     this.setState({
                                         show: false
-                                    })}}>Hủy</button>{/* {btnChoseFile} */}
+                                    })}}>Đóng</button>{/* {btnChoseFile} */}
                             </label>
                             <button type="buttom" className="btn btn-primary" style={{ marginLeft: 5 }} onClick={this.saveCropImage}>{btnDone}</button>
                         </div>
