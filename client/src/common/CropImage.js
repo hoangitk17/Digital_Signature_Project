@@ -205,7 +205,8 @@ export default class CropImage extends Component {
             innerClass,
             btnChoseFile,
             name,
-            isCheckClosePopup
+            isCheckClosePopup,
+            disabled
         } = this.props;
 
         const { source, image, show, loading } = this.state;
@@ -219,6 +220,8 @@ export default class CropImage extends Component {
         if (isCheckClosePopup === true && image && image !== "") {
             this.setDataImage();
         }
+
+        console.log("disabled", disabled, disabled === true)
 
         return (
         <form action="" method="" encType="multipart/form-data">
@@ -235,6 +238,7 @@ export default class CropImage extends Component {
                    /*  name={name} */
                     name="image"
                     id={`crop-for-${name}`}
+                    /* disabled={disabled} */
                 />
                 <RenderImage
                     onLoad={() => {
@@ -292,7 +296,7 @@ export default class CropImage extends Component {
                                 <button type="button" className="btn btn-secondary e-m-right-10" onClick={() => {
                                     this.setState({
                                         show: false
-                                    })}}>Hủy</button>{/* {btnChoseFile} */}
+                                    })}}>Đóng</button>{/* {btnChoseFile} */}
                             </label>
                             <button type="buttom" className="btn btn-primary" style={{ marginLeft: 5 }} onClick={this.saveCropImage}>{btnDone}</button>
                         </div>

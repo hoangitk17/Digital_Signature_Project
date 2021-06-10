@@ -113,6 +113,7 @@ class UpdateSignImage extends Component {
     render() {
         const { srcImageSign, InfoAfterSignIn } = this.state;
         const { show, isCheckClosePopup } = this.props;
+        const disabled = InfoAfterSignIn?.statusId === 4 ? false : true;
         return (
             <div className="popup-edit-info-user">
                 {/* Modal Update Image Sign */}
@@ -120,12 +121,12 @@ class UpdateSignImage extends Component {
                     <div className="modal-dialog modal-dialog-centered">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <h5 className="modal-title" id="modalUpdateSign">Cập nhật hình ảnh chữ ký</h5>
+                                <h5 className="modal-title" id="modalUpdateSign">Hình ảnh chữ ký số</h5>
                                 <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"
                                     onClick={show} />
                             </div>
                             <div className="modal-body">
-                                <div className="row">
+                                <div className="row" style={{position: "relative"}}>
                                     <div className="col-md-12" style={{ padding: "50px", display: "flex", justifyContent: "center" }}>
                                         {/* <InputFile
                                                 onChange={event => this.setState({ event })}
@@ -139,17 +140,19 @@ class UpdateSignImage extends Component {
                                             btnChoseFile="Chọn Ảnh"
                                             btnDone="Đồng ý"
                                             isCheckClosePopup={isCheckClosePopup}
+                                            disabled={disabled}
                                         />}
                                     </div>
+                                    {disabled === true ? <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "transparent" }}></div> : null}
                                 </div>
                             </div>
                             <div className="modal-footer">
                                 <button id="closeModalUpdateSignImage" type="button" className="btn btn-secondary" data-bs-dismiss="modal"
-                                    onClick={show}>Hủy</button>
-                                <div className="form-group">
+                                    onClick={show}>Đóng</button>
+                                {disabled === true ? null : <div className="form-group">
                                     <button onClick={() => { this.UpdateSignImage() }}
                                         type="submit" className="btn btn-primary btn-block float-right">Cập Nhật</button>
-                                </div>
+                                </div>}
                             </div>
 
                         </div>
