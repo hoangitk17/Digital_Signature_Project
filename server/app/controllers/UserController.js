@@ -39,7 +39,7 @@ class UserController {
         } = req.body;
         try {
             const oldUser = await User.findOne({ userName });
-          
+
             if (oldUser) return res.status(400).json({ message: "Tài khoản này đã tồn tại" });
           console.log("pass");
             let keyPair = null;
@@ -209,11 +209,22 @@ class UserController {
             address,
             avatar,
             dateOfBirth,
-            gender } = req.body;
+            gender,
+            imageIdCardFront,
+            imageIdCardBack } = req.body;
 
         if (avatar?.slice(0, 27) === "http://localhost:5000/user/") {
             avatar = avatar?.slice(27);
         }
+
+        if (imageIdCardFront?.slice(0, 27) === "http://localhost:5000/user/") {
+            imageIdCardFront = imageIdCardFront?.slice(27);
+        }
+
+        if (imageIdCardBack?.slice(0, 27) === "http://localhost:5000/user/") {
+            imageIdCardBack = imageIdCardBack?.slice(27);
+        }
+
 
         let updatedPost = null;
 
@@ -252,7 +263,10 @@ class UserController {
                     address,
                     avatar,
                     dateOfBirth,
-                    gender, _id: id
+                    gender,
+                    imageIdCardFront,
+                    imageIdCardBack,
+                    _id: id
                 };
 
                 await User.findByIdAndUpdate({ _id: id }, { $set: updatedPost });

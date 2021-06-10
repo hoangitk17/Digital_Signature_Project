@@ -47,9 +47,11 @@ class PopupEditInfoUser extends Component {
             address: props.InfoAfterSignIn?.address,
             privateKey: props.InfoAfterSignIn?.privateKey,
             publicKey: props.InfoAfterSignIn?.publicKey,
-            status: 1, //0 la khoa tai khoan, 1 la tai khoan dang hoat dong
+            status: props.InfoAfterSignIn?.statusId, //0 la khoa tai khoan, 1 la tai khoan dang hoat dong
             signImage: props.InfoAfterSignIn?.signImage,
             avatar: props.InfoAfterSignIn?.avatar,
+            imageIdCardFront: props.InfoAfterSignIn?.imageIdCardFront,
+            imageIdCardBack: props.InfoAfterSignIn?.imageIdCardBack,
             gender: true, //true la nam, false la nu
             newPassword: "",
             oldNewPassword: "",
@@ -210,11 +212,13 @@ class PopupEditInfoUser extends Component {
                 address: nextProps.InfoAfterSignIn?.address,
                 privateKey: nextProps.InfoAfterSignIn?.privateKey,
                 publicKey: nextProps.InfoAfterSignIn?.publicKey,
-                status: 1, //0 la khoa tai khoan, 1 la tai khoan dang hoat dong
+                status: nextProps.InfoAfterSignIn?.statusId, //0 la khoa tai khoan, 1 la tai khoan dang hoat dong
                 signImage: nextProps.InfoAfterSignIn?.signImage,
                 avatar: nextProps.InfoAfterSignIn?.avatar,
                 gender: nextProps.InfoAfterSignIn?.gender, //true la nam, false la nu
                 newPassword: "",
+                imageIdCardFront: nextProps.InfoAfterSignIn?.imageIdCardFront,
+                imageIdCardBack: nextProps.InfoAfterSignIn?.imageIdCardBack,
                 oldPassword: nextProps.InfoAfterSignIn?.password,
             };
         }
@@ -233,21 +237,26 @@ class PopupEditInfoUser extends Component {
             address: this.props.InfoAfterSignIn.InfoAfterSignIn?.address,
             privateKey: this.props.InfoAfterSignIn.InfoAfterSignIn?.privateKey,
             publicKey: this.props.InfoAfterSignIn.InfoAfterSignIn?.publicKey,
-            status: 1, //0 la khoa tai khoan, 1 la tai khoan dang hoat dong
+            status: this.props.InfoAfterSignIn.InfoAfterSignIn?.statusId, //0 la khoa tai khoan, 1 la tai khoan dang hoat dong
             signImage: this.props.InfoAfterSignIn.InfoAfterSignIn?.signImage,
             avatar: this.props.InfoAfterSignIn.InfoAfterSignIn?.avatar,
             gender: this.props.InfoAfterSignIn.InfoAfterSignIn?.gender, //true la nam, false la nu
             newPassword: "",
             oldPassword: this.props.InfoAfterSignIn.InfoAfterSignIn?.password,
+            imageIdCardFront: this.props.InfoAfterSignIn?.imageIdCardFront,
+            imageIdCardBack: this.props.InfoAfterSignIn?.imageIdCardBack,
             errors: {}
         })
     }
 
   updateInfoUser = async () => {
-      
         const infoUser = common.decodeToken(get("accessToken"));
         var avatar = await this.cropImage3.uploadImage();
+        var imageFront = await this.cropImageCardIdFront.uploadImage();
+        var imageBack = await this.cropImageCardIdBack.uploadImage();
         let avatarTemp = "";
+        let imageFrontTemp = "";
+        let imageBackTemp = "";
         if(avatar !== this.state.avatar)
         {
             const formData = new FormData();
@@ -277,6 +286,62 @@ class PopupEditInfoUser extends Component {
         if (avatarTemp.slice(0, 27) === "http://localhost:5000/user/") {
             avatarTemp = avatarTemp.slice(27);
         }
+
+      if (imageFront !== this.state.imageIdCardFront) {
+          const formDataFront = new FormData();
+          formDataFront.append("image", imageFront);
+          const config = {
+              headers: {
+                  'content-type': 'multipart/form-data'
+              }
+          }
+          await axios.put(`http://localhost:5000/user/get-link-image-from-file`, formDataFront, config).then(res => {
+              let filePathFront = res.data.signImage;
+              if (filePathFront) {
+                  imageFrontTemp = filePathFront;
+              }
+          }).catch(err => {
+              Swal.fire(
+                  'Thông báo',
+                  'Upload hình ảnh mặt trước chứng minh thất bại!',
+                  'error'
+              )
+          })
+      }
+      if (imageFront.slice(0, 27) === "http://localhost:5000/user/") {
+          imageFront = imageFront.slice(27);
+      }
+      if (imageFrontTemp.slice(0, 27) === "http://localhost:5000/user/") {
+          imageFrontTemp = imageFrontTemp.slice(27);
+      }
+
+      if (imageBack !== this.state.imageIdCardBack) {
+          const formDataBack = new FormData();
+          formDataBack.append("image", imageBack);
+          const config = {
+              headers: {
+                  'content-type': 'multipart/form-data'
+              }
+          }
+          await axios.put(`http://localhost:5000/user/get-link-image-from-file`, formDataBack, config).then(res => {
+              let filePathBack = res.data.signImage;
+              if (filePathBack) {
+                  imageBackTemp = filePathBack;
+              }
+          }).catch(err => {
+              Swal.fire(
+                  'Thông báo',
+                  'Upload hình ảnh thất bại!',
+                  'error'
+              )
+          })
+      }
+      if (imageBack.slice(0, 27) === "http://localhost:5000/user/") {
+          imageBack = imageBack.slice(27);
+      }
+      if (imageBackTemp.slice(0, 27) === "http://localhost:5000/user/") {
+          imageBackTemp = imageBackTemp.slice(27);
+      }
         console.log("link image avatar", avatar, avatarTemp, avatar.slice(0, 27), avatar.slice(27))
         const {
             password,
@@ -316,6 +381,8 @@ class PopupEditInfoUser extends Component {
                             cardId,
                             address,
                             avatar: avatarTemp !== "" ? avatarTemp : avatar,
+                            imageIdCardFront: imageFrontTemp !== "" ? imageFrontTemp : imageFront,
+                            imageIdCardBack: imageBackTemp !== "" ? imageBackTemp : imageBack,
                             dateOfBirth,
                             gender
                         }
@@ -397,6 +464,8 @@ class PopupEditInfoUser extends Component {
                     cardId,
                     address,
                     avatar: avatarTemp !== "" ? avatarTemp : avatar,
+                    imageIdCardFront: imageFrontTemp !== "" ? imageFrontTemp : imageFront,
+                    imageIdCardBack: imageBackTemp !== "" ? imageBackTemp : imageBack,
                     dateOfBirth,
                     gender
                 }
@@ -430,20 +499,6 @@ class PopupEditInfoUser extends Component {
                             id: infoUser?.data?._id,
                             data, closeModal: () => {
                                 this.setState({
-                                    //     name: "",
-                                    //     email: "",
-                                    //     phoneNumber: "",
-                                    //     userName: "",
-                                    //     cardId: "",
-                                    //     dateOfBirth: new Date(4500),
-                                    //     address: "",
-                                    //     privateKey: "",
-                                    //     publicKey: "",
-                                    //     status: 1, //0 la khoa tai khoan, 1 la tai khoan dang hoat dong
-                                    //     signImage: "",
-                                    //     avatar: "",
-                                    //     gender: true, //true la nam, false la nu
-
                                     password: "",
                                     newPassword: "",
                                     oldNewPassword: "",
@@ -463,7 +518,9 @@ class PopupEditInfoUser extends Component {
 
 
     render() {
-        const { infoSignUp, hidePassword, hidePasswordNew, hidePasswordSignUp, hidePasswordSignUpAgain, txtusername, txtpassword, errors, isLogin/* messenger */, dateOfBirth } = this.state;
+        const { infoSignUp, hidePassword, hidePasswordNew, hidePasswordSignUp,
+             hidePasswordSignUpAgain, txtusername, txtpassword, errors,
+              isLogin/* messenger */, dateOfBirth, status } = this.state;
         const { isError, errorMessage, InfoAfterSignIn, errorMessageSignUp } = this.props;
         var messengerSignUp = errorMessageSignUp ? errorMessageSignUp : null;
         const invalidChars = [
@@ -471,6 +528,8 @@ class PopupEditInfoUser extends Component {
             "+",
             "e",
         ];
+        console.log("status", status)
+        const disabled = status === 4 ? false : true;
         return (
             <div className="popup-edit-info-user">
                 {/* Modal Edit Info User */}
@@ -484,19 +543,42 @@ class PopupEditInfoUser extends Component {
                             <div className="modal-body">
                                 <form>
                                     <div className="row">
-                                        <div className="col-md-3" style={{ padding: "95px 42px" }}>
-                                            {/* <InputFile
-                                                onChange={event => this.setState({ event })}
-                                            /> */}
-                                            <CropImage
-                                                ref={element => (this.cropImage3 = element)}
-                                                src={this.state.avatar}
-                                                name="image-avatar"
-                                                textAdd="THÊM ẢNH"
-                                                title="CHỈNH SỬA KÍCH THƯỚC ẢNH"
-                                                btnChoseFile="Chọn Ảnh"
-                                                btnDone="Đồng ý"
-                                            />
+                                        <div className="col-md-3" /* style={{ padding: "95px 42px" }} */ style={{ position: "relative"}}>
+                                            <div className="row" style={{ display: "flex", flexDirection: "column", padding: "0px 30px" }}>
+                                                <CropImage
+                                                    ref={element => (this.cropImage3 = element)}
+                                                    src={this.state.avatar}
+                                                    name="image-avatar"
+                                                    textAdd="THÊM ẢNH"
+                                                    title="CHỈNH SỬA KÍCH THƯỚC ẢNH"
+                                                    btnChoseFile="Chọn Ảnh"
+                                                    btnDone="Đồng ý"
+                                                    disabled={disabled}
+                                                />
+                                                <br />
+                                                <CropImage
+                                                    ref={element => (this.cropImageCardIdFront = element)}
+                                                    src={this.state.imageIdCardFront}
+                                                    name="image-card-id-front-edit"
+                                                    textAdd="THÊM ẢNH"
+                                                    title="CHỈNH SỬA KÍCH THƯỚC ẢNH"
+                                                    btnChoseFile="Chọn Ảnh"
+                                                    btnDone="Đồng ý"
+                                                    disabled={disabled}
+                                                />
+                                                <br />
+                                                <CropImage
+                                                    ref={element => (this.cropImageCardIdBack = element)}
+                                                    src={this.state.imageIdCardBack}
+                                                    name="image-card-id-back-edit"
+                                                    textAdd="THÊM ẢNH"
+                                                    title="CHỈNH SỬA KÍCH THƯỚC ẢNH"
+                                                    btnChoseFile="Chọn Ảnh"
+                                                    btnDone="Đồng ý"
+                                                    disabled={disabled}
+                                                />
+                                                {disabled === true ? <div style={{position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "transparent"}}></div> : null}
+                                            </div>
                                         </div>
                                         <div className="col-md-9">
                                             <div className="row">
@@ -506,7 +588,7 @@ class PopupEditInfoUser extends Component {
                                                             <label>Tài Khoản</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
                                                         </div>
                                                         <div className="margin-5 col-md-8">
-                                                            <input onChange={(e) => {
+                                                            <input disabled={disabled} onChange={(e) => {
                                                                 if (e.target.value === "") {
                                                                     this.setState({
                                                                         userName: e.target.value, errors: {
@@ -526,7 +608,7 @@ class PopupEditInfoUser extends Component {
                                                             <label>Họ Và Tên</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
                                                         </div>
                                                         <div className="margin-5 col-md-8">
-                                                            <input onChange={(e) => {
+                                                            <input disabled={disabled} onChange={(e) => {
                                                                 if (e.target.value === "") {
                                                                     this.setState({
                                                                         name: e.target.value, errors: {
@@ -556,6 +638,7 @@ class PopupEditInfoUser extends Component {
                                                         </div>
                                                         <div className="margin-5 col-md-8">
                                                             <input
+                                                             disabled={disabled}
                                                              onKeyPress={e => invalidChars.includes(e.key) ? e.preventDefault() : null}
                                                              onChange={(e) => {
                                                                 if (e.target.value === "") {
@@ -585,6 +668,7 @@ class PopupEditInfoUser extends Component {
                                                         </div>
                                                         <div className="margin-5 col-md-8">
                                                             <input
+                                                             disabled={disabled}
                                                              onKeyPress={e => invalidChars.includes(e.key) ? e.preventDefault() : null}
                                                              onChange={(e) => {
                                                                 if (e.target.value === "") {
@@ -613,7 +697,7 @@ class PopupEditInfoUser extends Component {
                                                             <label>Email</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
                                                         </div>
                                                         <div className="margin-5 col-md-8">
-                                                            <input onChange={(e) => {
+                                                            <input disabled={disabled} onChange={(e) => {
                                                                 if (e.target.value === "") {
                                                                     this.setState({
                                                                         email: e.target.value, errors: {
@@ -641,6 +725,7 @@ class PopupEditInfoUser extends Component {
                                                         </div>
                                                         <div className="margin-5 col-md-8">
                                                             <div className="mt-2"><DatePicker
+                                                                disabled={disabled}
                                                                 className="date-picker"
                                                                 selected={dateOfBirth}
                                                                 onChange={(dateOfBirth) => {
@@ -669,28 +754,33 @@ class PopupEditInfoUser extends Component {
                                                                 <b>{errors.dateOfBirth}</b>
                                                             </div>
                                                         ) : null}
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <div className="row">
                                                         <div className="margin-5 col-md-4 line-height-55">
-                                                            <label>Giới Tính</label>{/* <span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span> */}
+                                                            <label>Giới Tính</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
                                                         </div>
                                                         <div className="margin-5 col-md-8" style={{ position: "relative" }}>
-                                                            <div className="d-flex" style={{ marginTop: 14 }}>
+                                                            {disabled === true
+                                                            ?
+                                                                <div className="d-flex" style={{ marginTop: 14, paddingLeft: ".75rem" }}>
+                                                                    {this.state.gender ? "Nam" : "Nữ"}
+                                                                </div>
+                                                            : <div className="d-flex" style={{ marginTop: 14 }}>
                                                                 <div className="form-check" onClick={() => { this.setState({ gender: true }) }}>
                                                                     <input /* onChange={() => { this.setState({ gender: true }) }} */
-                                                                        className="form-check-input" type="radio" name="gender" id="nam" checked={this.state.gender ? true : false} />
+                                                                        className="form-check-input" type="radio" name="gender" id="nam" checked={this.state.gender ? true : false}/>
                                                                     <label className="form-check-label" htmlFor="nam">Nam</label>
                                                                 </div>
                                                                 <div className="form-check" style={{ marginLeft: 100 }} onClick={() => { this.setState({ gender: false }) }}>
                                                                     <input /* onChange={() => { this.setState({ gender: false }) }} */
-                                                                        className="form-check-input" type="radio" name="gender" id="nu" checked={this.state.gender ? false : true} />
+                                                                        className="form-check-input" type="radio" name="gender" id="nu" checked={this.state.gender ? false : true}/>
                                                                     <label className="form-check-label" htmlFor="nu">Nữ</label>
                                                                 </div>
-                                                            </div>
+                                                            </div>}
                                                         </div>
-                                                        <span style={{ fontWeight: "600", textAlign: "center" }}>-------&nbsp;Đổi mật khẩu&nbsp;(nếu cần)&nbsp;---------------------------------</span>
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-6">
+                                                    <div className="row">
+                                                        <span style={{ fontWeight: "600", textAlign: "center" }}>-------&nbsp;Đổi mật khẩu&nbsp;-------------------------------------------------</span>
                                                         <div className="margin-5 col-md-4 line-height-55">
                                                             <label>Mật Khẩu Cũ</label>
                                                         </div>
@@ -800,7 +890,7 @@ class PopupEditInfoUser extends Component {
                                                     <label>Địa chỉ</label><span style={{ color: "red", fontSize: "14px" }}>&nbsp;*</span>
                                                 </div>
                                                 <div className="margin-5 col-md-9" style={{ marginLeft: 4 }}>
-                                                    <input onChange={(e) => {
+                                                    <input disabled={disabled} onChange={(e) => {
                                                         if (e.target.value === "") {
                                                             this.setState({
                                                                 address: e.target.value, errors: {
@@ -829,11 +919,11 @@ class PopupEditInfoUser extends Component {
                                 </form>
                             </div>
                             <div className="modal-footer">
-                                <button onClick={this.setDataWhenClosePopup} id="closeModalUpdateInfoUser" type="button" className="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                                <div className="form-group">
+                                <button onClick={this.setDataWhenClosePopup} id="closeModalUpdateInfoUser" type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                {disabled === true ? null : <div className="form-group">
                                     <button onClick={this.updateInfoUser}
                                         type="submit" className="btn btn-primary btn-block float-right"> Chỉnh Sửa</button>
-                                </div>
+                                </div>}
                             </div>
 
                         </div>
