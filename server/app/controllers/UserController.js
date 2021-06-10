@@ -106,7 +106,8 @@ class UserController {
             gender: user.gender,
             imageIdCardFront: linkServer + user?.imageIdCardFront,
             imageIdCardBack: linkServer + user?.imageIdCardBack, //"http://vyctravel.com/libs/upload/ckfinder/images/Visa/h%E1%BB%99%20chi%E1%BA%BFu/Untitled-7(1).jpg"
-            avatar: linkServer + user?.avatar
+            avatar: linkServer + user?.avatar,
+            signImage: linkServer + user?.signImage,
           }
         });
         if (name) {
