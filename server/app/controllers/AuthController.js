@@ -71,7 +71,8 @@ class AuthController {
 
       const isPasswordCorrect = password === user.password;
 
-      if (!isPasswordCorrect) return res.status(400).json({ message: "Mật khẩu không chính xác!" });
+      if (!isPasswordCorrect) return res.status(400).json({ message: "Tài khoản hoặc mật khẩu không chính xác!" });
+      if (user.roleId !== 2) return res.status(401).json({ message: "Tài khoản không có quyền truy cập trang web này!" });
 
       const userObj = user ? await mongooseToObject(user) : {};
       let sentUser = null;
