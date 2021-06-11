@@ -136,7 +136,7 @@ class UpdateSignImage extends Component {
                                         {<CropImage
                                             ref={element => (this.cropImage = element)}
                                             src={!srcImageSign ? "" : srcImageSign}
-                                            name="image-sign"
+                                            name="image-sign-edit"
                                             textAdd="THÊM ẢNH"
                                             title="CHỈNH SỬA KÍCH THƯỚC ẢNH"
                                             btnChoseFile="Chọn Ảnh"

@@ -561,7 +561,7 @@ class PopupEditInfoUser extends Component {
                                                 <CropImage
                                                     ref={element => (this.cropImage3 = element)}
                                                     src={this.state.avatar}
-                                                    name="image-avatar"
+                                                    name="image-avatar-edit"
                                                     textAdd="THÊM ẢNH"
                                                     title="CHỈNH SỬA KÍCH THƯỚC ẢNH"
                                                     btnChoseFile="Chọn Ảnh"
