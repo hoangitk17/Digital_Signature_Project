@@ -3,7 +3,8 @@ const { mongooseToObject } = require('../../utils/mongoose');
 const { generateRSAKey4096 } = require('../../utils/hybridcrypto');
 const fs = require('fs');
 const path = require('path');
-const linkServer = "http://localhost:5000/user/";
+//const linkServer = "http://localhost:5000/user/";
+const linkServer = "https://digital-signature-server.herokuapp.com/user/";
 class UserController {
 
     async exists(req, res, next) {
@@ -51,14 +52,14 @@ class UserController {
                 let userHasPrivate = await User.findOne({ privateKey: keyPair.privateKey });
                 usableKey = (userHasPublic || userHasPrivate);
             } while (usableKey)
-            if (imageIdCardFront?.slice(0, 27) === "http://localhost:5000/user/") {
-                imageIdCardFront = imageIdCardFront?.slice(27);
+            if (imageIdCardFront?.slice(0, 52) === linkServer) {
+                imageIdCardFront = imageIdCardFront?.slice(52);
             }
-            if (imageIdCardBack?.slice(0, 27) === "http://localhost:5000/user/") {
-                imageIdCardBack = imageIdCardBack?.slice(27);
+            if (imageIdCardBack?.slice(0, 52) === linkServer) {
+                imageIdCardBack = imageIdCardBack?.slice(52);
             }
-            if (avatar?.slice(0, 27) === "http://localhost:5000/user/") {
-                avatar = avatar?.slice(27);
+            if (avatar?.slice(0, 52) === linkServer) {
+                avatar = avatar?.slice(52);
             }
             const result = await User.create({
                 name,
@@ -187,16 +188,16 @@ class UserController {
             companyId,
             companyName } = req.body;
 
-        if (avatar?.slice(0, 27) === "http://localhost:5000/user/") {
-            avatar = avatar?.slice(27);
+        if (avatar?.slice(0, 52) === linkServer) {
+            avatar = avatar?.slice(52);
         }
 
-        if (imageIdCardFront?.slice(0, 27) === "http://localhost:5000/user/") {
-            imageIdCardFront = imageIdCardFront?.slice(27);
+        if (imageIdCardFront?.slice(0, 52) === linkServer) {
+            imageIdCardFront = imageIdCardFront?.slice(52);
         }
 
-        if (imageIdCardBack?.slice(0, 27) === "http://localhost:5000/user/") {
-            imageIdCardBack = imageIdCardBack?.slice(27);
+        if (imageIdCardBack?.slice(0, 52) === linkServer) {
+            imageIdCardBack = imageIdCardBack?.slice(52);
         }
 
 
@@ -219,8 +220,8 @@ class UserController {
                     signImage: newFullPath
                 })
 
-                if (newFullPath?.slice(0, 27) === "http://localhost:5000/user/") {
-                    newFullPath = newFullPath?.slice(27);
+                if (newFullPath?.slice(0, 52) === linkServer) {
+                    newFullPath = newFullPath?.slice(52);
                 }
 
 
