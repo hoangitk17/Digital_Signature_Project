@@ -2,18 +2,18 @@ import axios from "axios";
 import { get, save, clearAll } from "./localStorage";
 import { history } from "../App";
 
-const baseURL = "http://localhost:5000/";
-//const baseURL = "https://digital-signature-server.herokuapp.com/";
+//const baseURL = "http://localhost:5000/";
+const baseURL = "https://digital-signature-server.herokuapp.com/";
 
 const instance = axios.create({
   baseURL: baseURL
 });
-
+/*  */
 instance.interceptors.request.use(
   config => {
     const token = get("accessToken");
     if (token) {
-      config.headers["Authorization"] = `Bearer ${token}`;
+      //config.headers["Authorization"] = `Bearer ${token}`;
     }
     return config;
   },
