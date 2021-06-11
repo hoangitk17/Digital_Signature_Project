@@ -24,6 +24,7 @@ import common from "../../../utils/common";
 import CropImage from "../../../common/CropImage";
 import axios from "axios";
 import { createLog } from "../../../api/log";
+import { serverURL } from "../../../services/api";
 const iconEye = <FontAwesomeIcon icon={faEye} />;
 const iconEyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
 // import {
@@ -296,7 +297,7 @@ class Header extends Component {
                 'content-type': 'multipart/form-data'
             }
         }
-        await axios.put(`http://localhost:5000/user/get-link-image-from-file`, formData, config).then(res => {
+        await axios.put(`${serverURL}user/get-link-image-from-file`, formData, config).then(res => {
             let filePath = res.data.signImage;
             if (filePath) {
                 avatarTemp = filePath;
@@ -358,17 +359,17 @@ class Header extends Component {
                     let cardIdBack = await this.uploadImageCardId(avatar2);
                     let imageAvatarTemp = await this.uploadImageCardId(imageAvatar);
                     let imageSignTemp = await this.uploadImageCardId(imageSign);
-                    if (cardIdFront.slice(0, 27) === "http://localhost:5000/user/") {
-                        cardIdFront = cardIdFront.slice(27);
+                    if (cardIdFront.slice(0, 52) === serverURL + "user/") {
+                        cardIdFront = cardIdFront.slice(52);
                     }
-                    if (cardIdBack.slice(0, 27) === "http://localhost:5000/user/") {
-                        cardIdBack = cardIdBack.slice(27);
+                    if (cardIdBack.slice(0, 52) === serverURL + "user/") {
+                        cardIdBack = cardIdBack.slice(52);
                     }
-                    if (imageAvatarTemp.slice(0, 27) === "http://localhost:5000/user/") {
-                        imageAvatarTemp = imageAvatarTemp.slice(27);
+                    if (imageAvatarTemp.slice(0, 52) === serverURL + "user/") {
+                        imageAvatarTemp = imageAvatarTemp.slice(52);
                     }
-                    if (imageSignTemp.slice(0, 27) === "http://localhost:5000/user/") {
-                        imageSignTemp = imageSignTemp.slice(27);
+                    if (imageSignTemp.slice(0, 52) === serverURL + "user/") {
+                        imageSignTemp = imageSignTemp.slice(52);
                     }
                     const data = {
                         password: md5(password),
@@ -486,7 +487,7 @@ class Header extends Component {
         const { isError, errorMessage, errorMessageSignUp } = this.props;
         var messenger = !isError ? "" : errorMessage;
         var messengerSignUp = errorMessageSignUp ? errorMessageSignUp : null;
-        console.log("messengerSignUp", messengerSignUp)
+        console.log("messengerSignUp", messengerSignUp, serverURL)
         const invalidChars = [
             "-",
             "+",

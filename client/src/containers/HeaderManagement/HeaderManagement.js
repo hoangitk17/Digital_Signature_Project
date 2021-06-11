@@ -9,7 +9,7 @@ import * as action from "./actions";
 class HeaderManagement extends React.Component {
 
   componentDidMount() {
-      this.props.actions.getUserList();
+      //this.props.actions.getUserList();
   }
 
   render() {

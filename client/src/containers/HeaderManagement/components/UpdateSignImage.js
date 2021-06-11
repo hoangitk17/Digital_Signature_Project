@@ -21,6 +21,7 @@ import common from "../../../utils/common";
 import { get } from "../../../services/localStorage";
 import axios from "axios";
 import { createLog } from "../../../api/log";
+import { serverURL } from "../../../services/api";
 const iconEye = <FontAwesomeIcon icon={faEye} />;
 const iconEyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
 
@@ -56,7 +57,7 @@ class UpdateSignImage extends Component {
             closeModal: () => {
                 document.querySelector('#closeModalUpdateSignImage').click();
             } }); */
-            await axios.put(`http://localhost:5000/user/image-sign/${infoUser.data._id}`, formData, config).then(async res => {
+            await axios.put(`${serverURL}user/image-sign/${infoUser.data._id}`, formData, config).then(async res => {
                 let filePath = res.data.signImage
                 if (filePath) {
                     const dataLog = {
@@ -114,6 +115,7 @@ class UpdateSignImage extends Component {
         const { srcImageSign, InfoAfterSignIn } = this.state;
         const { show, isCheckClosePopup } = this.props;
         const disabled = InfoAfterSignIn?.statusId === 4 ? false : true;
+        console.log("sign image", serverURL)
         return (
             <div className="popup-edit-info-user">
                 {/* Modal Update Image Sign */}

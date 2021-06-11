@@ -22,6 +22,7 @@ import common from "../../../utils/common";
 import { get } from "../../../services/localStorage";
 import axios from "axios";
 import { createLog } from "../../../api/log";
+import { serverURL } from "../../../services/api";
 const iconEye = <FontAwesomeIcon icon={faEye} />;
 const iconEyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
 
@@ -272,7 +273,7 @@ class PopupEditInfoUser extends Component {
                     'content-type': 'multipart/form-data'
                 }
             }
-            await axios.put(`http://localhost:5000/user/get-link-image-from-file`, formData, config).then(res => {
+            await axios.put(`${serverURL}user/get-link-image-from-file`, formData, config).then(res => {
                 let filePath = res.data.signImage;
                 if (filePath) {
                     avatarTemp = filePath;
@@ -285,12 +286,12 @@ class PopupEditInfoUser extends Component {
                 )
             })
         }
-        if (avatar.slice(0, 27) === "http://localhost:5000/user/")
+        if (avatar.slice(0, 52) === serverURL + "user/")
         {
-            avatar = avatar.slice(27);
+            avatar = avatar.slice(52);
         }
-        if (avatarTemp.slice(0, 27) === "http://localhost:5000/user/") {
-            avatarTemp = avatarTemp.slice(27);
+        if (avatarTemp.slice(0, 52) === serverURL + "user/") {
+            avatarTemp = avatarTemp.slice(52);
         }
 
       if (imageFront !== this.state.imageIdCardFront) {
@@ -301,7 +302,7 @@ class PopupEditInfoUser extends Component {
                   'content-type': 'multipart/form-data'
               }
           }
-          await axios.put(`http://localhost:5000/user/get-link-image-from-file`, formDataFront, config).then(res => {
+          await axios.put(`${serverURL}user/get-link-image-from-file`, formDataFront, config).then(res => {
               let filePathFront = res.data.signImage;
               if (filePathFront) {
                   imageFrontTemp = filePathFront;
@@ -314,11 +315,11 @@ class PopupEditInfoUser extends Component {
               )
           })
       }
-      if (imageFront.slice(0, 27) === "http://localhost:5000/user/") {
-          imageFront = imageFront.slice(27);
+      if (imageFront.slice(0, 52) === serverURL + "user/") {
+          imageFront = imageFront.slice(52);
       }
-      if (imageFrontTemp.slice(0, 27) === "http://localhost:5000/user/") {
-          imageFrontTemp = imageFrontTemp.slice(27);
+      if (imageFrontTemp.slice(0, 52) === serverURL + "user/") {
+          imageFrontTemp = imageFrontTemp.slice(52);
       }
 
       if (imageBack !== this.state.imageIdCardBack) {
@@ -329,7 +330,7 @@ class PopupEditInfoUser extends Component {
                   'content-type': 'multipart/form-data'
               }
           }
-          await axios.put(`http://localhost:5000/user/get-link-image-from-file`, formDataBack, config).then(res => {
+          await axios.put(`${serverURL}user/get-link-image-from-file`, formDataBack, config).then(res => {
               let filePathBack = res.data.signImage;
               if (filePathBack) {
                   imageBackTemp = filePathBack;
@@ -342,13 +343,13 @@ class PopupEditInfoUser extends Component {
               )
           })
       }
-      if (imageBack.slice(0, 27) === "http://localhost:5000/user/") {
-          imageBack = imageBack.slice(27);
+      if (imageBack.slice(0, 52) === serverURL + "user/") {
+          imageBack = imageBack.slice(52);
       }
-      if (imageBackTemp.slice(0, 27) === "http://localhost:5000/user/") {
-          imageBackTemp = imageBackTemp.slice(27);
+      if (imageBackTemp.slice(0, 52) === serverURL + "user/") {
+          imageBackTemp = imageBackTemp.slice(52);
       }
-        console.log("link image avatar", avatar, avatarTemp, avatar.slice(0, 27), avatar.slice(27))
+        console.log("link image avatar", avatar, avatarTemp, avatar.slice(0, 52), avatar.slice(52))
         const {
             password,
             newPassword,
@@ -540,7 +541,7 @@ class PopupEditInfoUser extends Component {
             "+",
             "e",
         ];
-        console.log("status", status)
+        console.log("status", status, serverURL)
         const disabled = status === 4 ? false : true;
         return (
             <div className="popup-edit-info-user">

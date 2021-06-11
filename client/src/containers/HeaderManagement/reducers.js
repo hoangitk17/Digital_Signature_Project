@@ -22,7 +22,7 @@ export default handleActions(
         /**
      * get list table by area with table empty
      */
-        [actions.getUserList]: (state, action) => {
+        /* [actions.getUserList]: (state, action) => {
             return freeze({
                 ...state,
                 isLoading: true
@@ -41,7 +41,7 @@ export default handleActions(
                 isError: true,
                 isLoading: false
             })
-        },
+        }, */
         [actions.getUserById]: (state, action) => {
             return freeze({
                 ...state,
