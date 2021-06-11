@@ -6,7 +6,8 @@ export const getUserList = payload => {
 
 export const getUserById = payload => {
     const { id } = payload;
-    return api.get(`/user/${id}`);
+    const data = { id: id };
+    return api.get(`/user/${id}`, data);
 };
 
 export const signIn = payload => {
@@ -20,7 +21,9 @@ export const signUp = payload => {
 };
 
 export const getPublicKeyServer = payload => {
-  return api.get(`/auth/getPublicKeyServer`);
+    const id = "123";
+    const data = { id: id };
+    return api.get(`/auth/getPublicKeyServer`, data);
 };
 
 export const updateInfoUser = payload => {

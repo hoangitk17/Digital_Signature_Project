@@ -14,25 +14,25 @@ export default handleActions(
         /**
      * get list table by area with table empty
      */
-        [actions.getUserList]: (state, action) => {
-            return freeze({
-                ...state,
-                isLoading: true
-            })
-        },
-        [actions.getUserListSuccess]: (state, action) => {
-            return freeze({
-                ...state,
-                userList: action.payload.data,
-                isLoading: false
-            })
-        },
-        [actions.getUserListFail]: (state, action) => {
-            return freeze({
-                ...state,
-                isError: true
-            })
-        },
+        // [actions.getUserList]: (state, action) => {
+        //     return freeze({
+        //         ...state,
+        //         isLoading: true
+        //     })
+        // },
+        // [actions.getUserListSuccess]: (state, action) => {
+        //     return freeze({
+        //         ...state,
+        //         userList: action.payload.data,
+        //         isLoading: false
+        //     })
+        // },
+        // [actions.getUserListFail]: (state, action) => {
+        //     return freeze({
+        //         ...state,
+        //         isError: true
+        //     })
+        // },
 
     },
     initialState

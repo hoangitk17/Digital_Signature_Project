@@ -7,14 +7,14 @@ import common from "../../../utils/common";
 import nodeForge from "../../../utils/nodeforge";
 import forge from 'node-forge';
 
-function* handleGetUserList(action) {
-    try {
-        const res = yield call(apiUser.getUserList, action.payload);
-        yield put(actions.getUserListSuccess(res.data));
-    } catch (error) {
-        yield put(actions.getUserListFail(error));
-    }
-}
+// function* handleGetUserList(action) {
+//     try {
+//         const res = yield call(apiUser.getUserList, action.payload);
+//         yield put(actions.getUserListSuccess(res.data));
+//     } catch (error) {
+//         yield put(actions.getUserListFail(error));
+//     }
+// }
 function* handleSignIn(action) {
     let res = null;
     try {
@@ -156,9 +156,9 @@ function* handleGetUserInfoByPublicKey(action) {
 }
 
 
-function* getUserList() {
-    yield takeEvery(actions.getUserList, handleGetUserList);
-}
+// function* getUserList() {
+//     yield takeEvery(actions.getUserList, handleGetUserList);
+// }
 function* getUserById() {
     yield takeEvery(actions.getUserById, handleGetUserById);
 }
@@ -177,7 +177,7 @@ function* getUserInfoByPublicKey() {
 }
 
 export default [
-    getUserList,
+    /* getUserList, */
     signIn,
     signUp,
     getUserById,

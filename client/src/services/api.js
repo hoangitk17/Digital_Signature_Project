@@ -3,6 +3,7 @@ import { get, save, clearAll } from "./localStorage";
 import { history } from "../App";
 
 const baseURL = "http://localhost:5000/";
+//const baseURL = "https://digital-signature-server.herokuapp.com/";
 
 const instance = axios.create({
   baseURL: baseURL
@@ -70,4 +71,7 @@ instance.interceptors.response.use(
   }
 );
 
+export const serverURL = baseURL;
+export const numberSliceStringImageLocal = 27;
+export const numberSliceStringImageCloud = 52;
 export default instance;
