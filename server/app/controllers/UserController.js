@@ -263,10 +263,11 @@ class UserController {
             const user = await User.findOne({ publicKey });
             const userObj = await mongooseToObject(user);
             const userObjTemp = { ...userObj };
-            userObjTemp.imageIdCardFront = linkServer + userObjTemp?.imageIdCardFront,
-            userObjTemp.imageIdCardBack = linkServer + userObjTemp?.imageIdCardBack,
-            userObjTemp.avatar = linkServer + userObjTemp?.avatar,
-            userObjTemp.signImage = linkServer + userObjTemp?.signImage
+            let nameLinkImageAvatar = userObjTemp?.avatar?.slice(7);
+            userObjTemp.imageIdCardFront = linkServer + userObjTemp?.imageIdCardFront;
+            userObjTemp.imageIdCardBack = linkServer + userObjTemp?.imageIdCardBack;
+            userObjTemp.avatar = linkServer + "images/" + nameLinkImageAvatar; /* userObjTemp?.avatar */
+            userObjTemp.signImage = linkServer + userObjTemp?.signImage;
             delete userObjTemp.privateKey;
             delete userObjTemp.publicKey;
             delete userObjTemp.password;
