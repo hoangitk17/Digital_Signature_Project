@@ -450,6 +450,14 @@ class CreateSignForFile extends Component {
                               <p className="card-text">{userInfoSigned.email || ""}</p>
                               <h6 className="card-title" style={{ fontWeight: "bold" }}>Số điện thoại</h6>
                               <p className="card-text">{userInfoSigned.phoneNumber || ""}</p>
+                              {userInfoSigned.companyName ?
+                                (<> <h6 className="card-title" style={{ fontWeight: "bold" }}>Tên công ty</h6>
+                                <p className="card-text">{userInfoSigned.companyName || ""}</p></>) : null
+                              }
+                              {userInfoSigned.companyId ?
+                                (<> <h6 className="card-title" style={{ fontWeight: "bold" }}>Mã số thuế</h6>
+                                <p className="card-text">{userInfoSigned.companyId || ""}</p></>) : null
+                              }
                               <h6 className="card-title" style={{ fontWeight: "bold" }}>Thời gian ký</h6>
                               <p className="card-text">{signingTime ? signingTime.toLocaleString('vi-VN') : ""}</p>
                             </div>

@@ -952,10 +952,10 @@ class PopupEditInfoUser extends Component {
                             </div>
                             <div className="modal-footer">
                                 <button onClick={this.setDataWhenClosePopup} id="closeModalUpdateInfoUser" type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                                {disabled === true ? null : <div className="form-group">
+                                <div className="form-group">
                                     <button onClick={this.updateInfoUser}
                                         type="submit" className="btn btn-primary btn-block float-right"> Chỉnh Sửa</button>
-                                </div>}
+                                </div>
                             </div>
 
                         </div>
