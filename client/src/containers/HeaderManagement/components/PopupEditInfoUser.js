@@ -812,7 +812,7 @@ class PopupEditInfoUser extends Component {
                                                 </div>
                                                 <div className="col-md-6">
                                                     <div className="row">
-                                                        <span style={{ fontWeight: "600", textAlign: "center" }}>-------&nbsp;Đổi mật khẩu&nbsp;-------------------------------------------------</span>
+                                                        <span style={{ fontWeight: "600", textAlign: "center" }}>-------&nbsp;Đổi mật khẩu&nbsp;-----------------------------------------------</span>
                                                         <div className="margin-5 col-md-4 line-height-55">
                                                             <label>Mật Khẩu Cũ</label>
                                                         </div>
